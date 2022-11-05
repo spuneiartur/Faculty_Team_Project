@@ -10,13 +10,31 @@
 */
 
 
-
+// Classes -------------------------------------------------------------------------------------------
 class token {
-	std::string stringInput = "";
-	char delimiter;
+private:
+	std::string text;
+	unsigned int line;
+	unsigned int column;
+public:
+	// Constructors
+	token() {
+		std::string text = "";
+		unsigned int line = NULL;
+		unsigned int column = NULL;
+	}
+	// Destructors
+	~token() {
+		std::cout << "token object was destructed" << std::endl;
+	}
 	// Methods
+	// // Getters
+
+	// // Setters
 	
 };
+
+// Functions -------------------------------------------------------------------------------------------
 
 // Function for converting to lowerCase
 std::string stringToLowerCase(std::string string) {
@@ -132,6 +150,7 @@ int main()
 	{
 		std::cout << tokenizedVector[i] << std::endl;
 	}
+	token createTable;
 
 	return 0;
 }
