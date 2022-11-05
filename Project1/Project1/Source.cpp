@@ -5,6 +5,8 @@
 // Deallocation - Do no forget:
 // tokenizedVector
 
+// Verifying if git is working
+
 
 
 class token {
