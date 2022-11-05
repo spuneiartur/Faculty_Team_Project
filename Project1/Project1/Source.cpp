@@ -1,11 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 #include<string>
+#include <algorithm>
 
-// Deallocation - Do no forget:
-// tokenizedVector
+/* Deallocation - Do no forget :
+ 1) tokenizedVector
+ 2) 
 
-// Verifying if git is working
+*/
 
 
 
@@ -15,6 +17,12 @@ class token {
 	// Methods
 	
 };
+
+// Function for converting to lowerCase
+std::string stringToLowerCase(std::string string) {
+	std::transform(string.begin(), string.end(), string.begin(), ::tolower);  
+	return string;
+}
 
 // Function for Deleting Extra Spaces
 std::string deletingExtraSpacesString (std::string string) {
@@ -97,7 +105,9 @@ char** tokenizingStringIntoVector(char** array, std::string string, char delimit
 char** tokenizingFunction(std::string string, char delimiter, int& sizeOfVector) {
 	
 	char** tokenizedVector = nullptr;
-
+	// Converting string to LowerCase
+	string = stringToLowerCase(string);
+	
 	// Deleting extra spaces from the string (from the beginning and from the rest part of the string)
 	string = deletingExtraSpacesString(string);
 
@@ -116,17 +126,16 @@ char** tokenizingFunction(std::string string, char delimiter, int& sizeOfVector)
 int main()
 {
 	int sizeOfVector;
-	char** tokenizedVector = tokenizingFunction("   we will see how to    remove some   spaces from a   string     ", ' ', sizeOfVector);
+	char** tokenizedVector = tokenizingFunction("   we wiLl see how to    REMOVE some   SPACEs from a   String     ", ' ', sizeOfVector);
 
 	for (int i = 0; i< sizeOfVector; i++)
 	{
 		std::cout << tokenizedVector[i] << std::endl;
 	}
 
-	/*std::cout <<  tokenizedVector[0];*/
 	return 0;
 }
 
 
 // DROP TABLE table_name
-//   we will see how to    remove some   spaces from a   string   
+//   we wiLl see how to    REMOVE some   SPACEs from a   String       
