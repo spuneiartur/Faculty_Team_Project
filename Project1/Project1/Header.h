@@ -1,5 +1,20 @@
 #pragma once
 
+enum typesOfToken {
+	typeCommands, typeOperators, typeDataType, argString, argNumber
+};
+
+enum typeCommands {
+	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index
+};
+
+enum typeOperators {
+	add = '+', sub = '-', mul = '*', div_ = '/', mod = '%', equals = '=', notEqual = '!=', greater = '>', less = '<', greaterEqual = '>=', lessEqual = '<=', notLess = '!<', notGreater = '!>', and_, between, exists, in, notIn, like, glob, not_, or_, isNull, addStrings = '||', unique, l_parentheses = '(', r_parentheses = ')', asterix = '*'
+};
+
+enum typeDataType {
+	varchar2 = typeCommands::revoke + 1, number, long_, date, raw, long_raw, rowid, char_, blob, bfile
+};
 
 
 // Classes -------------------------------------------------------------------------------------------
