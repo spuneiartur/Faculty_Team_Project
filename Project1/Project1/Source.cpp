@@ -16,7 +16,7 @@
 int main()
 {
 	int sizeOfVector;
-	char** tokenizedVector = tokenizingFunction("   we wiLl see how to    REMOVE some   SPACEs from a   String     ", ' ', sizeOfVector);
+	char** tokenizedVector = tokenizingFunction("   we wiLl see how to++    REMOVE some   SPACEs from a   String     ", ' ', sizeOfVector);
 
 	for (int i = 0; i< sizeOfVector; i++)
 	{

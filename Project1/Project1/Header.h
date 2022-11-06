@@ -34,6 +34,26 @@ std::string stringToLowerCase(std::string string) {
 	return string;
 }
 
+// Function for inserting space  between operators and other arguments (ex: 12 +5 -> 12 + 5)
+
+std::string insertingExtraSpacesforOperators(std::string string) {
+	for (int i = 0; i < string.length(); i++)
+	{
+		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || string[i] == '(' || string[i] == ')' || string[i] == '*' || string[i] == '&&' || string[i] == '||')
+		{
+			if (string[i - 1] != ' ')
+			{
+				string.insert(i, " ");
+			}
+			if (string[i + 1] != ' ')
+			{
+				string.insert(i + 1, " ");
+			}
+		}
+	}
+	return string;
+}
+
 // Function for Deleting Extra Spaces
 std::string deletingExtraSpacesString(std::string string) {
 	for (int i = 0; i < string.length(); i++)
@@ -117,6 +137,9 @@ char** tokenizingFunction(std::string string, char delimiter, int& sizeOfVector)
 	char** tokenizedVector = nullptr;
 	// Converting string to LowerCase
 	string = stringToLowerCase(string);
+
+	// Inserting space  between operators and other arguments (ex: 12 +5 -> 12 + 5)
+	string = insertingExtraSpacesforOperators(string);
 
 	// Deleting extra spaces from the string (from the beginning and from the rest part of the string)
 	string = deletingExtraSpacesString(string);
