@@ -1,6 +1,6 @@
 ﻿  Source.cpp
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(55,20): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(74,20): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(99,20): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(132,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(120,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(139,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(164,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(198,20): warning C4018: '<': signed/unsigned mismatch
   Project1.vcxproj -> D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Debug\Project1.exe

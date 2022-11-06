@@ -16,29 +16,26 @@
 int main()
 {
 	int sizeOfTokenizedVector, i = 0;
-	char** tokenizedVector = tokenizingFunction("  we wiLl see how to    REMOVE some   SPACEs from a   String ", sizeOfTokenizedVector, ' ');
-	int* vectorTypeOfToken = new int[sizeOfTokenizedVector];
-	vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
+	char** tokenizedVector = tokenizingFunction("CREATE TABLE clients ( client_id NUMBER(6) CONSTRAINT pk_client PRIMARY KEY, client_name VARCHAR2(20) NOT NULL, client_surname VARCHAR2(20) NOT NULL, telephone VARCHAR2(20), credit_limit NUMBER(9,2), email VARCHAR2(30) CONSTRAINT one_email UNIQUE, birth_date DATE, status VARCHAR2(20), gender CHAR(1), CONSTRAINT ck_email CHECK (email LIKE '%@%.%') );", sizeOfTokenizedVector, ' ');
+	
+	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 
-	/*token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);*/
+	token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
-	/*token.getVectorTypeOfTokenValues();*/
+	token.getVectorTypeOfTokenValues();
 
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
 	{
 		std::cout << tokenizedVector[i] << std::endl;
 	}
 
-	for (int i = 0; i < sizeOfTokenizedVector; i++)
-	{
-		delete[] tokenizedVector[i];
-		
-	}
 
+	// Deleting previously allocated arrays 
 	delete[] tokenizedVector;
 	delete[] vectorTypeOfToken;
 	tokenizedVector = nullptr;
 	vectorTypeOfToken = nullptr;
+
 	return 0;
 }
 

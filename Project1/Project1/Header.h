@@ -21,25 +21,90 @@ enum typeDataType {
 class token {
 private:
 	std::string text;
+	std::string type;
+	char** tokenizedVector;
+	int sizeOfTokenizedVector;
+	int* vectorTypeOfToken;
 	unsigned int line;
 	unsigned int column;
+
+
 public:
+
 	// Constructors
-	token() {
-		std::string text = "";
-		unsigned int line = NULL;
-		unsigned int column = NULL;
+	token(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken, std::string stringText = "", std::string stringType = "", unsigned int line = NULL, unsigned int column = NULL)
+	{
+		this->text = stringText;
+		this->type = stringType;
+		this->tokenizedVector = tokenizedVector;
+		this->sizeOfTokenizedVector = sizeOfTokenizedVector;
+		this->vectorTypeOfToken = vectorTypeOfToken;
+		this->line = line;
+		this->column = column;
+
+
 	}
 	// Destructors
 	~token() {
 		std::cout << "token object was destructed" << std::endl;
 	}
 	// Methods
+
 	// // Getters
+	void getVectorTypeOfTokenValues() {
+		if (vectorTypeOfToken != nullptr)
+		{
+			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+			{
+				std::cout << this->vectorTypeOfToken[i] << " | ";
+			}
+			std::cout << std::endl;
+		}
+		else {
+			throw;
+		}
+	}
 
 	// // Setters
 
+
+
+
+
+
+
+
 };
+
+class lexer : public token {
+private:
+	int iterator = -1; // ??
+public:
+	// Constructors
+
+	//Destructors
+	~lexer() {
+		std::cout << "Lexer object was destructed!" << std::endl;
+	}
+
+	void parsingTokenizedVector() {
+		getToken();
+		verifyCompatibilityForNextArg();
+	}
+
+	void getToken()
+	{
+		this->iterator++;
+	};
+
+	void verifyCompatibilityForNextArg()
+	{
+
+	};
+	// create_arg() - create table for ex
+};
+
+
 
 // Functions -------------------------------------------------------------------------------------------
 
@@ -91,7 +156,7 @@ std::string deletingExtraSpacesString(std::string string) {
 }
 
 // Function for computing neccesary memory for the future array of char pointers (char**)
-char** allocatingMemoryForCharArray(char** array, std::string string, char delimiter, int& sizeOfVector) {
+char** allocatingMemoryForCharArray( std::string string, char delimiter, int &sizeOfTokenizedVector) {
 	int contorWords = 0;
 	int contorLetters = 0;
 	int maxNoLetters = 0;
@@ -116,40 +181,40 @@ char** allocatingMemoryForCharArray(char** array, std::string string, char delim
 	maxNoLetters = maxNoLetters < contorLetters ? contorLetters : maxNoLetters;
 
 
-	// Allocating the previous computed memory to out vector of chars
-	array = new char* [contorWords];
+	// Allocating the previous computed memory to our vector of chars
+	char** tokenizedVector = new char*[contorWords];
 	for (int i = 0; i < contorWords; i++)
 	{
-		array[i] = new char[contorLetters + 1];
+		tokenizedVector[i] = new char[contorLetters + 1];
 	}
-	sizeOfVector = contorWords;
-	return array;
+	sizeOfTokenizedVector = contorWords;
+	return tokenizedVector;
+	
 }
 
-char** tokenizingStringIntoVector(char** array, std::string string, char delimiter) {
+void tokenizingStringIntoVector(char** tokenizedVector, std::string string, char delimiter) {
 	int contorAux = 0;
 	std::string tempString;
 	for (int i = 0; i < string.length(); i++)
 	{
 		if (string[i] == delimiter)
 		{
-			strcpy(array[contorAux++], tempString.c_str());
+			strcpy(tokenizedVector[contorAux++], tempString.c_str());
 			tempString = "";
 		}
 		else {
 			tempString += string[i];
 		}
 	}
-	strcpy(array[contorAux], tempString.c_str());
+	strcpy(tokenizedVector[contorAux], tempString.c_str());
 
-	return array;
+	
 
 }
 
 // Tokenizer function (function that separates words into an array of keywords)
-char** tokenizingFunction(std::string string, int& sizeOfVector, char delimiter) {
-
-	char** tokenizedVector = nullptr;
+char** tokenizingFunction(std::string string, int &sizeOfTokenizedVector, char delimiter) {
+	
 	// Converting string to LowerCase
 	string = stringToLowerCase(string);
 
@@ -160,19 +225,19 @@ char** tokenizingFunction(std::string string, int& sizeOfVector, char delimiter)
 	string = deletingExtraSpacesString(string);
 
 	// Computing and allocating memory for the tokenizing vector
-	tokenizedVector = allocatingMemoryForCharArray(tokenizedVector, string, delimiter, sizeOfVector);
+	char** tokenizedVector = allocatingMemoryForCharArray(string, delimiter, sizeOfTokenizedVector);
 
 	// Tokenizing the string by placing each word in the tokenizedVector array
-	tokenizedVector = tokenizingStringIntoVector(tokenizedVector, string, delimiter);
+	tokenizingStringIntoVector(tokenizedVector, string, delimiter);
 
 	return tokenizedVector;
 
 };
 
 
-int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken) {
+int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector) {
 	// First allocating memory for vectorTypeOfToken
-	
+	int* vectorTypeOfToken = new int[sizeOfTokenizedVector];
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
 	{
 		vectorTypeOfToken[i] = -1; // default value for unfilled indexes
