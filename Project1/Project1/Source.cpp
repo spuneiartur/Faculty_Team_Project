@@ -15,15 +15,30 @@
 
 int main()
 {
-	int sizeOfVector;
-	char** tokenizedVector = tokenizingFunction("   we wiLl see how to++    REMOVE some   SPACEs from a   String     ", ' ', sizeOfVector);
+	int sizeOfTokenizedVector, i = 0;
+	char** tokenizedVector = tokenizingFunction("  we wiLl see how to    REMOVE some   SPACEs from a   String ", sizeOfTokenizedVector, ' ');
+	int* vectorTypeOfToken = new int[sizeOfTokenizedVector];
+	vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
-	for (int i = 0; i< sizeOfVector; i++)
+	/*token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);*/
+
+	/*token.getVectorTypeOfTokenValues();*/
+
+	for (int i = 0; i < sizeOfTokenizedVector; i++)
 	{
 		std::cout << tokenizedVector[i] << std::endl;
 	}
-	token createTable;
 
+	for (int i = 0; i < sizeOfTokenizedVector; i++)
+	{
+		delete[] tokenizedVector[i];
+		
+	}
+
+	delete[] tokenizedVector;
+	delete[] vectorTypeOfToken;
+	tokenizedVector = nullptr;
+	vectorTypeOfToken = nullptr;
 	return 0;
 }
 

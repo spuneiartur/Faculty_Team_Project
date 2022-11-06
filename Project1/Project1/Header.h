@@ -147,7 +147,7 @@ char** tokenizingStringIntoVector(char** array, std::string string, char delimit
 }
 
 // Tokenizer function (function that separates words into an array of keywords)
-char** tokenizingFunction(std::string string, char delimiter, int& sizeOfVector) {
+char** tokenizingFunction(std::string string, int& sizeOfVector, char delimiter) {
 
 	char** tokenizedVector = nullptr;
 	// Converting string to LowerCase
@@ -169,3 +169,84 @@ char** tokenizingFunction(std::string string, char delimiter, int& sizeOfVector)
 
 };
 
+
+int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken) {
+	// First allocating memory for vectorTypeOfToken
+	
+	for (int i = 0; i < sizeOfTokenizedVector; i++)
+	{
+		vectorTypeOfToken[i] = -1; // default value for unfilled indexes
+	}
+
+	// For each token we allocate a type
+	std::string tempString;
+	for (int i = 0; i < sizeOfTokenizedVector; i++)
+	{
+		tempString = tokenizedVector[i];
+
+		// Checking if token is a command 
+		if (tempString == "create") vectorTypeOfToken[i] = typeCommands::create;
+		if (tempString == "alter") vectorTypeOfToken[i] = typeCommands::alter;
+		if (tempString == "drop") vectorTypeOfToken[i] = typeCommands::drop;
+		if (tempString == "select") vectorTypeOfToken[i] = typeCommands::select;
+		if (tempString == "delete") vectorTypeOfToken[i] = typeCommands::delete_;
+		if (tempString == "insert") vectorTypeOfToken[i] = typeCommands::insert;
+		if (tempString == "update") vectorTypeOfToken[i] = typeCommands::update;
+		if (tempString == "commit") vectorTypeOfToken[i] = typeCommands::commit;
+		if (tempString == "rollback") vectorTypeOfToken[i] = typeCommands::rollback;
+		if (tempString == "savepoint") vectorTypeOfToken[i] = typeCommands::savepoint;
+		if (tempString == "grant") vectorTypeOfToken[i] = typeCommands::grant;
+		if (tempString == "revoke") vectorTypeOfToken[i] = typeCommands::revoke;
+		if (tempString == "table") vectorTypeOfToken[i] = typeCommands::table;
+		if (tempString == "index") vectorTypeOfToken[i] = typeCommands::index;
+
+		// if not a command, we check if the token is an operator
+		if (tempString == "+") vectorTypeOfToken[i] = typeOperators::add;
+		if (tempString == "-") vectorTypeOfToken[i] = typeOperators::sub;
+		if (tempString == "*") vectorTypeOfToken[i] = typeOperators::mul;
+		if (tempString == "/") vectorTypeOfToken[i] = typeOperators::div_;
+		if (tempString == "%") vectorTypeOfToken[i] = typeOperators::mod;
+		if (tempString == "=") vectorTypeOfToken[i] = typeOperators::equals;
+		if (tempString == "!=") vectorTypeOfToken[i] = typeOperators::notEqual;
+		if (tempString == ">") vectorTypeOfToken[i] = typeOperators::greater;
+		if (tempString == "<") vectorTypeOfToken[i] = typeOperators::less;
+		if (tempString == "<") vectorTypeOfToken[i] = typeOperators::less;
+		if (tempString == "<=") vectorTypeOfToken[i] = typeOperators::lessEqual;
+		if (tempString == ">=") vectorTypeOfToken[i] = typeOperators::greaterEqual;
+		if (tempString == "!<") vectorTypeOfToken[i] = typeOperators::notLess;
+		if (tempString == "!>") vectorTypeOfToken[i] = typeOperators::notGreater;
+		if (tempString == "!>") vectorTypeOfToken[i] = typeOperators::notGreater;
+		if (tempString == "and") vectorTypeOfToken[i] = typeOperators::and_;
+		if (tempString == "&&") vectorTypeOfToken[i] = typeOperators::and_;
+		if (tempString == "between") vectorTypeOfToken[i] = typeOperators::between;
+		if (tempString == "exists") vectorTypeOfToken[i] = typeOperators::exists;
+		if (tempString == "notIn") vectorTypeOfToken[i] = typeOperators::notIn;
+		if (tempString == "like") vectorTypeOfToken[i] = typeOperators::like;
+		if (tempString == "glob") vectorTypeOfToken[i] = typeOperators::glob;
+		if (tempString == "not") vectorTypeOfToken[i] = typeOperators::not_;
+		if (tempString == "or") vectorTypeOfToken[i] = typeOperators::or_;
+		if (tempString == "isnull") vectorTypeOfToken[i] = typeOperators::isNull;
+		if (tempString == "isnull") vectorTypeOfToken[i] = typeOperators::isNull;
+		if (tempString == "||") vectorTypeOfToken[i] = typeOperators::addStrings;
+		if (tempString == "unique") vectorTypeOfToken[i] = typeOperators::unique;
+		if (tempString == "unique") vectorTypeOfToken[i] = typeOperators::unique;
+		if (tempString == "(") vectorTypeOfToken[i] = typeOperators::l_parentheses;
+		if (tempString == ")") vectorTypeOfToken[i] = typeOperators::r_parentheses;
+
+		// if not previous 2 we check if the token is a data type identifier
+		if (tempString == "varchar2") vectorTypeOfToken[i] = typeDataType::varchar2;
+		if (tempString == "number") vectorTypeOfToken[i] = typeDataType::number;
+		if (tempString == "long") vectorTypeOfToken[i] = typeDataType::long_;
+		if (tempString == "date") vectorTypeOfToken[i] = typeDataType::date;
+		if (tempString == "raw") vectorTypeOfToken[i] = typeDataType::raw;
+		if (tempString == "long_raw") vectorTypeOfToken[i] = typeDataType::long_raw;
+		if (tempString == "rowid") vectorTypeOfToken[i] = typeDataType::rowid;
+		if (tempString == "char") vectorTypeOfToken[i] = typeDataType::char_;
+		if (tempString == "blob") vectorTypeOfToken[i] = typeDataType::blob;
+		if (tempString == "bfile") vectorTypeOfToken[i] = typeDataType::bfile;
+
+		// if not even one of the 3 listed above, then it should be an indentifier, it will be marked with -1 in out vectorTypeOfToken
+
+	}
+	return vectorTypeOfToken;
+}
