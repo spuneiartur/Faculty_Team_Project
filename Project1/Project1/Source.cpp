@@ -20,9 +20,9 @@ int main()
 	
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 
-	//token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
+	token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
-	//token.getVectorTypeOfTokenValues();
+	token.getVectorTypeOfTokenValues();
 
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
 	{
