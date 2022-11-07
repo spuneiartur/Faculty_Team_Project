@@ -15,96 +15,171 @@ enum typeOperators {
 enum typeDataType {
 	varchar2 = typeCommands::revoke + 1, number, long_, date, raw, long_raw, rowid, char_, blob, bfile
 };
-
-
+// TODO
+// TO CREATE A =DEEP COPY, NOT A SHALLOW ONE in the class token of the vector vectorTypeOfToken
+// To modify tokenizedVecctor from dinamically allocated to statically
+// 
 // Classes -------------------------------------------------------------------------------------------
-class token {
-private:
-	std::string text;
-	std::string type;
-	char** tokenizedVector;
-	int sizeOfTokenizedVector;
-	int* vectorTypeOfToken;
-	unsigned int line;
-	unsigned int column;
-
-
-public:
-
-	// Constructors
-	token(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken, std::string stringText = "", std::string stringType = "", unsigned int line = NULL, unsigned int column = NULL)
-	{
-		this->text = stringText;
-		this->type = stringType;
-		this->tokenizedVector = tokenizedVector;
-		this->sizeOfTokenizedVector = sizeOfTokenizedVector;
-		this->vectorTypeOfToken = vectorTypeOfToken;
-		this->line = line;
-		this->column = column;
-
-
-	}
-	// Destructors
-	~token() {
-		std::cout << "token object was destructed" << std::endl;
-	}
-	// Methods
-
-	// // Getters
-	void getVectorTypeOfTokenValues() {
-		if (vectorTypeOfToken != nullptr)
-		{
-			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
-			{
-				std::cout << this->vectorTypeOfToken[i] << " | ";
-			}
-			std::cout << std::endl;
-		}
-		else {
-			throw;
-		}
-	}
-
-	// // Setters
-
-
-
-
-
-
-
-
-};
-
-class lexer : public token {
-private:
-	int iterator = -1; // ??
-public:
-	// Constructors
-
-	//Destructors
-	~lexer() {
-		std::cout << "Lexer object was destructed!" << std::endl;
-	}
-
-	void parsingTokenizedVector() {
-		getToken();
-		verifyCompatibilityForNextArg();
-	}
-
-	void getToken()
-	{
-		this->iterator++;
-	};
-
-	void verifyCompatibilityForNextArg()
-	{
-
-	};
-	// create_arg() - create table for ex
-};
-
-
+//class token {
+//private:
+//	std::string text;
+//	std::string type;
+//	char** tokenizedVector;
+//	int sizeOfTokenizedVector;
+//	int* vectorTypeOfToken;
+//	unsigned int line;
+//	unsigned int column;
+//
+//
+//public:
+//
+//	// Constructors
+//	token(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken, std::string stringText = "", std::string stringType = "", unsigned int line = NULL, unsigned int column = NULL)
+//	{
+//		this->text = stringText;
+//		this->type = stringType;
+//		this->sizeOfTokenizedVector = sizeOfTokenizedVector;
+//		if (tokenizedVector != nullptr)
+//		{
+//			this->tokenizedVector = new char*[sizeOfTokenizedVector];
+//			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+//			{
+//				this->tokenizedVector[i] = new char[strlen(tokenizedVector[i]) + 1];
+//				strcpy(this->tokenizedVector[i], tokenizedVector[i]);
+//			}
+//		}
+//		else
+//		{
+//			this->tokenizedVector = nullptr;
+//		}
+//
+//		if (vectorTypeOfToken != nullptr)
+//		{
+//			this->vectorTypeOfToken = new int[sizeOfTokenizedVector];
+//			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+//			{
+//				this->vectorTypeOfToken[i] = vectorTypeOfToken[i];
+//
+//			}
+//		}
+//		else
+//		{
+//			this->vectorTypeOfToken = nullptr;
+//		}
+//		this->line = line;
+//		this->column = column;
+//
+//
+//	}
+//
+//	//Copy Constructor
+//	token(const token& t)
+//	{
+//		this->text = t.text;
+//		this->type = t.type;
+//		this->sizeOfTokenizedVector = t.sizeOfTokenizedVector;
+//
+//		if (t.tokenizedVector != nullptr)
+//		{
+//			this->tokenizedVector = new char* [this->sizeOfTokenizedVector];
+//			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+//			{
+//				this->tokenizedVector[i] = new char[strlen(t.tokenizedVector[i]) + 1];
+//				strcpy(this->tokenizedVector[i], t.tokenizedVector[i]);
+//			}
+//		}
+//		else
+//		{
+//			this->tokenizedVector = nullptr;
+//		}
+//
+//		if (t.vectorTypeOfToken != nullptr)
+//		{
+//			this->vectorTypeOfToken = new int[this->sizeOfTokenizedVector];
+//			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+//			{
+//				this->vectorTypeOfToken[i] = t.vectorTypeOfToken[i];
+//			}
+//		}
+//		else
+//		{
+//			this->vectorTypeOfToken = nullptr;
+//		}
+//
+//		this->vectorTypeOfToken = t.vectorTypeOfToken; 
+//		this->line = t.line;
+//		this->column = t.column;
+//	}
+//
+//	// Destructors
+//	~token() {
+//		for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+//		{
+//			delete[] this->tokenizedVector[i];
+//		}
+//		delete[] this->tokenizedVector;
+//		this->tokenizedVector = nullptr;
+//
+//		delete[] this->vectorTypeOfToken;
+//		std::cout << "token object was destructed" << std::endl;
+//	}
+//	// Methods
+//
+//	// // Getters
+//	void getVectorTypeOfTokenValues() {
+//		if (vectorTypeOfToken != nullptr)
+//		{
+//			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+//			{
+//				std::cout << this->vectorTypeOfToken[i] << " | ";
+//			}
+//			std::cout << std::endl;
+//		}
+//		else {
+//			throw;
+//		}
+//	}
+//
+//	// // Setters
+//
+//
+//
+//
+//
+//
+//
+//
+//};
+////
+////class lexer : public token {
+////private:
+////	int iterator = -1; // ??
+////public:
+////	// Constructors
+////
+////	//Destructors
+////	~lexer() {
+////		std::cout << "Lexer object was destructed!" << std::endl;
+////	}
+////
+////	void parsingTokenizedVector() {
+////		getToken();
+////		verifyCompatibilityForNextArg();
+////	}
+////
+////	void getToken()
+////	{
+////		this->iterator++;
+////	};
+////
+////	void verifyCompatibilityForNextArg()
+////	{
+////
+////	};
+////	// create_arg() - create table for ex
+////};
+////
+//
 
 // Functions -------------------------------------------------------------------------------------------
 
@@ -156,7 +231,7 @@ std::string deletingExtraSpacesString(std::string string) {
 }
 
 // Function for computing neccesary memory for the future array of char pointers (char**)
-char** allocatingMemoryForCharArray( std::string string, char delimiter, int &sizeOfTokenizedVector) {
+int allocatingMemoryForCharArray( std::string string, char delimiter) {
 	int contorWords = 0;
 	int contorLetters = 0;
 	int maxNoLetters = 0;
@@ -179,35 +254,31 @@ char** allocatingMemoryForCharArray( std::string string, char delimiter, int &si
 	}
 	contorWords++;
 	maxNoLetters = maxNoLetters < contorLetters ? contorLetters : maxNoLetters;
-
-
-	// Allocating the previous computed memory to our vector of chars
-	char** tokenizedVector = new char*[contorWords];
-	for (int i = 0; i < contorWords; i++)
-	{
-		tokenizedVector[i] = new char[contorLetters + 1];
-	}
-	sizeOfTokenizedVector = contorWords;
-	return tokenizedVector;
+	
+	return contorWords;
 	
 }
 
-void tokenizingStringIntoVector(char** tokenizedVector, std::string string, char delimiter) {
+char** tokenizingStringIntoVector(int sizeOfTokenizedVector, std::string string, char delimiter) {
 	int contorAux = 0;
 	std::string tempString;
+	char** arrayForChars = new char*[sizeOfTokenizedVector];
 	for (int i = 0; i < string.length(); i++)
 	{
 		if (string[i] == delimiter)
 		{
-			strcpy(tokenizedVector[contorAux++], tempString.c_str());
+			arrayForChars[contorAux] = new char[tempString.length() + 1];
+			strcpy(arrayForChars[contorAux++], tempString.c_str());
 			tempString = "";
 		}
 		else {
 			tempString += string[i];
 		}
 	}
-	strcpy(tokenizedVector[contorAux], tempString.c_str());
+	arrayForChars[contorAux] = new char[tempString.length() + 1];
+	strcpy(arrayForChars[contorAux], tempString.c_str());
 
+	return arrayForChars;
 	
 
 }
@@ -225,12 +296,10 @@ char** tokenizingFunction(std::string string, int &sizeOfTokenizedVector, char d
 	string = deletingExtraSpacesString(string);
 
 	// Computing and allocating memory for the tokenizing vector
-	char** tokenizedVector = allocatingMemoryForCharArray(string, delimiter, sizeOfTokenizedVector);
+	sizeOfTokenizedVector = allocatingMemoryForCharArray(string, delimiter);
 
 	// Tokenizing the string by placing each word in the tokenizedVector array
-	tokenizingStringIntoVector(tokenizedVector, string, delimiter);
-
-	return tokenizedVector;
+	return tokenizingStringIntoVector(sizeOfTokenizedVector, string, delimiter);
 
 };
 

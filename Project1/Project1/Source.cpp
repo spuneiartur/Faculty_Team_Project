@@ -20,16 +20,16 @@ int main()
 	
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 
-	token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
+	//token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
-	token.getVectorTypeOfTokenValues();
+	//token.getVectorTypeOfTokenValues();
 
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
 	{
 		std::cout << tokenizedVector[i] << std::endl;
 	}
 
-
+	
 	// Deleting previously allocated arrays 
 	delete[] tokenizedVector;
 	delete[] vectorTypeOfToken;
@@ -42,3 +42,4 @@ int main()
 
 // DROP TABLE table_name
 //   we wiLl see how to    REMOVE some   SPACEs from a   String       
+//CREATE TABLE clients ( client_id NUMBER(6) CONSTRAINT pk_client PRIMARY KEY, client_name VARCHAR2(20) NOT NULL, client_surname VARCHAR2(20) NOT NULL, telephone VARCHAR2(20), credit_limit NUMBER(9,2), email VARCHAR2(30) CONSTRAINT one_email UNIQUE, birth_date DATE, status VARCHAR2(20), gender CHAR(1), CONSTRAINT ck_email CHECK (email LIKE '%@%.%') );
