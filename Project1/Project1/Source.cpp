@@ -30,7 +30,12 @@ int main()
 	}
 
 	
-	// Deleting previously allocated arrays 
+	// Deleting previously allocated arrays
+
+	for (int i = 0; i < sizeOfTokenizedVector; i++)
+	{
+		delete[] tokenizedVector[i];
+	}
 	delete[] tokenizedVector;
 	delete[] vectorTypeOfToken;
 	tokenizedVector = nullptr;
