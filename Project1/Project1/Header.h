@@ -1,7 +1,11 @@
 #pragma once
 
-enum typesOfToken {
-	typeCommands, typeOperators, typeDataType, argString, argNumber
+int VARCHAR2 = -5;
+int INT_NUMBER = -10;
+int FLOAT_NUMBER = -15;
+
+enum commandBranches {
+	createTable, createIndex, typeDataType, argString, argNumber
 };
 
 enum typeCommands {
@@ -16,10 +20,10 @@ enum typeDataType {
 	varchar2 = typeCommands::revoke + 1, number, long_, date, raw, long_raw, rowid, char_, blob, bfile
 };
 // TODO
-
+// to build custom throws
 
 // Classes -------------------------------------------------------------------------------------------
-class token {
+class Token {
 private:
 	std::string text;
 	std::string type;
@@ -28,16 +32,88 @@ private:
 	int* vectorTypeOfToken;
 	unsigned int line;
 	unsigned int column;
+	int iterator;
 
 
 public:
 
-	// Constructors
-	token(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken, std::string stringText = "", std::string stringType = "", unsigned int line = NULL, unsigned int column = NULL)
+	// Methods
+
+	// // Getters
+	void getVectorTypeOfTokenValues() {
+		if (vectorTypeOfToken != nullptr)
+		{
+			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+			{
+				std::cout << this->vectorTypeOfToken[i] << " | ";
+			}
+			std::cout << std::endl;
+		}
+		else {
+			throw;
+		}
+	}
+
+	// // Setters
+
+
+	void parser() {
+		std::string token = getToken(iterator);
+		int type = getTypeOfToken(iterator);
+
+		lexer(token, type);
+		
+	}
+
+	int lexer(std::string token, int type)
 	{
+		if (token == "create")
+		{
+			if ( "table" == getToken(iterator+1)) return 0;
+			if ("index" == getToken(iterator + 1)) return 0;
+			throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE"
+		}
+		if (token == "table")
+		{
+			if (VARCHAR2 == getTypeOfToken(iterator + 1)) return 0;
+			throw; // Unexpected token at position iterator+1; Non compatible with token "TABLE"
+		}
+		//if (type == VARCHAR2) // the token is an indentifier
+		//{
+		//	if(getTypeOfToken(iterator+1) == )
+		//}
+	}
+
+	char* getToken(int iterator) {
+		if (iterator <= sizeOfTokenizedVector)
+		{
+			return tokenizedVector[iterator];
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	int getTypeOfToken(int iterator) {
+		if (iterator <= sizeOfTokenizedVector)
+		{
+			return vectorTypeOfToken[iterator];
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
+	// Constructors
+	Token(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken, std::string stringText = "", std::string stringType = "", unsigned int line = NULL, unsigned int column = NULL)
+	{
+	
 		this->text = stringText;
 		this->type = stringType;
 		this->sizeOfTokenizedVector = sizeOfTokenizedVector;
+		this->iterator = 0;
 		if (tokenizedVector != nullptr)
 		{
 			this->tokenizedVector = new char*[sizeOfTokenizedVector];
@@ -72,12 +148,12 @@ public:
 	}
 
 	//Copy Constructor
-	token(const token& t)
+	Token(const Token& t)
 	{
 		this->text = t.text;
 		this->type = t.type;
 		this->sizeOfTokenizedVector = t.sizeOfTokenizedVector;
-
+		this->iterator = t.iterator;
 		if (t.tokenizedVector != nullptr)
 		{
 			this->tokenizedVector = new char* [this->sizeOfTokenizedVector];
@@ -111,35 +187,19 @@ public:
 	}
 
 	// Destructors
-	~token() {
+	~Token() {
+		// tokenizedVector
 		for (int i = 0; i < this->sizeOfTokenizedVector; i++)
 		{
 			delete[] this->tokenizedVector[i];
 		}
 		delete[] this->tokenizedVector;
 		this->tokenizedVector = nullptr;
-
+		// vectorTypeOfToken
 		delete[] this->vectorTypeOfToken;
 		std::cout << "token object was destructed" << std::endl;
 	}
-	// Methods
-
-	// // Getters
-	void getVectorTypeOfTokenValues() {
-		if (vectorTypeOfToken != nullptr)
-		{
-			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
-			{
-				std::cout << this->vectorTypeOfToken[i] << " | ";
-			}
-			std::cout << std::endl;
-		}
-		else {
-			throw;
-		}
-	}
-
-	// // Setters
+	
 
 
 
@@ -150,7 +210,7 @@ public:
 
 };
 //
-//class lexer : public token {
+//class lexer : public Token {
 //private:
 //	int iterator = -1; // ??
 //public:
@@ -193,7 +253,8 @@ std::string stringToLowerCase(std::string string) {
 std::string insertingExtraSpacesforOperators(std::string string) {
 	for (int i = 0; i < string.length(); i++)
 	{
-		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || string[i] == '(' || string[i] == ')' || string[i] == '*' || string[i] == '&&' || string[i] == '||')
+		// Attention - we don t separate the parenthesis or commas that are next to digits, that will simply our work in future in the case of VARCHAR2(20), NUMBER(10,2) etc.
+		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || /*pharenthesis condition start*/(string[i] == '(' && string[i + 1] != 0 && string[i + 1] != '1' && string[i + 1] != '2' && string[i + 1] != '3' && string[i + 1] != '4' && string[i + 1] != '5' && string[i + 1] != '6' && string[i + 1] != '7' && string[i + 1] != '8' && string[i + 1] != '9') || (string[i] == ')' && string[i - 1] != '0' && string[i - 1] != '1' && string[i - 1] != '2' && string[i - 1] != '3' && string[i - 1] != '4' && string[i - 1] != '5' && string[i - 1] != '6' && string[i - 1] != '7' && string[i - 1] != '8' && string[i - 1] != '9')/*pharenthesis condition start*/ || /*comma condition start*/(string[i] == ',' && string[i - 1] != '0' && string[i - 1] != '1' && string[i - 1] != '2' && string[i - 1] != '3' && string[i - 1] != '4' && string[i - 1] != '5' && string[i - 1] != '6' && string[i - 1] != '7' && string[i - 1] != '8' && string[i - 1] != '9')/*comma condition end*/ || string[i] == '&&' || string[i] == '||')
 		{
 			if (string[i - 1] != ' ')
 			{
@@ -367,18 +428,62 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 		if (tempString == ")") vectorTypeOfToken[i] = typeOperators::r_parentheses;
 
 		// if not previous 2 we check if the token is a data type identifier
-		if (tempString == "varchar2") vectorTypeOfToken[i] = typeDataType::varchar2;
-		if (tempString == "number") vectorTypeOfToken[i] = typeDataType::number;
-		if (tempString == "long") vectorTypeOfToken[i] = typeDataType::long_;
-		if (tempString == "date") vectorTypeOfToken[i] = typeDataType::date;
-		if (tempString == "raw") vectorTypeOfToken[i] = typeDataType::raw;
-		if (tempString == "long_raw") vectorTypeOfToken[i] = typeDataType::long_raw;
-		if (tempString == "rowid") vectorTypeOfToken[i] = typeDataType::rowid;
-		if (tempString == "char") vectorTypeOfToken[i] = typeDataType::char_;
-		if (tempString == "blob") vectorTypeOfToken[i] = typeDataType::blob;
-		if (tempString == "bfile") vectorTypeOfToken[i] = typeDataType::bfile;
+		std::string tempPartialString;
+		int j = 0;
+		// Checking only the type without its parameters (ex. varchar2 instead of the passed token varchar2(20) etc.)
+		while ( j  < tempString.length() && tempString[j] != '(')
+		{
+			tempPartialString += tempString[j++];
+		}
+		if (tempPartialString == "varchar2") vectorTypeOfToken[i] = typeDataType::varchar2;
+		if (tempPartialString == "number") vectorTypeOfToken[i] = typeDataType::number;
+		if (tempPartialString == "long") vectorTypeOfToken[i] = typeDataType::long_;
+		if (tempPartialString == "date") vectorTypeOfToken[i] = typeDataType::date;
+		if (tempPartialString == "raw") vectorTypeOfToken[i] = typeDataType::raw;
+		if (tempPartialString == "long_raw") vectorTypeOfToken[i] = typeDataType::long_raw;
+		if (tempPartialString == "rowid") vectorTypeOfToken[i] = typeDataType::rowid;
+		if (tempPartialString == "char") vectorTypeOfToken[i] = typeDataType::char_;
+		if (tempPartialString == "blob") vectorTypeOfToken[i] = typeDataType::blob;
+		if (tempPartialString == "bfile") vectorTypeOfToken[i] = typeDataType::bfile;
 
 		// if not even one of the 3 listed above, then it should be an indentifier, it will be marked with -1 in out vectorTypeOfToken
+		if (vectorTypeOfToken[i] < 0)
+		{
+			// Getting the type of the identifier (VARCHAR2 | INT | FLOAT)
+			bool intBool = true, floatBool = true, varchar2Bool = true;
+			for (int i = 0; i < tempString.length(); i++)
+			{
+				//ASCII
+				// if the element is not a digit or - or .
+				if ((tempString[i] < 48 || tempString[i] > 57 ) && tempString[i] != '-' && tempString[i] != '.')
+				{ 
+					intBool = false;
+					floatBool = false;
+					// if the element is not a letter or an underscore
+					if ((tempString[i] < 97 || tempString[i] > 122) && tempString[i] != '_')
+					{
+						varchar2Bool = false;
+					}
+				}
+				// if the number is a float
+				else if(tempString[i] == '.')
+				{
+					intBool = false;
+					varchar2Bool = false;
+				}
+				
+			}
+			// if the dot wasn t located, then we don t have a float
+			
+			if (intBool)
+			{ 
+				floatBool = false;
+				varchar2Bool = false;
+			}
+			if (intBool) vectorTypeOfToken[i] = INT_NUMBER;
+			if (floatBool) vectorTypeOfToken[i] = FLOAT_NUMBER;
+			if (varchar2Bool) vectorTypeOfToken[i] = VARCHAR2;
+		}
 
 	}
 	return vectorTypeOfToken;
