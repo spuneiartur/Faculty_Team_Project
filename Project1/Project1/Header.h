@@ -62,14 +62,14 @@ public:
 		int type = getTypeOfToken(iterator);
 
 		lexer(token, type);
-		
+
 	}
 
 	int lexer(std::string token, int type)
 	{
 		if (token == "create")
 		{
-			if ( "table" == getToken(iterator+1)) return 0;
+			if ("table" == getToken(iterator + 1)) return 0;
 			if ("index" == getToken(iterator + 1)) return 0;
 			throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE"
 		}
@@ -109,14 +109,14 @@ public:
 	// Constructors
 	Token(char** tokenizedVector, int sizeOfTokenizedVector, int* vectorTypeOfToken, std::string stringText = "", std::string stringType = "", unsigned int line = NULL, unsigned int column = NULL)
 	{
-	
+
 		this->text = stringText;
 		this->type = stringType;
 		this->sizeOfTokenizedVector = sizeOfTokenizedVector;
 		this->iterator = 0;
 		if (tokenizedVector != nullptr)
 		{
-			this->tokenizedVector = new char*[sizeOfTokenizedVector];
+			this->tokenizedVector = new char* [sizeOfTokenizedVector];
 			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
 			{
 				this->tokenizedVector[i] = new char[strlen(tokenizedVector[i]) + 1];
@@ -181,7 +181,7 @@ public:
 			this->vectorTypeOfToken = nullptr;
 		}
 
-		this->vectorTypeOfToken = t.vectorTypeOfToken; 
+		this->vectorTypeOfToken = t.vectorTypeOfToken;
 		this->line = t.line;
 		this->column = t.column;
 	}
@@ -199,16 +199,86 @@ public:
 		delete[] this->vectorTypeOfToken;
 		std::cout << "token object was destructed" << std::endl;
 	}
-	
-
-
-
-
-
-
 
 
 };
+
+class Table {
+private:
+	char* name;
+	int noColumns;
+	int noLines;
+
+public:
+	// Methods
+	void setData(int noColumns, int noLines, char* name = nullptr) {
+		if (this->name != nullptr)
+		{
+			delete[] this->name;
+			this->name = nullptr;
+		}
+		if (name != nullptr)
+		{
+			this->name = new char[strlen(name) + 1];
+			strcpy(this->name, name);
+		}
+		else
+		{
+			this->name = nullptr;
+		}
+		this->noColumns = noColumns;
+		this->noLines = noLines;
+	}
+
+	//Constructors
+	Table() {
+		 this->name = nullptr;
+		 this->noColumns= NULL;
+		 this->noLines = NULL;
+	}
+	Table(int noColumns, int noLines, char* name = nullptr) {
+		if (name != nullptr)
+		{
+			this->name = new char[strlen(name) + 1];
+			strcpy(this->name, name);
+		}
+		else
+		{
+			this->name = nullptr;
+		}
+		this->noColumns = noColumns;
+		this->noLines = noLines;
+
+	}
+	 // Copy constructor
+	Table(const Table& t) {
+		if (this->name != nullptr)
+		{
+			delete[] this->name;
+			this->name = nullptr;
+		}
+		if (t.name != nullptr)
+		{
+			this->name = new char[strlen(t.name) + 1];
+			strcpy(this->name, t.name);
+		}
+		else
+		{
+			this->name = nullptr;
+		}
+		this->noColumns = t.noColumns;
+		this->noLines = t.noLines;
+	}
+	//Destructor
+	~Table() {
+		if (this->name != nullptr)
+		{
+			delete[] this->name;
+			this->name = nullptr;
+		}
+	}
+};
+
 //
 //class lexer : public Token {
 //private:

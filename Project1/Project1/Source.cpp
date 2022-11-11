@@ -28,7 +28,7 @@ int main()
 	{
 		std::cout << tokenizedVector[i] << "   ||   "<< vectorTypeOfToken[i]<<std::endl;
 	}
-
+	
 	
 	// Deleting previously allocated arrays
 
@@ -41,6 +41,15 @@ int main()
 	tokenizedVector = nullptr;
 	vectorTypeOfToken = nullptr;
 
+
+	// PLAYGROUND
+	char* TESTcHAR = new char[6];
+	strcpy(TESTcHAR, "Hello");
+	std::cout << strlen(TESTcHAR) << std::endl;
+	/*Table table1(2,2, TESTcHAR);*/
+	Table tables[2];
+	tables[1].setData(2, 2, TESTcHAR);
+	delete[] TESTcHAR;
 	return 0;
 }
 
