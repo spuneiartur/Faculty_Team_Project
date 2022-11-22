@@ -53,6 +53,8 @@ int main()
 	return 0;
 }
 
+//cristi new laptopp
+
 
 // DROP TABLE table_name
 //   we wiLl see how to    REMOVE some   SPACEs from a   String       
