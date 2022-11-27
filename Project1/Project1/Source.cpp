@@ -5,12 +5,39 @@
 #include "Header.h"
 
 /* Deallocation - Do no forget :
- 1) tokenizedVector
- 2) 
+
 
 */
 
+class CreateTable {
+private:
+	std::string title;
+	int noColumns;
+	int iterator;
 
+
+public:
+};
+
+class SelectTable{
+private:
+	std::string title;
+	int noColumns;
+	int iterator;
+
+
+public:
+};
+CreateTable createTabel();
+/*if(token == "create"){
+	createTabel.setNewTabel();
+}*/
+
+class Parser {
+private:
+
+public:
+};
 
 
 int main()
@@ -50,6 +77,9 @@ int main()
 	Table tables[2];
 	tables[1].setData(2, 2, TESTcHAR);
 	delete[] TESTcHAR;
+
+
+
 	return 0;
 }
 

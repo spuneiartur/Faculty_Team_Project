@@ -17,7 +17,7 @@ enum typeOperators {
 };
 
 enum typeDataType {
-	varchar2 = typeCommands::revoke + 1, number, long_, date, raw, long_raw, rowid, char_, blob, bfile
+	varchar2 = typeCommands::index + 1, number, long_, date, raw, long_raw, rowid, char_, blob, bfile
 };
 // TODO
 // to build custom throws
@@ -34,7 +34,7 @@ private:
 	unsigned int column;
 	int iterator;
 
-
+	
 public:
 
 	// Methods
@@ -63,16 +63,25 @@ public:
 
 		lexer(token, type);
 
-	}
 
+
+	}
+	int lexerCreateTable(char** tokenizedVector) {
+		std::string token = tokenizedVector[0];
+		while (token != ";") {
+
+		}
+		//if ("table" == getToken(iterator + 1)) return 0;
+		//throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE"
+	}
 	int lexer(std::string token, int type)
 	{
+		// To add a lexer function for every command -----------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (token == "create")
 		{
-			if ("table" == getToken(iterator + 1)) return 0;
-			if ("index" == getToken(iterator + 1)) return 0;
-			throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE"
+			lexerCreateTable(tokenizedVector);
 		}
+
 		if (token == "table")
 		{
 			if (VARCHAR2 == getTypeOfToken(iterator + 1)) return 0;
@@ -202,6 +211,7 @@ public:
 
 
 };
+
 
 class Table {
 private:
