@@ -620,9 +620,9 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 				floatBool = false;
 				varchar2Bool = false;
 			}
-			if (intBool) vectorTypeOfToken[i] = INT_NUMBER;
-			if (floatBool) vectorTypeOfToken[i] = FLOAT_NUMBER;
-			if (varchar2Bool) vectorTypeOfToken[i] = VARCHAR2;
+			if (intBool) vectorTypeOfToken[i] = NUMBER;
+			if (floatBool) vectorTypeOfToken[i] = NUMBER;
+			if (varchar2Bool) vectorTypeOfToken[i] = TEXT;
 		}
 
 	}
