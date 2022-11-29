@@ -217,6 +217,38 @@ public:
 		}
 	}
 
+	void lexerDropTable() {
+		int i = 0;
+		if (strcmp(tokenizedVector[i], "drop") == 0) {				//check first token is drop
+			i++;
+			if (strcmp(tokenizedVector[i], "table") == 0) {				//check second token is table
+				i++;
+			}
+			else throw; //second token is not correct -> !=table
+		}
+		else throw; //first token is not correct -> !=drop
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table exists
+			i++;
+		}
+	}
+
+
+	void lexerDropIndex() {
+		int i = 0;
+		if (strcmp(tokenizedVector[i], "drop") == 0) {				//check first token is drop
+			i++;
+			if (strcmp(tokenizedVector[i], "index") == 0) {				//check second token is index
+				i++;
+			}
+			else throw; //second token is not correct -> !=index
+		}
+		else throw; //first token is not correct -> !=drop
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//index_name   //also have to check if the index exists
+			i++;
+		}
+	}
+
+
 	
 	void lexerUpdate() 
 	{
