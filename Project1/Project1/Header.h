@@ -279,6 +279,10 @@ public:
 		else if (strcmp(tokenizedVector[0], "update") == 0) {
 			lexerUpdate();
 		}
+		else if (strcmp(tokenizedVector[0], "select") == 0)
+		{
+			lexerSelect();
+		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
 	}
 
