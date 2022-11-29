@@ -179,7 +179,7 @@ public:
 				else {
 					for (int n = 1; n < k; n++) {
 						if (strcmp(tokenizedVector[n], ",")) {
-							if (!(vectorTypeOfToken[n - 1], dataTypeValues::string)) { // check if the value before the "," is a string
+							if (!(vectorTypeOfToken[n - 1]==dataTypeValues::string)) { // check if the value before the "," is a string
 								throw;
 							}
 						}
