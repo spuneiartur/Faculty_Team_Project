@@ -1,19 +1,19 @@
 #pragma once
 
-int VARCHAR2 = -5;
-int INT_NUMBER = -10;
-int FLOAT_NUMBER = -15;
+int TEXT = -5;
+int NUMBER = -10;
+
 
 enum commandBranches {
 	createTable, createIndex, typeDataType, argString, argNumber
 };
 
 enum typeCommands {
-	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index
+	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index, where, set, IF
 };
 
 enum typeOperators {
-	add = '+', sub = '-', mul = '*', div_ = '/', mod = '%', equals = '=', notEqual = '!=', greater = '>', less = '<', greaterEqual = '>=', lessEqual = '<=', notLess = '!<', notGreater = '!>', and_, between, exists, in, notIn, like, glob, not_, or_, isNull, addStrings = '||', unique, l_parentheses = '(', r_parentheses = ')', asterix = '*'
+	add = '+', sub = '-', mul = '*', div_ = '/', mod = '%', equals = '=', notEqual = '!=', greater = '>', less = '<', greaterEqual = '>=', lessEqual = '<=', notLess = '!<', notGreater = '!>', and_, between, exists, in, notIn, like, glob, not_, or_, isNull, addStrings = '||', unique, l_parentheses = '(', r_parentheses = ')', asterix = '*', 
 };
 
 enum typeDataType {
@@ -47,7 +47,7 @@ public:
 	void getVectorTypeOfTokenValues() {
 		if (vectorTypeOfToken != nullptr)
 		{
-			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+			for (int i = 0; i < this->sizeOfTokenizedVector; i++) 
 			{
 				std::cout << this->vectorTypeOfToken[i] << " | ";
 			}
@@ -62,85 +62,151 @@ public:
 
 
 	void parser() {
-		std::string token = getToken(iterator);
-		int type = getTypeOfToken(iterator);
-
 		lexer();
-
-
-
 	}
+
+	// Checks this syntax : id = 5 || name = 'Alex'. 
+	// HOW TO USE: index (i) should be passed when it is forwarding to first argument (ex. vector[i] == id || vector[i] == name)
+	// !!! NOTE: Function accepts only one set of argument (ex. id = 15 -> ok; (id = 15, name = 'Alex') -> not ok) 
+	// !!! NOTE: Function accepts empty space as value for text argument (ex. name = '')
+	void checkingLexerOfEquality(int& i) {
+		if (vectorTypeOfToken[i] != dataTypeValues::string) throw std::invalid_argument("Unexpected token at position iterator; Expected an identifier"); // checking the identifier name of column
+		i++;
+		if (vectorTypeOfToken[i] != 61) throw std::invalid_argument("Unexpected token at position iterator; Expected token \"=\"");
+		i++;
+		if (strcmp(tokenizedVector[i], "'") == 0)
+		{
+			i++;
+			if (strcmp(tokenizedVector[i], "'") == 0)
+			{
+				i++;
+			}
+			else
+			{
+				if (strcmp(tokenizedVector[i + 1], "'") < 0) throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"=\"");
+				if (vectorTypeOfToken[i] != dataTypeValues::string && vectorTypeOfToken[i] != dataTypeValues::number) throw std::invalid_argument("Unexpected token at position iterator; Expected a value compatible with the column");
+				i += 2;
+			}
+
+		}
+		else if (vectorTypeOfToken[i] == dataTypeValues::number)
+		{
+			i++;
+		}
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected a value compatible with the column");
+	}
+
 	void lexerCreateTable() {
 		int i = 1;
-		//std::string token = tokenizedVector[i++];
-		//std::string nextToken = tokenizedVector[i++];
 		if (!strcmp(tokenizedVector[i], "table") && vectorTypeOfToken[i + 1] == dataTypeValues::string) {
 			i++;
-			if (vectorTypeOfToken[i] < 0 && !strcmp(tokenizedVector[i+1], "(")) { // if its an identifier and next token is a paranthesis
-				if (!strcmp(tokenizedVector[i + 2], ")")) throw; // you should insert at least one column 
-				i+=2;
-				// Processing the lexer for all columns' structure 
-				while (strcmp(tokenizedVector[i], ")") < 0 ){
-					while (strcmp(tokenizedVector[i], ")") < 0) { // Here tokenizedVector[i] is pointing to the opening paranthesis of the column
-						int maxSize=0;
-						if (strcmp(tokenizedVector[i], "(") < 0) throw; // Missing "(" token at the the position i
-							
-						if (vectorTypeOfToken[i + 1] >= 0) throw; // Unexpected argument at position i, expecting an identifier - name for the column;
-						if (strcmp(tokenizedVector[i + 2], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
-						switch (vectorTypeOfToken[i+3])
-						{
-						
-						case typeDataType::integer:  // type 14 from enum of data types - INTEGER
-							
-							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+			if (vectorTypeOfToken[i] == dataTypeValues::string) { // if token is an identifier 
+				i++;
 
-							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw;
+				if ( strcmp(tokenizedVector[i], "(") == 0) { // if token is an identifier and next token is a paranthesis
+				}
+				else if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
+				{
+					i += 3;
+				}
+				else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
 
-							maxSize = atoi(tokenizedVector[i + 5]);
+					if (strcmp(tokenizedVector[i + 1], ")") == 0) throw; // you should insert at least one column 
+					i++;
+					// Processing the lexer for all columns' structure 
+					while (strcmp(tokenizedVector[i], ")") < 0) {
+						while (strcmp(tokenizedVector[i], ")") < 0) { // Here tokenizedVector[i] is pointing to the opening paranthesis of the column
+							int maxSize = 0;
+							if (strcmp(tokenizedVector[i], "(") < 0) throw; // Missing "(" token at the the position i
 
-							if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+							if (vectorTypeOfToken[i + 1] >= 0) throw; // Unexpected argument at position i, expecting an identifier - name for the column;
+							if (strcmp(tokenizedVector[i + 2], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+							switch (vectorTypeOfToken[i + 3]) // Forkifying around 2 cases: if the input is set as integer or as text
+							{
 
-							if (vectorTypeOfToken[i + 7] != dataTypeValues::number || atoi(tokenizedVector[i + 7]) > maxSize) throw; // Token is not of the integer data type or the integer is greater than max size addmissible
-							i += 8;
-							break;
-						case typeDataType::text: // type 15 from enum of data types - TEXT
-							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+							case typeDataType::integer:  // type 14 from enum of data types - INTEGER
 
-							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw; // Expected a 
+								if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
 
-							maxSize = atoi(tokenizedVector[i + 5])/8;
+								if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw;
 
-							if (strcmp(tokenizedVector[i + 6],  ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+								maxSize = atoi(tokenizedVector[i + 5]);
 
-							if (strcmp(tokenizedVector[i + 7],  "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
-							if (strcmp(tokenizedVector[i + 7], "'") == 0 && strcmp(tokenizedVector[i + 8], "'") == 0) {
-								i += 9;
+								if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+
+								if (vectorTypeOfToken[i + 7] != dataTypeValues::number || atoi(tokenizedVector[i + 7]) > maxSize) throw; // Token is not of the integer data type or the integer is greater than max size addmissible
+								i += 8;
+								break;
+							case typeDataType::text: // type 15 from enum of data types - TEXT
+								if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+
+								if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw; // Expected a 
+
+								maxSize = atoi(tokenizedVector[i + 5]) / 8;
+
+								if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+
+								if (strcmp(tokenizedVector[i + 7], "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
+								if (strcmp(tokenizedVector[i + 7], "'") == 0 && strcmp(tokenizedVector[i + 8], "'") == 0) {
+									i += 9;
+								}
+								else {
+									if (strlen(tokenizedVector[i + 8]) > maxSize) throw; // Token is not a text data type or the length of the text is greater than the max size addmissible 
+
+									if (strcmp(tokenizedVector[i + 9], "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
+									i += 10;
+								}
+								break;
+							default:
+								throw; // Expected a data type as second argument (text or integer)
 							}
-							else {
-								if (strlen(tokenizedVector[i + 8]) > maxSize) throw; // Token is not a text data type or the length of the text is greater than the max size addmissible 
+							if (strcmp(tokenizedVector[i], ")") < 0) throw; // Expected token ")"
 
-								if (strcmp(tokenizedVector[i + 9], "'") < 0 ) throw; // Unexpected argument at position i, expecting a "'" - separator;
-								i += 10;
-							}
-							break;
-						default:
-							throw; // Expected a data type as second argument (text or integer)
 						}
-						if (strcmp(tokenizedVector[i], ")") < 0) throw; // Expected token ")"
+						i++; // Exiting the parameters for processed column
+						if (strcmp(tokenizedVector[i], ",") < 0 && strcmp(tokenizedVector[i], ")") < 0) throw; // Expected a separation token - ","
+						else if (strcmp(tokenizedVector[i], ",") == 0) i++; // Moving to next column or end of the command
 
 					}
-					i++; // Exiting the parameters for processed column
-					if (strcmp(tokenizedVector[i], ",") < 0 && strcmp(tokenizedVector[i], ")") < 0) throw; // Expected a separation token - ","
-					else if(strcmp(tokenizedVector[i], ",") == 0 ) i++; // Moving to next column or end of the command
-					
-				}
+				
 			}
+			i++;
+			if(strcmp(tokenizedVector[i],";") < 0) throw std::invalid_argument("Unexpected tokens after \")\"");
+
 			std::cout << "the command is correct!" << std::endl;
 		}
-		else throw;
-		//if ("table" == getToken(iterator + 1)) return 0;
-		//throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE". Expected token "Table" or "Index"
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
+		
 	}
+	
+	void lexerUpdate() 
+	{
+		int i = 1;
+		if (vectorTypeOfToken[i] != dataTypeValues::string) throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"UPDATE\". Expected an identifier"); // checking the identifier name of table
+		i++;
+		if (strcmp(tokenizedVector[i], "set") < 0) throw std::invalid_argument("Unexpected token at position iterator; Non compatible with token \"UPDATE table_name -\". Expected token \"Set\""); // checking the token SET
+		i++;
+		
+		checkingLexerOfEquality(i); // Checks this syntax : id = 5 || name = 'Alex'
+
+		if (strcmp(tokenizedVector[i], ",") == 0) throw std::invalid_argument("Too many SET columns ");
+
+		if(strcmp(tokenizedVector[i], "where") < 0) throw std::invalid_argument("Unexpected token at position iterator; Expected token \"where\"");
+
+		i++;
+
+		checkingLexerOfEquality(i); // Checks this syntax of this type: id = 5 || name = 'Alex'
+
+		if(strcmp(tokenizedVector[i], ";") <0) throw std::invalid_argument("Too many arguments after WHERE or Missing token \";\"");
+
+		std::cout << "The command is correct!" << std::endl;
+
+
+
+
+
+	}
+
 
 	void lexerSelect(){
 		int i = 0;
@@ -201,6 +267,8 @@ public:
 
 	}
 
+
+
 	void lexer()
 	{
 		// To add a lexer function for every command -----------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -208,7 +276,10 @@ public:
 		{
 			lexerCreateTable();
 		}
-		else throw; // First word in the command is wrong
+		else if (strcmp(tokenizedVector[0], "update") == 0) {
+			lexerUpdate();
+		}
+		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
 	}
 
 	char* getToken(int iterator) {
@@ -453,7 +524,7 @@ std::string insertingExtraSpacesforOperators(std::string string) {
 	{
 	
 
-		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || string[i] == '(' || string[i] == ')' || string[i] == ',' || string[i] == '&&' || string[i] == '||' || string[i] == '\'')
+		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || string[i] == '(' || string[i] == ')' || string[i] == ',' || string[i] == '&&' || string[i] == '||' || string[i] == '\'' || string[i] == ';')
 		{
 			if (string[i - 1] != ' ')
 			{
@@ -593,6 +664,9 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 		if (tempString == "revoke") vectorTypeOfToken[i] = typeCommands::revoke;
 		if (tempString == "table") vectorTypeOfToken[i] = typeCommands::table;
 		if (tempString == "index") vectorTypeOfToken[i] = typeCommands::index;
+		if (tempString == "if") vectorTypeOfToken[i] = typeCommands::IF;
+		if (tempString == "where") vectorTypeOfToken[i] = typeCommands::where;
+		if (tempString == "set") vectorTypeOfToken[i] = typeCommands::set;
 
 		// if not a command, we check if the token is an operator
 		if (tempString == "+") vectorTypeOfToken[i] = typeOperators::add;
@@ -620,12 +694,11 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 		if (tempString == "not") vectorTypeOfToken[i] = typeOperators::not_;
 		if (tempString == "or") vectorTypeOfToken[i] = typeOperators::or_;
 		if (tempString == "isnull") vectorTypeOfToken[i] = typeOperators::isNull;
-		if (tempString == "isnull") vectorTypeOfToken[i] = typeOperators::isNull;
 		if (tempString == "||") vectorTypeOfToken[i] = typeOperators::addStrings;
-		if (tempString == "unique") vectorTypeOfToken[i] = typeOperators::unique;
 		if (tempString == "unique") vectorTypeOfToken[i] = typeOperators::unique;
 		if (tempString == "(") vectorTypeOfToken[i] = typeOperators::l_parentheses;
 		if (tempString == ")") vectorTypeOfToken[i] = typeOperators::r_parentheses;
+		if (tempString == "if") vectorTypeOfToken[i] = typeCommands::IF;
 
 		// if not previous 2 we check if the token is a data type identifier
 		std::string tempPartialString;
@@ -673,9 +746,9 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 				floatBool = false;
 				varchar2Bool = false;
 			}
-			if (intBool) vectorTypeOfToken[i] = INT_NUMBER;
-			if (floatBool) vectorTypeOfToken[i] = FLOAT_NUMBER;
-			if (varchar2Bool) vectorTypeOfToken[i] = VARCHAR2;
+			if (intBool) vectorTypeOfToken[i] = NUMBER;
+			if (floatBool) vectorTypeOfToken[i] = NUMBER;
+			if (varchar2Bool) vectorTypeOfToken[i] = TEXT;
 		}
 
 	}
