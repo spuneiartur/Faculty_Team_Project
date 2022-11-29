@@ -3,7 +3,6 @@
 #include<string>
 #include<algorithm>
 #include "Header.h"
-
 /* Deallocation - Do no forget :
 
 
@@ -43,7 +42,7 @@ public:
 int main()
 {
 	int sizeOfTokenizedVector, i = 0;
-	char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'))", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("CREATE TABLE students IF No EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'))", sizeOfTokenizedVector, ' ');
 	
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 
