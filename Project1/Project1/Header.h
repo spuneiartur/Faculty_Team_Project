@@ -1,8 +1,8 @@
 #pragma once
 
-int VARCHAR2 = -5;
-int INT_NUMBER = -10;
-int FLOAT_NUMBER = -15;
+int TEXT = -5;
+int NUMBER = -10;
+
 
 enum commandBranches {
 	createTable, createIndex, typeDataType, argString, argNumber
@@ -13,7 +13,7 @@ enum typeCommands {
 };
 
 enum typeOperators {
-	add = '+', sub = '-', mul = '*', div_ = '/', mod = '%', equals = '=', notEqual = '!=', greater = '>', less = '<', greaterEqual = '>=', lessEqual = '<=', notLess = '!<', notGreater = '!>', and_, between, exists, in, notIn, like, glob, not_, or_, isNull, addStrings = '||', unique, l_parentheses = '(', r_parentheses = ')', asterix = '*'
+	add = '+', sub = '-', mul = '*', div_ = '/', mod = '%', equals = '=', notEqual = '!=', greater = '>', less = '<', greaterEqual = '>=', lessEqual = '<=', notLess = '!<', notGreater = '!>', and_, between, exists, in, notIn, like, glob, not_, or_, isNull, addStrings = '||', unique, l_parentheses = '(', r_parentheses = ')', asterix = '*', IF
 };
 
 enum typeDataType {
@@ -568,12 +568,11 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 		if (tempString == "not") vectorTypeOfToken[i] = typeOperators::not_;
 		if (tempString == "or") vectorTypeOfToken[i] = typeOperators::or_;
 		if (tempString == "isnull") vectorTypeOfToken[i] = typeOperators::isNull;
-		if (tempString == "isnull") vectorTypeOfToken[i] = typeOperators::isNull;
 		if (tempString == "||") vectorTypeOfToken[i] = typeOperators::addStrings;
-		if (tempString == "unique") vectorTypeOfToken[i] = typeOperators::unique;
 		if (tempString == "unique") vectorTypeOfToken[i] = typeOperators::unique;
 		if (tempString == "(") vectorTypeOfToken[i] = typeOperators::l_parentheses;
 		if (tempString == ")") vectorTypeOfToken[i] = typeOperators::r_parentheses;
+		if (tempString == "if") vectorTypeOfToken[i] = typeOperators::IF;
 
 		// if not previous 2 we check if the token is a data type identifier
 		std::string tempPartialString;
