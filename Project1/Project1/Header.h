@@ -152,6 +152,9 @@ public:
 					nrColumns++;
 				}else if(tokenizedVector[j]=="FROM") {
 					k = j;	// we find the position at which FROM is to use later on
+					if (tokenizedVector[j] != "FROM") {
+						throw; // in case our command has no FROM we throw and error
+					}
 				}
 			}
 			if (nrColumns == 1) { // if columns are equal to one we first check if we want all from the table or if we want one columns since they are both equal to 1 in the code
