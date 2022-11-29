@@ -9,11 +9,11 @@ enum commandBranches {
 };
 
 enum typeCommands {
-	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index
+	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index, where, set, IF
 };
 
 enum typeOperators {
-	add = '+', sub = '-', mul = '*', div_ = '/', mod = '%', equals = '=', notEqual = '!=', greater = '>', less = '<', greaterEqual = '>=', lessEqual = '<=', notLess = '!<', notGreater = '!>', and_, between, exists, in, notIn, like, glob, not_, or_, isNull, addStrings = '||', unique, l_parentheses = '(', r_parentheses = ')', asterix = '*', IF
+	add = '+', sub = '-', mul = '*', div_ = '/', mod = '%', equals = '=', notEqual = '!=', greater = '>', less = '<', greaterEqual = '>=', lessEqual = '<=', notLess = '!<', notGreater = '!>', and_, between, exists, in, notIn, like, glob, not_, or_, isNull, addStrings = '||', unique, l_parentheses = '(', r_parentheses = ')', asterix = '*', 
 };
 
 enum typeDataType {
@@ -62,14 +62,40 @@ public:
 
 
 	void parser() {
-		std::string token = getToken(iterator);
-		int type = getTypeOfToken(iterator);
-
 		lexer();
-
-
-
 	}
+
+	// Checks this syntax : id = 5 || name = 'Alex'. 
+	// HOW TO USE: index (i) should be passed when it is forwarding to first argument (ex. vector[i] == id || vector[i] == name)
+	// !!! NOTE: Function accepts only one set of argument (ex. id = 15 -> ok; (id = 15, name = 'Alex') -> not ok) 
+	// !!! NOTE: Function accepts empty space as value for text argument (ex. name = '')
+	void checkingLexerOfEquality(int& i) {
+		if (vectorTypeOfToken[i] != dataTypeValues::string) throw std::invalid_argument("Unexpected token at position iterator; Expected an identifier"); // checking the identifier name of column
+		i++;
+		if (vectorTypeOfToken[i] != 61) throw std::invalid_argument("Unexpected token at position iterator; Expected token \"=\"");
+		i++;
+		if (strcmp(tokenizedVector[i], "'") == 0)
+		{
+			i++;
+			if (strcmp(tokenizedVector[i], "'") == 0)
+			{
+				i++;
+			}
+			else
+			{
+				if (strcmp(tokenizedVector[i + 1], "'") < 0) throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"=\"");
+				if (vectorTypeOfToken[i] != dataTypeValues::string && vectorTypeOfToken[i] != dataTypeValues::number) throw std::invalid_argument("Unexpected token at position iterator; Expected a value compatible with the column");
+				i += 2;
+			}
+
+		}
+		else if (vectorTypeOfToken[i] == dataTypeValues::number)
+		{
+			i++;
+		}
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected a value compatible with the column");
+	}
+
 	void lexerCreateTable() {
 		int i = 1;
 		if (!strcmp(tokenizedVector[i], "table") && vectorTypeOfToken[i + 1] == dataTypeValues::string) {
@@ -144,11 +170,44 @@ public:
 					}
 				
 			}
+			i++;
+			if(strcmp(tokenizedVector[i],";") < 0) throw std::invalid_argument("Unexpected tokens after \")\"");
+
 			std::cout << "the command is correct!" << std::endl;
 		}
 		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
 		
 	}
+	
+	void lexerUpdate() 
+	{
+		int i = 1;
+		if (vectorTypeOfToken[i] != dataTypeValues::string) throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"UPDATE\". Expected an identifier"); // checking the identifier name of table
+		i++;
+		if (strcmp(tokenizedVector[i], "set") < 0) throw std::invalid_argument("Unexpected token at position iterator; Non compatible with token \"UPDATE table_name -\". Expected token \"Set\""); // checking the token SET
+		i++;
+		
+		checkingLexerOfEquality(i); // Checks this syntax : id = 5 || name = 'Alex'
+
+		if (strcmp(tokenizedVector[i], ",") == 0) throw std::invalid_argument("Too many SET columns ");
+
+		if(strcmp(tokenizedVector[i], "where") < 0) throw std::invalid_argument("Unexpected token at position iterator; Expected token \"where\"");
+
+		i++;
+
+		checkingLexerOfEquality(i); // Checks this syntax of this type: id = 5 || name = 'Alex'
+
+		if(strcmp(tokenizedVector[i], ";") <0) throw std::invalid_argument("Too many arguments after WHERE or Missing token \";\"");
+
+		std::cout << "The command is correct!" << std::endl;
+
+
+
+
+
+	}
+
+
 	void lexer()
 	{
 		// To add a lexer function for every command -----------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -156,7 +215,10 @@ public:
 		{
 			lexerCreateTable();
 		}
-		else throw; // First word in the command is wrong
+		else if (strcmp(tokenizedVector[0], "update") == 0) {
+			lexerUpdate();
+		}
+		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
 	}
 
 	char* getToken(int iterator) {
@@ -401,7 +463,7 @@ std::string insertingExtraSpacesforOperators(std::string string) {
 	{
 	
 
-		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || string[i] == '(' || string[i] == ')' || string[i] == ',' || string[i] == '&&' || string[i] == '||' || string[i] == '\'')
+		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || string[i] == '(' || string[i] == ')' || string[i] == ',' || string[i] == '&&' || string[i] == '||' || string[i] == '\'' || string[i] == ';')
 		{
 			if (string[i - 1] != ' ')
 			{
@@ -541,6 +603,9 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 		if (tempString == "revoke") vectorTypeOfToken[i] = typeCommands::revoke;
 		if (tempString == "table") vectorTypeOfToken[i] = typeCommands::table;
 		if (tempString == "index") vectorTypeOfToken[i] = typeCommands::index;
+		if (tempString == "if") vectorTypeOfToken[i] = typeCommands::IF;
+		if (tempString == "where") vectorTypeOfToken[i] = typeCommands::where;
+		if (tempString == "set") vectorTypeOfToken[i] = typeCommands::set;
 
 		// if not a command, we check if the token is an operator
 		if (tempString == "+") vectorTypeOfToken[i] = typeOperators::add;
@@ -572,7 +637,7 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 		if (tempString == "unique") vectorTypeOfToken[i] = typeOperators::unique;
 		if (tempString == "(") vectorTypeOfToken[i] = typeOperators::l_parentheses;
 		if (tempString == ")") vectorTypeOfToken[i] = typeOperators::r_parentheses;
-		if (tempString == "if") vectorTypeOfToken[i] = typeOperators::IF;
+		if (tempString == "if") vectorTypeOfToken[i] = typeCommands::IF;
 
 		// if not previous 2 we check if the token is a data type identifier
 		std::string tempPartialString;
