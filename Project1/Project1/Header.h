@@ -178,6 +178,45 @@ public:
 		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
 		
 	}
+
+	void lexerCreateIndex() {
+		int i = 0;
+		if (strcmp(tokenizedVector[i], "create") == 0) {				//check first token is create
+			i++;
+			if (strcmp(tokenizedVector[i], "index") == 0) {				//check second token is index
+				i++;
+			}
+		}
+		else throw;			
+		//if (strcmp(tokenizedVector[i], "(") == 0) {						//(if not exits)
+		//	i++;
+		//	if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
+		//	{
+		//		i += 3;
+		//	}
+		//	else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
+		//}
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//index_name
+			i++;
+		}
+		else throw;  
+		if (strcmp(tokenizedVector[i], "ON" == 0)) {			//ON
+			i++;
+		}
+		else throw;
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table is valid
+			i++;
+		}
+		else throw;
+		if (strcmp(tokenizedVector[i], "(") == 0) {
+			i++;
+		}
+
+		if () {													//column_name	//also have to check if clumn is valid
+
+		}
+	}
+
 	
 	void lexerUpdate() 
 	{
