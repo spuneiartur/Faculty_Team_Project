@@ -208,6 +208,67 @@ public:
 	}
 
 
+	void lexerSelect(){
+		int i = 0;
+		int k;
+		int nrColumns = 1; // we must have one column
+		if (strcmp(tokenizedVector[i], "select") && vectorTypeOfToken[i + 1] == dataTypeValues::string) { // verifiy for a basic SELECT value
+			for (int j = i; j < sizeOfTokenizedVector; j++) { // find all of the columns by adding all of the apperances of "," 
+				if (strcmp(tokenizedVector[j], ",")) {
+					nrColumns++;
+				}else if(tokenizedVector[j]=="FROM") {
+					k = j;	// we find the position at which FROM is to use later on
+					if (tokenizedVector[j] != "FROM") {
+						throw; // in case our command has no FROM we throw and error
+					}
+				}
+			}
+			if (nrColumns == 1) { // if columns are equal to one we first check if we want all from the table or if we want one columns since they are both equal to 1 in the code
+				if (strcmp(tokenizedVector[i + 1], "ALL") || strcmp(tokenizedVector[i + 1], "*")) {
+					if (!strcmp(tokenizedVector[i + 2], tokenizedVector[k])) {
+						throw; // SELECT ALL FROM syntax is wrongly written
+					}
+					else if(vectorTypeOfToken[i+3]!=dataTypeValues::string) {
+						throw; // if the 4th place is not a string value , the name of the table we throw error
+					}
+				}
+				else if(vectorTypeOfToken[i + 1] == dataTypeValues::string){ // check if we just want to take a column and if its not a column we throw
+					if (!strcmp(tokenizedVector[i + 2], tokenizedVector[k])) {
+						throw; // SELECT value FROM syntax is wrongly written
+					}
+					else if (vectorTypeOfToken[i + 3] != dataTypeValues::string) {
+						throw; // if the 4th place is not a string value , the name of the table we throw error
+					}
+				}
+			}// now we check if we want to select more tables
+			else if(nrColumns > 1){
+				if (!strcmp(tokenizedVector[k], "FROM")) {
+					throw;
+				}
+				else {
+					for (int n = 1; n < k; n++) {
+						if (strcmp(tokenizedVector[n], ",")) {
+							if (!(vectorTypeOfToken[n - 1]==dataTypeValues::string)) { // check if the value before the "," is a string
+								throw;
+							}
+						}
+						else {
+							throw;
+						}
+					}
+					if (vectorTypeOfToken[k + 1] != dataTypeValues::string) { //check if we have something after FROM and that it is a string
+						throw;
+					}
+				}
+			}
+		}
+
+
+
+	}
+
+
+
 	void lexer()
 	{
 		// To add a lexer function for every command -----------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
