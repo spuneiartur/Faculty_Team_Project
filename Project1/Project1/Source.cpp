@@ -42,7 +42,7 @@ public:
 int main()
 {
 	int sizeOfTokenizedVector, i = 0;
-	char** tokenizedVector = tokenizingFunction("CREATE TABLE students IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'))", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("UPDATE studenti SET nume = 'Artur' WHERE id = '145';", sizeOfTokenizedVector, ' ');
 	
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 
@@ -89,3 +89,5 @@ int main()
 // DROP TABLE table_name
 //   we wiLl see how to    REMOVE some   SPACEs from a   String       
 //CREATE TABLE clients ( client_id NUMBER(6) 12.5 CONSTRAINT pk_client PRIMARY KEY, client_name VARCHAR2(20) NOT NULL, client_surname VARCHAR2(20) NOT NULL, telephone VARCHAR2(20), credit_limit NUMBER(9,2), email VARCHAR2(30) CONSTRAINT one_email UNIQUE, birth_date DATE, status VARCHAR2(20), gender CHAR(1), CONSTRAINT ck_email CHECK (email LIKE '%@%.%') );
+
+// UPDATE studenti SET nume = 'Alice' WHERE id = 1
