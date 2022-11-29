@@ -47,7 +47,7 @@ public:
 	void getVectorTypeOfTokenValues() {
 		if (vectorTypeOfToken != nullptr)
 		{
-			for (int i = 0; i < this->sizeOfTokenizedVector; i++)
+			for (int i = 0; i < this->sizeOfTokenizedVector; i++) 
 			{
 				std::cout << this->vectorTypeOfToken[i] << " | ";
 			}
@@ -72,74 +72,82 @@ public:
 	}
 	void lexerCreateTable() {
 		int i = 1;
-		//std::string token = tokenizedVector[i++];
-		//std::string nextToken = tokenizedVector[i++];
 		if (!strcmp(tokenizedVector[i], "table") && vectorTypeOfToken[i + 1] == dataTypeValues::string) {
 			i++;
-			if (vectorTypeOfToken[i] < 0 && !strcmp(tokenizedVector[i+1], "(")) { // if its an identifier and next token is a paranthesis
-				if (!strcmp(tokenizedVector[i + 2], ")")) throw; // you should insert at least one column 
-				i+=2;
-				// Processing the lexer for all columns' structure 
-				while (strcmp(tokenizedVector[i], ")") < 0 ){
-					while (strcmp(tokenizedVector[i], ")") < 0) { // Here tokenizedVector[i] is pointing to the opening paranthesis of the column
-						int maxSize=0;
-						if (strcmp(tokenizedVector[i], "(") < 0) throw; // Missing "(" token at the the position i
-							
-						if (vectorTypeOfToken[i + 1] >= 0) throw; // Unexpected argument at position i, expecting an identifier - name for the column;
-						if (strcmp(tokenizedVector[i + 2], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
-						switch (vectorTypeOfToken[i+3])
-						{
-						
-						case typeDataType::integer:  // type 14 from enum of data types - INTEGER
-							
-							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+			if (vectorTypeOfToken[i] == dataTypeValues::string) { // if token is an identifier 
+				i++;
 
-							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw;
+				if ( strcmp(tokenizedVector[i], "(") == 0) { // if token is an identifier and next token is a paranthesis
+				}
+				else if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
+				{
+					i += 3;
+				}
+				else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
 
-							maxSize = atoi(tokenizedVector[i + 5]);
+					if (strcmp(tokenizedVector[i + 1], ")") == 0) throw; // you should insert at least one column 
+					i++;
+					// Processing the lexer for all columns' structure 
+					while (strcmp(tokenizedVector[i], ")") < 0) {
+						while (strcmp(tokenizedVector[i], ")") < 0) { // Here tokenizedVector[i] is pointing to the opening paranthesis of the column
+							int maxSize = 0;
+							if (strcmp(tokenizedVector[i], "(") < 0) throw; // Missing "(" token at the the position i
 
-							if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+							if (vectorTypeOfToken[i + 1] >= 0) throw; // Unexpected argument at position i, expecting an identifier - name for the column;
+							if (strcmp(tokenizedVector[i + 2], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+							switch (vectorTypeOfToken[i + 3]) // Forkifying around 2 cases: if the input is set as integer or as text
+							{
 
-							if (vectorTypeOfToken[i + 7] != dataTypeValues::number || atoi(tokenizedVector[i + 7]) > maxSize) throw; // Token is not of the integer data type or the integer is greater than max size addmissible
-							i += 8;
-							break;
-						case typeDataType::text: // type 15 from enum of data types - TEXT
-							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+							case typeDataType::integer:  // type 14 from enum of data types - INTEGER
 
-							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw; // Expected a 
+								if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
 
-							maxSize = atoi(tokenizedVector[i + 5])/8;
+								if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw;
 
-							if (strcmp(tokenizedVector[i + 6],  ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+								maxSize = atoi(tokenizedVector[i + 5]);
 
-							if (strcmp(tokenizedVector[i + 7],  "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
-							if (strcmp(tokenizedVector[i + 7], "'") == 0 && strcmp(tokenizedVector[i + 8], "'") == 0) {
-								i += 9;
+								if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+
+								if (vectorTypeOfToken[i + 7] != dataTypeValues::number || atoi(tokenizedVector[i + 7]) > maxSize) throw; // Token is not of the integer data type or the integer is greater than max size addmissible
+								i += 8;
+								break;
+							case typeDataType::text: // type 15 from enum of data types - TEXT
+								if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+
+								if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw; // Expected a 
+
+								maxSize = atoi(tokenizedVector[i + 5]) / 8;
+
+								if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+
+								if (strcmp(tokenizedVector[i + 7], "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
+								if (strcmp(tokenizedVector[i + 7], "'") == 0 && strcmp(tokenizedVector[i + 8], "'") == 0) {
+									i += 9;
+								}
+								else {
+									if (strlen(tokenizedVector[i + 8]) > maxSize) throw; // Token is not a text data type or the length of the text is greater than the max size addmissible 
+
+									if (strcmp(tokenizedVector[i + 9], "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
+									i += 10;
+								}
+								break;
+							default:
+								throw; // Expected a data type as second argument (text or integer)
 							}
-							else {
-								if (strlen(tokenizedVector[i + 8]) > maxSize) throw; // Token is not a text data type or the length of the text is greater than the max size addmissible 
+							if (strcmp(tokenizedVector[i], ")") < 0) throw; // Expected token ")"
 
-								if (strcmp(tokenizedVector[i + 9], "'") < 0 ) throw; // Unexpected argument at position i, expecting a "'" - separator;
-								i += 10;
-							}
-							break;
-						default:
-							throw; // Expected a data type as second argument (text or integer)
 						}
-						if (strcmp(tokenizedVector[i], ")") < 0) throw; // Expected token ")"
+						i++; // Exiting the parameters for processed column
+						if (strcmp(tokenizedVector[i], ",") < 0 && strcmp(tokenizedVector[i], ")") < 0) throw; // Expected a separation token - ","
+						else if (strcmp(tokenizedVector[i], ",") == 0) i++; // Moving to next column or end of the command
 
 					}
-					i++; // Exiting the parameters for processed column
-					if (strcmp(tokenizedVector[i], ",") < 0 && strcmp(tokenizedVector[i], ")") < 0) throw; // Expected a separation token - ","
-					else if(strcmp(tokenizedVector[i], ",") == 0 ) i++; // Moving to next column or end of the command
-					
-				}
+				
 			}
 			std::cout << "the command is correct!" << std::endl;
 		}
-		else throw;
-		//if ("table" == getToken(iterator + 1)) return 0;
-		//throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE". Expected token "Table" or "Index"
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
+		
 	}
 	void lexer()
 	{
