@@ -17,7 +17,11 @@ enum typeOperators {
 };
 
 enum typeDataType {
-	varchar2 = typeCommands::index + 1, number, long_, date, raw, long_raw, rowid, char_, blob, bfile
+	text = typeCommands::index + 1, integer
+};
+
+enum dataTypeValues {
+	number = -10, string = -5
 };
 // TODO
 // to build custom throws
@@ -61,36 +65,90 @@ public:
 		std::string token = getToken(iterator);
 		int type = getTypeOfToken(iterator);
 
-		lexer(token, type);
+		lexer();
 
 
 
 	}
-	int lexerCreateTable(char** tokenizedVector) {
-		std::string token = tokenizedVector[0];
-		while (token != ";") {
+	void lexerCreateTable() {
+		int i = 1;
+		//std::string token = tokenizedVector[i++];
+		//std::string nextToken = tokenizedVector[i++];
+		if (!strcmp(tokenizedVector[i], "table") && vectorTypeOfToken[i + 1] == dataTypeValues::string) {
+			i++;
+			if (vectorTypeOfToken[i] < 0 && !strcmp(tokenizedVector[i+1], "(")) { // if its an identifier and next token is a paranthesis
+				if (!strcmp(tokenizedVector[i + 2], ")")) throw; // you should insert at least one column 
+				i+=2;
+				// Processing the lexer for all columns' structure 
+				while (strcmp(tokenizedVector[i], ")") < 0 ){
+					while (strcmp(tokenizedVector[i], ")") < 0) { // Here tokenizedVector[i] is pointing to the opening paranthesis of the column
+						int maxSize=0;
+						if (strcmp(tokenizedVector[i], "(") < 0) throw; // Missing "(" token at the the position i
+							
+						if (vectorTypeOfToken[i + 1] >= 0) throw; // Unexpected argument at position i, expecting an identifier - name for the column;
+						if (strcmp(tokenizedVector[i + 2], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+						switch (vectorTypeOfToken[i+3])
+						{
+						
+						case typeDataType::integer:  // type 14 from enum of data types - INTEGER
+							
+							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
 
+							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw;
+
+							maxSize = atoi(tokenizedVector[i + 5]);
+
+							if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+
+							if (vectorTypeOfToken[i + 7] != dataTypeValues::number || atoi(tokenizedVector[i + 7]) > maxSize) throw; // Token is not of the integer data type or the integer is greater than max size addmissible
+							i += 8;
+							break;
+						case typeDataType::text: // type 15 from enum of data types - TEXT
+							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+
+							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw; // Expected a 
+
+							maxSize = atoi(tokenizedVector[i + 5])/8;
+
+							if (strcmp(tokenizedVector[i + 6],  ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+
+							if (strcmp(tokenizedVector[i + 7],  "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
+							if (strcmp(tokenizedVector[i + 7], "'") == 0 && strcmp(tokenizedVector[i + 8], "'") == 0) {
+								i += 9;
+							}
+							else {
+								if (strlen(tokenizedVector[i + 8]) > maxSize) throw; // Token is not a text data type or the length of the text is greater than the max size addmissible 
+
+								if (strcmp(tokenizedVector[i + 9], "'") < 0 ) throw; // Unexpected argument at position i, expecting a "'" - separator;
+								i += 10;
+							}
+							break;
+						default:
+							throw; // Expected a data type as second argument (text or integer)
+						}
+						if (strcmp(tokenizedVector[i], ")") < 0) throw; // Expected token ")"
+
+					}
+					i++; // Exiting the parameters for processed column
+					if (strcmp(tokenizedVector[i], ",") < 0 && strcmp(tokenizedVector[i], ")") < 0) throw; // Expected a separation token - ","
+					else if(strcmp(tokenizedVector[i], ",") == 0 ) i++; // Moving to next column or end of the command
+					
+				}
+			}
+			std::cout << "the command is correct!" << std::endl;
 		}
+		else throw;
 		//if ("table" == getToken(iterator + 1)) return 0;
-		//throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE"
+		//throw; // Unexpected token at position iterator+1; Non compatible with token "CREATE". Expected token "Table" or "Index"
 	}
-	int lexer(std::string token, int type)
+	void lexer()
 	{
 		// To add a lexer function for every command -----------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		if (token == "create")
+		if (strcmp(tokenizedVector[0], "create") == 0)
 		{
-			lexerCreateTable(tokenizedVector);
+			lexerCreateTable();
 		}
-
-		if (token == "table")
-		{
-			if (VARCHAR2 == getTypeOfToken(iterator + 1)) return 0;
-			throw; // Unexpected token at position iterator+1; Non compatible with token "TABLE"
-		}
-		//if (type == VARCHAR2) // the token is an indentifier
-		//{
-		//	if(getTypeOfToken(iterator+1) == )
-		//}
+		else throw; // First word in the command is wrong
 	}
 
 	char* getToken(int iterator) {
@@ -333,8 +391,9 @@ std::string stringToLowerCase(std::string string) {
 std::string insertingExtraSpacesforOperators(std::string string) {
 	for (int i = 0; i < string.length(); i++)
 	{
-		// Attention - we don t separate the parenthesis or commas that are next to digits, that will simply our work in future in the case of VARCHAR2(20), NUMBER(10,2) etc.
-		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || /*pharenthesis condition start*/(string[i] == '(' && string[i + 1] != 0 && string[i + 1] != '1' && string[i + 1] != '2' && string[i + 1] != '3' && string[i + 1] != '4' && string[i + 1] != '5' && string[i + 1] != '6' && string[i + 1] != '7' && string[i + 1] != '8' && string[i + 1] != '9') || (string[i] == ')' && string[i - 1] != '0' && string[i - 1] != '1' && string[i - 1] != '2' && string[i - 1] != '3' && string[i - 1] != '4' && string[i - 1] != '5' && string[i - 1] != '6' && string[i - 1] != '7' && string[i - 1] != '8' && string[i - 1] != '9')/*pharenthesis condition start*/ || /*comma condition start*/(string[i] == ',' && string[i - 1] != '0' && string[i - 1] != '1' && string[i - 1] != '2' && string[i - 1] != '3' && string[i - 1] != '4' && string[i - 1] != '5' && string[i - 1] != '6' && string[i - 1] != '7' && string[i - 1] != '8' && string[i - 1] != '9')/*comma condition end*/ || string[i] == '&&' || string[i] == '||')
+	
+
+		if (string[i] == '+' || string[i] == '-' || string[i] == '*' || string[i] == '/' || string[i] == '=' || string[i] == '!=' || string[i] == '<' || string[i] == '>' || string[i] == '<=' || string[i] == '>=' || string[i] == '!<' || string[i] == '!>' || string[i] == '(' || string[i] == ')' || string[i] == ',' || string[i] == '&&' || string[i] == '||' || string[i] == '\'')
 		{
 			if (string[i - 1] != ' ')
 			{
@@ -344,6 +403,7 @@ std::string insertingExtraSpacesforOperators(std::string string) {
 			{
 				string.insert(i + 1, " ");
 			}
+			
 		}
 	}
 	return string;
@@ -515,16 +575,9 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 		{
 			tempPartialString += tempString[j++];
 		}
-		if (tempPartialString == "varchar2") vectorTypeOfToken[i] = typeDataType::varchar2;
-		if (tempPartialString == "number") vectorTypeOfToken[i] = typeDataType::number;
-		if (tempPartialString == "long") vectorTypeOfToken[i] = typeDataType::long_;
-		if (tempPartialString == "date") vectorTypeOfToken[i] = typeDataType::date;
-		if (tempPartialString == "raw") vectorTypeOfToken[i] = typeDataType::raw;
-		if (tempPartialString == "long_raw") vectorTypeOfToken[i] = typeDataType::long_raw;
-		if (tempPartialString == "rowid") vectorTypeOfToken[i] = typeDataType::rowid;
-		if (tempPartialString == "char") vectorTypeOfToken[i] = typeDataType::char_;
-		if (tempPartialString == "blob") vectorTypeOfToken[i] = typeDataType::blob;
-		if (tempPartialString == "bfile") vectorTypeOfToken[i] = typeDataType::bfile;
+		if (tempPartialString == "text") vectorTypeOfToken[i] = typeDataType::text;
+		if (tempPartialString == "integer") vectorTypeOfToken[i] = typeDataType::integer;
+		
 
 		// if not even one of the 3 listed above, then it should be an indentifier, it will be marked with -1 in out vectorTypeOfToken
 		if (vectorTypeOfToken[i] < 0)
@@ -568,3 +621,4 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 	}
 	return vectorTypeOfToken;
 }
+
