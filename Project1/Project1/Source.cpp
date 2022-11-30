@@ -43,8 +43,8 @@ int main()
 {
 	int sizeOfTokenizedVector, i = 0;
 
-	char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'))", sizeOfTokenizedVector, ' ');
-	//char** tokenizedVector = tokenizingFunction("SELECT (table alpha) FROM spain", sizeOfTokenizedVector, ' ');
+	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("SELECT (table_alpha, nr_grupa) FROM spain;", sizeOfTokenizedVector, ' ');
 
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
@@ -92,3 +92,7 @@ int main()
 //CREATE TABLE clients ( client_id NUMBER(6) 12.5 CONSTRAINT pk_client PRIMARY KEY, client_name VARCHAR2(20) NOT NULL, client_surname VARCHAR2(20) NOT NULL, telephone VARCHAR2(20), credit_limit NUMBER(9,2), email VARCHAR2(30) CONSTRAINT one_email UNIQUE, birth_date DATE, status VARCHAR2(20), gender CHAR(1), CONSTRAINT ck_email CHECK (email LIKE '%@%.%') );
 
 // UPDATE studenti SET nume = 'Alice' WHERE id = 1;
+ 
+// CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));
+
+// SELECT (table_alpha, nr_grupa) FROM spain;

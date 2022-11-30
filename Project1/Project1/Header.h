@@ -213,7 +213,7 @@ public:
 		int k,m;
 		int numberOfCommasIn = 0;
 		int nrColumns = 1; // we must have one column
-		if (!(strcmp(tokenizedVector[i], "select")) /*&& (vectorTypeOfToken[i + 2] == dataTypeValues::string) /* && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0*/) { // verifiy for a basic SELECT value or a SELECT ALL FROM
+		if ((strcmp(tokenizedVector[i], "select") == 0 && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0) /*&& (vectorTypeOfToken[i + 2] == dataTypeValues::string) /* && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0*/) { // verifiy for a basic SELECT value or a SELECT ALL FROM
 			for (int j = i; j < sizeOfTokenizedVector; j++) { // find all of the columns by adding all of the apperances of "," 
 				if (!(strcmp(tokenizedVector[i + 1], "("))) { // look for "(" since we one or more attributes that are not ALL
 					if (!(strcmp(tokenizedVector[j], ","))) {
@@ -278,8 +278,9 @@ public:
 			}
 		}
 		else {
-			throw;
+			throw std::invalid_argument("The command is missing the token \";\"");;
 		}
+		std::cout << "Command is correct!" << std::endl;
 	}
 
 

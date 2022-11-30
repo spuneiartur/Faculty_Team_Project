@@ -1,9 +1,9 @@
 ﻿  Source.cpp
 D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(154,45): warning C4018: '>': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(527,20): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(549,20): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(574,20): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(601,20): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(711,14): warning C4018: '<': signed/unsigned mismatch
-D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(724,22): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(547,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(569,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(594,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(621,20): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(731,14): warning C4018: '<': signed/unsigned mismatch
+D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Project1\Header.h(744,22): warning C4018: '<': signed/unsigned mismatch
   Project1.vcxproj -> D:\Facultate\Facultate Anul II\Sem I\POO_Project\POO_Group_Project\Project1\Debug\Project1.exe
