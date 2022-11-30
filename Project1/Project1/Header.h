@@ -63,6 +63,10 @@ public:
 
 	void parser() {
 		lexer();
+
+		if (strcmp(tokenizedVector[0], "create") == 0) {
+			parserCreateTable();
+		}else throw std::invalid_argument("Wrong first token of the command");
 	}
 
 	// Checks this syntax : id = 5 || name = 'Alex'. 
@@ -94,6 +98,104 @@ public:
 			i++;
 		}
 		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected a value compatible with the column");
+	}
+	// Counting from a sequence of paranthesis the no of Columns
+	// I: The position of the first paranthesis, not the one including column arguments
+	// E: The No of columns
+	int countingNoOfColumns(int posOfParanthesis) {
+		int counterNoCol = 0;
+		int j = NULL;
+		for (j = posOfParanthesis + 1; j < sizeOfTokenizedVector; j++)
+		{
+			if (strcmp(tokenizedVector[j], "(") == 0)
+			{
+				while (strcmp(tokenizedVector[j], ")") < 0)
+				{
+					j++;
+				}
+				counterNoCol++;
+			}
+		}
+		return counterNoCol;
+	}
+
+	void parserCreateTable() {
+		int posOfParanthesis;
+		// Checking if the condition IF NOT EXISTS is mentioned -----------------------------------??????????????????????????????????
+		int verificationIsNeeded = 0;
+		for (int i = 1; i < sizeOfTokenizedVector-2; i++)
+		{
+			if (strcmp(tokenizedVector[i], "if") == 0)
+			{
+				if(strcmp(tokenizedVector[i + 1], "not") == 0)
+				{
+					if (strcmp(tokenizedVector[i + 2], "exists") == 0)
+					{
+						verificationIsNeeded++;
+					}
+				}
+			}
+			// Exiting the for loop if '(' is found
+			if (strcmp(tokenizedVector[i], "(") == 0)
+			{
+				posOfParanthesis = i;
+				i = sizeOfTokenizedVector - 2;
+				
+			}
+		}
+		// Counting and saving the parameters for columns
+		
+		// // Getting the No of Columns
+		int counterNoCol = countingNoOfColumns(posOfParanthesis);
+		std::cout << "The table consists of " << counterNoCol << " columns" << std::endl;
+		// // Saving parameters for each column 
+		std::string* vNames = new std::string[counterNoCol];
+		std::string* vTypes = new std::string[counterNoCol];
+		int* vDimensions = new int[counterNoCol];
+		std::string* vDefaults = new std::string[counterNoCol];
+		int argType = 0;
+		int column = 0;
+		int argNo = 4;
+		for (int j = posOfParanthesis + 1; j < sizeOfTokenizedVector; j++)
+		{
+			if (strcmp(tokenizedVector[j], "(") == 0)
+			{	
+				if (strcmp(tokenizedVector[j + 3], "text") == 0)
+				{
+					
+					vNames[column] = tokenizedVector[j + 1];
+					vTypes[column] = tokenizedVector[j + 3];
+					vDimensions[column] = atoi(tokenizedVector[j + 5]);
+					if (strcmp(tokenizedVector[j + 8], "'") == 0)
+					{
+						vDefaults[column] = "";
+					}
+					else
+					{
+						vDefaults[column] = tokenizedVector[j + 8];
+					}
+					j += 10;
+					column++;
+				}
+				else if (strcmp(tokenizedVector[j + 3], "integer") == 0)
+				{
+					vNames[column] = tokenizedVector[j + 1];
+					vTypes[column] = tokenizedVector[j + 3];
+					vDimensions[column] = atoi(tokenizedVector[j + 5]);
+					vDefaults[column] = tokenizedVector[j + 7];
+					j += 8;
+					column++;
+				}
+				else throw std::invalid_argument("The type of value is nor INTEGER nor TEXT");
+			}
+		}
+		for (int i = 0; i < counterNoCol; i++) {
+			std::cout << vNames[i] << " | " << vTypes[i] << " | " << vDimensions[i] << " | " << vDefaults[i] << std::endl;
+		}
+
+		// Creating table
+
+
 	}
 
 	void lexerCreateTable() {

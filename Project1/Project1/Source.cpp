@@ -14,7 +14,7 @@ int main()
 
 	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
 
-	char** tokenizedVector = tokenizingFunction("SELECT (albania) FROM spain;", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
 
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
@@ -26,7 +26,7 @@ int main()
 		std::cout << tokenizedVector[i] << "   ||   "<< vectorTypeOfToken[i]<<std::endl;
 	}
 	
-	token.lexer();
+	token.parser();
 	
 	// Deleting previously allocated arrays
 
@@ -41,15 +41,8 @@ int main()
 
 
 	// PLAYGROUND
-	char* TESTcHAR = new char[6];
-	strcpy(TESTcHAR, "Hello");
-	std::cout << strlen(TESTcHAR) << std::endl;
 	/*Table table1(2,2, TESTcHAR);*/
 	Table tables[2];
-	tables[1].setData(2, 2, TESTcHAR);
-	delete[] TESTcHAR;
-
-
 
 	return 0;
 }
