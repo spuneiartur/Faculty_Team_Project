@@ -208,63 +208,78 @@ public:
 	}
 
 
-	void lexerSelect(){
+	void lexerSelect() {
 		int i = 0;
-		int k;
+		int k,m;
+		int numberOfCommasIn = 0;
 		int nrColumns = 1; // we must have one column
-		if (strcmp(tokenizedVector[i], "select") && vectorTypeOfToken[i + 1] == dataTypeValues::string) { // verifiy for a basic SELECT value
+		if (!(strcmp(tokenizedVector[i], "select")) /*&& (vectorTypeOfToken[i + 2] == dataTypeValues::string) /* && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0*/) { // verifiy for a basic SELECT value or a SELECT ALL FROM
 			for (int j = i; j < sizeOfTokenizedVector; j++) { // find all of the columns by adding all of the apperances of "," 
-				if (strcmp(tokenizedVector[j], ",")) {
-					nrColumns++;
-				}else if(tokenizedVector[j]=="FROM") {
-					k = j;	// we find the position at which FROM is to use later on
-					if (tokenizedVector[j] != "FROM") {
-						throw; // in case our command has no FROM we throw and error
+				if (!(strcmp(tokenizedVector[i + 1], "("))) { // look for "(" since we one or more attributes that are not ALL
+					if (!(strcmp(tokenizedVector[j], ","))) {
+						nrColumns++; //count the number of columns / variables
+						numberOfCommasIn++;// count the number of "," in the ()
+					}
+					else if (!(strcmp(tokenizedVector[j], ")"))) {
+						k = j;//saved the location of where the parenthisis end
+						break;// stop when we get there
 					}
 				}
 			}
-			if (nrColumns == 1) { // if columns are equal to one we first check if we want all from the table or if we want one columns since they are both equal to 1 in the code
-				if (strcmp(tokenizedVector[i + 1], "ALL") || strcmp(tokenizedVector[i + 1], "*")) {
-					if (!strcmp(tokenizedVector[i + 2], tokenizedVector[k])) {
-						throw; // SELECT ALL FROM syntax is wrongly written
-					}
-					else if(vectorTypeOfToken[i+3]!=dataTypeValues::string) {
-						throw; // if the 4th place is not a string value , the name of the table we throw error
+			if (nrColumns > 1) {
+				for (int j = k + 1; j < sizeOfTokenizedVector; j++) {
+					if (!(strcmp(tokenizedVector[j], "from"))) {
+						m = j; // save location of from 
 					}
 				}
-				else if(vectorTypeOfToken[i + 1] == dataTypeValues::string){ // check if we just want to take a column and if its not a column we throw
-					if (!strcmp(tokenizedVector[i + 2], tokenizedVector[k])) {
-						throw; // SELECT value FROM syntax is wrongly written
-					}
-					else if (vectorTypeOfToken[i + 3] != dataTypeValues::string) {
-						throw; // if the 4th place is not a string value , the name of the table we throw error
-					}
-				}
-			}// now we check if we want to select more tables
-			else if(nrColumns > 1){
-				if (!strcmp(tokenizedVector[k], "FROM")) {
+				if ((strcmp(tokenizedVector[i + 1], "(")) || (strcmp(tokenizedVector[m - 1], ")"))) {//verify if we have () around the values
 					throw;
 				}
+				for (int j = i + 2; j < nrColumns + numberOfCommasIn + 2; j++) { // check if we have string then "," and end with string
+					if (vectorTypeOfToken[j] == dataTypeValues::string) {
+						if (!(strcmp(tokenizedVector[j], "all"))) {
+							throw;//if user uses all and another value throw an error
+						}
+						++j;
+						if (!(strcmp(tokenizedVector[j], ")"))) {
+								break; // stop when we reach the end so we dont look for one more comma that will throw an error
+						}
+						if ((strcmp(tokenizedVector[j], ","))) {
+							throw;//if the values are not comma separated throw a error
+						}
+					}
+				}
+			} // for a case where we find FROM but we find it somewhere else then after a ")"
+
+			if (nrColumns == 1) {
+				//FOR ONE COLUMN------------------------------------------------------
+				if (!(strcmp(tokenizedVector[i + 1], "(")) && !(strcmp(tokenizedVector[i + 3], ")"))) {// check if we only have one argument 
+					if (vectorTypeOfToken[i + 1] == dataTypeValues::string) { // check to see if we have a string between the parenthesis
+						if (strcmp(tokenizedVector[i + 4], "from")) {
+							throw; // SELECT value FROM syntax is wrongly written
+						}
+						else if (vectorTypeOfToken[i + 5] != dataTypeValues::string) {
+							throw; // if the 4th place is not a string value , the name of the table we throw error
+						}
+					}
+				}
+				//FOR ALL COLUMNS-----------------------------------------------------
+				else if (!(strcmp(tokenizedVector[i + 1], "all")) || !(strcmp(tokenizedVector[i + 1], "*"))) {//check for ALL or * written after SELECT
+						if (strcmp(tokenizedVector[i + 2], "from")) {
+							throw; // SELECT ALL FROM syntax is wrongly written
+						}
+						else if (vectorTypeOfToken[i + 3] != dataTypeValues::string) {
+							throw; // if the 4th place is not a string value , the name of the table we throw error
+						}
+				}
 				else {
-					for (int n = 1; n < k; n++) {
-						if (strcmp(tokenizedVector[n], ",")) {
-							if (!(vectorTypeOfToken[n - 1]==dataTypeValues::string)) { // check if the value before the "," is a string
-								throw;
-							}
-						}
-						else {
-							throw;
-						}
-					}
-					if (vectorTypeOfToken[k + 1] != dataTypeValues::string) { //check if we have something after FROM and that it is a string
-						throw;
-					}
+					throw;
 				}
 			}
 		}
-
-
-
+		else {
+			throw;
+		}
 	}
 
 
@@ -276,6 +291,9 @@ public:
 		{
 			lexerCreateTable();
 		}
+		else if (strcmp(tokenizedVector[0], "select") == 0) {
+			lexerSelect();
+		}
 		else if (strcmp(tokenizedVector[0], "update") == 0) {
 			lexerUpdate();
 		}
@@ -284,6 +302,7 @@ public:
 			lexerSelect();
 		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
+
 	}
 
 	char* getToken(int iterator) {

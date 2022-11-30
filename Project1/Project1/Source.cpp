@@ -42,10 +42,11 @@ public:
 int main()
 {
 	int sizeOfTokenizedVector, i = 0;
-	char** tokenizedVector = tokenizingFunction("SELECT (id,,nume,grupa gsgr)  FROM  studenti WHERE id = 1", sizeOfTokenizedVector, ' ');
-	
-	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 
+	char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'))", sizeOfTokenizedVector, ' ');
+	//char** tokenizedVector = tokenizingFunction("SELECT (table alpha) FROM spain", sizeOfTokenizedVector, ' ');
+
+	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
 	token.getVectorTypeOfTokenValues();
