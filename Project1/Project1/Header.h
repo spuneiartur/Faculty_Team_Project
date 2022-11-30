@@ -227,7 +227,7 @@ public:
 
 	void lexerSelect() {
 		int i = 0;
-		int k,m;
+		int k,m,n;
 		int numberOfCommasIn = 0;
 		int nrColumns = 1; // we must have one column
 		if ((strcmp(tokenizedVector[i], "select") == 0 && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0) /*&& (vectorTypeOfToken[i + 2] == dataTypeValues::string) /* && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0*/) { // verifiy for a basic SELECT value or a SELECT ALL FROM
@@ -253,6 +253,9 @@ public:
 					throw;
 				}
 				for (int j = i + 2; j < nrColumns + numberOfCommasIn + 2; j++) { // check if we have string then "," and end with string
+					if (!(strcmp(tokenizedVector[j], tokenizedVector[j + 2]))) {
+						throw;//check if the same column isnt used twice
+					}
 					if (vectorTypeOfToken[j] == dataTypeValues::string) {
 						if (!(strcmp(tokenizedVector[j], "all"))) {
 							throw;//if user uses all and another value throw an error
@@ -266,18 +269,31 @@ public:
 						}
 					}
 				}
+				if (strcmp(tokenizedVector[m + 2], ";")|| vectorTypeOfToken[m+1] !=dataTypeValues::string || strcmp(tokenizedVector[m - 1], ")") || strcmp(tokenizedVector[m], "from")) {
+					throw; //verifiy if after from we have ";" and a string;
+				}
+				
 			} // for a case where we find FROM but we find it somewhere else then after a ")"
 
 			if (nrColumns == 1) {
 				//FOR ONE COLUMN------------------------------------------------------
 				if (!(strcmp(tokenizedVector[i + 1], "(")) && !(strcmp(tokenizedVector[i + 3], ")"))) {// check if we only have one argument 
-					if (vectorTypeOfToken[i + 1] == dataTypeValues::string) { // check to see if we have a string between the parenthesis
+					if (vectorTypeOfToken[i + 2] == dataTypeValues::string && (strcmp(tokenizedVector[i + 2], "all")) && (strcmp(tokenizedVector[i + 2], "*"))) { // check to see if we have a string between the parenthesis and its not all or *
 						if (strcmp(tokenizedVector[i + 4], "from")) {
 							throw; // SELECT value FROM syntax is wrongly written
 						}
-						else if (vectorTypeOfToken[i + 5] != dataTypeValues::string) {
+						if (vectorTypeOfToken[i + 5] != dataTypeValues::string) {
 							throw; // if the 4th place is not a string value , the name of the table we throw error
 						}
+						if (strcmp(tokenizedVector[i + 6], ";")) {
+							throw; // verifiy the we dont have two words after from
+						}
+						if (!(strcmp(tokenizedVector[i + 2], "all")) || (!(strcmp(tokenizedVector[i + 2], "*")))) {
+							throw;
+						}
+					}
+					else {
+						throw; //if the value between parenthisis insnt a string throw error
 					}
 				}
 				//FOR ALL COLUMNS-----------------------------------------------------
@@ -287,6 +303,9 @@ public:
 						}
 						else if (vectorTypeOfToken[i + 3] != dataTypeValues::string) {
 							throw; // if the 4th place is not a string value , the name of the table we throw error
+						}
+						if (strcmp(tokenizedVector[i + 4], ";")) {
+							throw; // verifiy the we dont have two words after from
 						}
 				}
 				else {
@@ -299,6 +318,8 @@ public:
 		}
 		std::cout << "Command is correct!" << std::endl;
 	}
+
+	
 
 
 
