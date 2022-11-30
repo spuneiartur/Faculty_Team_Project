@@ -371,8 +371,6 @@ public:
 			i++;
 			if (strcmp(tokenizedVector[i + 1], ")") == 0) throw; // you should insert at least one column 
 			i++;
-			if (strcmp(tokenizedVector[i + 1], ")") == 0) throw; // you should insert at least one column 
-			i++;
 			// Processing the lexer for all columns' structure 
 			while (strcmp(tokenizedVector[i], ")") < 0) {
 				while (strcmp(tokenizedVector[i], ")") < 0) { // Here tokenizedVector[i] is pointing to the opening paranthesis of the column

@@ -14,7 +14,7 @@ int main()
 
 	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
 
-	char** tokenizedVector = tokenizingFunction("INSERT INTO tabs((id, integer, 1000, 0));", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("INSERT INTO tabs(id, integer, 1000, 0);", sizeOfTokenizedVector, ' ');
 
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
