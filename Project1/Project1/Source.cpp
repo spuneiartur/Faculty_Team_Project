@@ -8,43 +8,14 @@
 
 */
 
-class CreateTable {
-private:
-	std::string title;
-	int noColumns;
-	int iterator;
-
-
-public:
-};
-
-class SelectTable{
-private:
-	std::string title;
-	int noColumns;
-	int iterator;
-
-
-public:
-};
-CreateTable createTabel();
-/*if(token == "create"){
-	createTabel.setNewTabel();
-}*/
-
-class Parser {
-private:
-
-public:
-};
-
-
 int main()
 {
 	int sizeOfTokenizedVector, i = 0;
 
 	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
+
 	char** tokenizedVector = tokenizingFunction("SELECT (albania) FROM spain;", sizeOfTokenizedVector, ' ');
+
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 

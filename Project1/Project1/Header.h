@@ -178,6 +178,23 @@ public:
 		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
 		
 	}
+
+	void lexerDisplay() {
+		int i = 1;
+		if (strcmp(tokenizedVector[i], "table") < 0) throw std::invalid_argument("The second token is not compatible with token \"DISPLAY\". Expected token \"TABLE\"");
+		
+		if(vectorTypeOfToken[i+1] != dataTypeValues::string) throw std::invalid_argument("Missing the table name; Expected an identifier - name of an existing table");
+
+		if (strcmp(tokenizedVector[sizeOfTokenizedVector-1], ";") != 0) throw std::invalid_argument("Expected \";\"");
+
+
+		if(vectorTypeOfToken[i + 2] == dataTypeValues::string && strcmp(tokenizedVector[sizeOfTokenizedVector-1], ";") == 0) throw std::invalid_argument("Wrong table name");
+
+		if (strcmp(tokenizedVector[i + 2], ",") == 0) throw std::invalid_argument("Too many arguments. Display accepts only a table as argument");
+
+
+		std::cout << "The command is correct!" << std::endl;
+	}
 	
 	void lexerUpdate() 
 	{
@@ -312,6 +329,9 @@ public:
 		if (strcmp(tokenizedVector[0], "create") == 0)
 		{
 			lexerCreateTable();
+		}
+		else if (strcmp(tokenizedVector[0], "display") == 0) {
+			lexerDisplay();
 		}
 		else if (strcmp(tokenizedVector[0], "select") == 0) {
 			lexerSelect();
@@ -522,36 +542,6 @@ public:
 		}
 	}
 };
-
-//
-//class lexer : public Token {
-//private:
-//	int iterator = -1; // ??
-//public:
-//	// Constructors
-//
-//	//Destructors
-//	~lexer() {
-//		std::cout << "Lexer object was destructed!" << std::endl;
-//	}
-//
-//	void parsingTokenizedVector() {
-//		getToken();
-//		verifyCompatibilityForNextArg();
-//	}
-//
-//	void getToken()
-//	{
-//		this->iterator++;
-//	};
-//
-//	void verifyCompatibilityForNextArg()
-//	{
-//
-//	};
-//	// create_arg() - create table for ex
-//};
-//
 
 
 // Functions -------------------------------------------------------------------------------------------
