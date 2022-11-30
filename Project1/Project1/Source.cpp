@@ -42,8 +42,9 @@ public:
 int main()
 {
 	int sizeOfTokenizedVector, i = 0;
-	char** tokenizedVector = tokenizingFunction("SELECT (id,,nume,grupa gsgr)  FROM  studenti WHERE id = 1", sizeOfTokenizedVector, ' ');
-	
+	char** tokenizedVector = tokenizingFunction("CREATE INDEX IF NOT EXISTS index1 ON Table1(collumn1);", sizeOfTokenizedVector, ' ');
+
+
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);

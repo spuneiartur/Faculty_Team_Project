@@ -9,7 +9,7 @@ enum commandBranches {
 };
 
 enum typeCommands {
-	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index, where, set, IF
+	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index, where, set, IF , ON
 };
 
 enum typeOperators {
@@ -186,21 +186,25 @@ public:
 			if (strcmp(tokenizedVector[i], "index") == 0) {				//check second token is index
 				i++;
 			}
+			else throw;
 		}
-		else throw;			
-		//if (strcmp(tokenizedVector[i], "(") == 0) {						//(if not exits)
-		//	i++;
-		//	if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
-		//	{
-		//		i += 3;
-		//	}
-		//	else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
-		//}
-		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//index_name
+		else throw;		
+
+		if (vectorTypeOfToken[i] == dataTypeValues::string) 
 			i++;
-		}
-		else throw;  
-		if (strcmp(tokenizedVector[i], "ON" == 0)) {			//ON
+		else if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
+		{
+			i += 3;
+			if (vectorTypeOfToken[i] == dataTypeValues::string) {
+				i++;
+			}
+			else throw; // index_name nu este corect dupa IF NOT EXISTS
+		}		
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
+		
+
+		 
+		if (strcmp(tokenizedVector[i], "on") == 0) {			//ON
 			i++;
 		}
 		else throw;
@@ -208,12 +212,33 @@ public:
 			i++;
 		}
 		else throw;
+
 		if (strcmp(tokenizedVector[i], "(") == 0) {
 			i++;
 		}
+		else throw; //nu se deschide paranteza
 
-		if () {													//column_name	//also have to check if clumn is valid
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//column_name	//also have to check if column is valid
+			i++;
+		}
+		else throw; //nu este cuvantul valid
 
+		if (strcmp(tokenizedVector[i], ",") == 0) {
+			throw; //too many arguments
+		}
+
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {
+			throw; //invalid coolumn name
+		}
+
+		if (strcmp(tokenizedVector[i], ")") == 0) {
+			i++;
+		}
+		else throw; //nu se inchide paranteza
+
+
+		if (strcmp(tokenizedVector[i], ";") != 0) {
+			throw; // nu s-a pus ; la finalul comenzii
 		}
 	}
 
@@ -230,6 +255,9 @@ public:
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table exists
 			i++;
 		}
+		if (strcmp(tokenizedVector[i], ";") != 0) {
+			throw; // nu s-a pus ; la finalul comenzii
+		}
 	}
 
 
@@ -245,6 +273,9 @@ public:
 		else throw; //first token is not correct -> !=drop
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//index_name   //also have to check if the index exists
 			i++;
+		}
+		if (strcmp(tokenizedVector[i], ";") != 0) {
+			throw; // nu s-a pus ; la finalul comenzii
 		}
 	}
 
@@ -345,7 +376,12 @@ public:
 		// To add a lexer function for every command -----------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (strcmp(tokenizedVector[0], "create") == 0)
 		{
-			lexerCreateTable();
+			if (strcmp(tokenizedVector[1], "table") == 0) {
+				lexerCreateTable();
+			}
+			if (strcmp(tokenizedVector[1], "index") == 0) {
+				lexerCreateIndex();
+			}
 		}
 		else if (strcmp(tokenizedVector[0], "update") == 0) {
 			lexerUpdate();
