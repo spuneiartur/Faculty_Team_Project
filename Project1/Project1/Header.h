@@ -180,6 +180,9 @@ public:
 	}
 
 	void lexerCreateIndex() {
+		//if (strcmp(tokenizedVector[0], "createtable") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
+		//	throw; //wrong keywords
+		//}
 		int i = 2;		
 		if (vectorTypeOfToken[i] == dataTypeValues::string) 
 			i++;
@@ -233,10 +236,9 @@ public:
 
 	void lexerDropTable() {
 		int i = 2;
-		//if (strcmp(tokenizedVector[i], "droptable") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
+		//if (strcmp(tokenizedVector[0], "droptable") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
 		//	throw; //wrong keywords
-		//}
-		
+		//}		
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table exists
 			i++;
 		}
