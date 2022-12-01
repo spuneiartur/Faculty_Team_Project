@@ -19,15 +19,18 @@ int main()
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
-	token.getVectorTypeOfTokenValues();
+	token.parser();
+
+
+
+
+	/*token.getVectorTypeOfTokenValues();
 
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
 	{
 		std::cout << tokenizedVector[i] << "   ||   "<< vectorTypeOfToken[i]<<std::endl;
 	}
-	
-	token.parser();
-	
+	*/
 	// Deleting previously allocated arrays
 
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
