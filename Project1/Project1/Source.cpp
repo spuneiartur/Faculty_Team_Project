@@ -14,20 +14,25 @@ int main()
 
 	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
 
+
 	char** tokenizedVector = tokenizingFunction("INSERT INTO tabs(id, integer, 1000, 0);", sizeOfTokenizedVector, ' ');
+
 
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
-	token.getVectorTypeOfTokenValues();
+	token.parser();
+
+
+
+
+	/*token.getVectorTypeOfTokenValues();
 
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
 	{
 		std::cout << tokenizedVector[i] << "   ||   "<< vectorTypeOfToken[i]<<std::endl;
 	}
-	
-	token.lexer();
-	
+	*/
 	// Deleting previously allocated arrays
 
 	for (int i = 0; i < sizeOfTokenizedVector; i++)
@@ -41,14 +46,13 @@ int main()
 
 
 	// PLAYGROUND
-	char* TESTcHAR = new char[6];
-	strcpy(TESTcHAR, "Hello");
-	std::cout << strlen(TESTcHAR) << std::endl;
 	/*Table table1(2,2, TESTcHAR);*/
-	Table tables[2];
-	tables[1].setData(2, 2, TESTcHAR);
-	delete[] TESTcHAR;
-
+	/*Table tables[2];
+	std::string* s1 = new std::string[1];
+	s1[0] = "Hello";
+	std::string* s2 = new std::string[1];
+	s2[0] = s1[0];
+	std::cout << s2 << std::endl << s1 << std::endl;*/
 
 
 	return 0;
