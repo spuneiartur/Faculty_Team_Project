@@ -180,16 +180,7 @@ public:
 	}
 
 	void lexerCreateIndex() {
-		int i = 0;
-		if (strcmp(tokenizedVector[i], "create") == 0) {				//check first token is create
-			i++;
-			if (strcmp(tokenizedVector[i], "index") == 0) {				//check second token is index
-				i++;
-			}
-			else throw;
-		}
-		else throw;		
-
+		int i = 2;		
 		if (vectorTypeOfToken[i] == dataTypeValues::string) 
 			i++;
 		else if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
@@ -201,9 +192,7 @@ public:
 			else throw; // index_name nu este corect dupa IF NOT EXISTS
 		}		
 		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
-		
-
-		 
+			 
 		if (strcmp(tokenizedVector[i], "on") == 0) {			//ON
 			i++;
 		}
@@ -243,17 +232,20 @@ public:
 	}
 
 	void lexerDropTable() {
-		int i = 0;
-		if (strcmp(tokenizedVector[i], "drop") == 0) {				//check first token is drop
-			i++;
-			if (strcmp(tokenizedVector[i], "table") == 0) {				//check second token is table
-				i++;
-			}
-			else throw; //second token is not correct -> !=table
-		}
-		else throw; //first token is not correct -> !=drop
+		int i = 2;
+		//if (strcmp(tokenizedVector[i], "droptable") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
+		//	throw; //wrong keywords
+		//}
+		
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table exists
 			i++;
+		}
+		else throw; // missing table name
+		if (strcmp(tokenizedVector[i], ",") == 0) {
+			throw; // too many table names
+		}
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	
+			throw; //wrong table name - has space
 		}
 		if (strcmp(tokenizedVector[i], ";") != 0) {
 			throw; // nu s-a pus ; la finalul comenzii
@@ -262,17 +254,19 @@ public:
 
 
 	void lexerDropIndex() {
-		int i = 0;
-		if (strcmp(tokenizedVector[i], "drop") == 0) {				//check first token is drop
-			i++;
-			if (strcmp(tokenizedVector[i], "index") == 0) {				//check second token is index
-				i++;
-			}
-			else throw; //second token is not correct -> !=index
-		}
-		else throw; //first token is not correct -> !=drop
+		int i = 2;
+		//if (strcmp(tokenizedVector[0], "dropindex") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
+		//	throw; //wrong keywords
+		//}
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//index_name   //also have to check if the index exists
 			i++;
+		}
+		else throw; //missing index name
+		if (strcmp(tokenizedVector[i], ",") == 0) {
+			throw; // too many index names
+		}
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {
+			throw; //wrong index name - has space
 		}
 		if (strcmp(tokenizedVector[i], ";") != 0) {
 			throw; // nu s-a pus ; la finalul comenzii
@@ -379,9 +373,10 @@ public:
 			if (strcmp(tokenizedVector[1], "table") == 0) {
 				lexerCreateTable();
 			}
-			if (strcmp(tokenizedVector[1], "index") == 0) {
+			else if (strcmp(tokenizedVector[1], "index") == 0) {
 				lexerCreateIndex();
 			}
+			else throw;
 		}
 		else if (strcmp(tokenizedVector[0], "update") == 0) {
 			lexerUpdate();
@@ -390,7 +385,19 @@ public:
 		{
 			lexerSelect();
 		}
+		else if(strcmp(tokenizedVector[0], "drop") == 0)
+		{
+			if (strcmp(tokenizedVector[1], "table") == 0) {
+				lexerDropTable();
+			}
+			else if (strcmp(tokenizedVector[1], "index") == 0) {
+				lexerDropIndex();
+			}
+			else throw;   //second word is not correct
+		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
+
+
 	}
 
 	char* getToken(int iterator) {
