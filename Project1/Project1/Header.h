@@ -38,7 +38,7 @@ private:
 	std::string* vDefaults = nullptr;
 	int noData;
 	std::string** mData = nullptr;
-	static unsigned int noOfTables;
+	static int noOfTables;
 	static Table tables[100];
 
 public:
@@ -47,8 +47,9 @@ public:
 
 		if (checkIfExists)
 		{
-			for (int i = 0; i < noOfTables; i++)
+			for (int i = 0; i <= noOfTables; i++)
 			{
+				
 				if (strcmp(tables[i].name, name) == 0)
 				{
 					throw std::invalid_argument("A table with such name alreay exists");
@@ -439,7 +440,7 @@ public:
 		return *this;
 	}
 };
-unsigned int Table::noOfTables = -1;
+int Table::noOfTables = -1;
 Table Table::tables[100];
 
 
@@ -627,7 +628,9 @@ public:
 				}
 				else if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
 				{
+					if(strcmp(tokenizedVector[i+3], "(") < 0) throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
 					i += 3;
+					
 				}
 				else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
 
@@ -648,7 +651,7 @@ public:
 
 							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
 
-							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw;
+							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw std::invalid_argument("Unexpected token at position in the column arguments; Expected token \",\" ");
 
 							maxSize = atoi(tokenizedVector[i + 5]);
 

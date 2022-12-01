@@ -11,7 +11,7 @@
 int main()
 {
 
-	std::string commandLine = " CREATE TABLE Studenteel ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));";
+	std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));";
 	
 	loopingThroughCommands(commandLine);
 
