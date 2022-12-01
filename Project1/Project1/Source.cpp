@@ -14,7 +14,7 @@ int main()
 
 	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
 
-	char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10'));", sizeOfTokenizedVector, ' ');
 
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
@@ -42,7 +42,13 @@ int main()
 
 	// PLAYGROUND
 	/*Table table1(2,2, TESTcHAR);*/
-	Table tables[2];
+	/*Table tables[2];
+	std::string* s1 = new std::string[1];
+	s1[0] = "Hello";
+	std::string* s2 = new std::string[1];
+	s2[0] = s1[0];
+	std::cout << s2 << std::endl << s1 << std::endl;*/
+
 
 	return 0;
 }

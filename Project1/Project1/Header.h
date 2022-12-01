@@ -186,7 +186,7 @@ public:
 					j += 8;
 					column++;
 				}
-				else throw std::invalid_argument("The type of value is nor INTEGER nor TEXT");
+				else throw std::invalid_argument("The type of value is neither an INTEGER nor TEXT");
 			}
 		}
 		for (int i = 0; i < counterNoCol; i++) {
@@ -571,38 +571,35 @@ public:
 
 class Table {
 private:
-	char* name;
+	bool exists = false;
+	char* name = nullptr;
 	int noColumns;
-	int noLines;
+	std::string* vNames = nullptr;
+	std::string* vTypes = nullptr;
+	int* vDimensions = nullptr;
+	std::string* vDefaults = nullptr;
+	int noData;
+	std::string** mData = nullptr;
+	
+	static Table tables[100];
 
 public:
 	// Methods
-	void setData(int noColumns, int noLines, char* name = nullptr) {
-		if (this->name != nullptr)
-		{
-			delete[] this->name;
-			this->name = nullptr;
-		}
-		if (name != nullptr)
-		{
-			this->name = new char[strlen(name) + 1];
-			strcpy(this->name, name);
-		}
-		else
-		{
-			this->name = nullptr;
-		}
-		this->noColumns = noColumns;
-		this->noLines = noLines;
-	}
+	
 
 	//Constructors
 	Table() {
-		 this->name = nullptr;
-		 this->noColumns= NULL;
-		 this->noLines = NULL;
+		this->exists = false;
+		this->name = nullptr;
+		this->noColumns = 0;
+		this->vNames = nullptr;
+		this->vTypes = nullptr;
+		this->vDimensions = nullptr;
+		this->vDefaults = nullptr;
+		this->noData = 0;
+		this->mData = nullptr;
 	}
-	Table(int noColumns, int noLines, char* name = nullptr) {
+	/*Table(int noColumns, int noLines, char* name = nullptr) {
 		if (name != nullptr)
 		{
 			this->name = new char[strlen(name) + 1];
@@ -615,9 +612,12 @@ public:
 		this->noColumns = noColumns;
 		this->noLines = noLines;
 
-	}
+	}*/
 	 // Copy constructor
 	Table(const Table& t) {
+
+		this->exists = t.exists;
+		// name
 		if (this->name != nullptr)
 		{
 			delete[] this->name;
@@ -632,8 +632,118 @@ public:
 		{
 			this->name = nullptr;
 		}
+
 		this->noColumns = t.noColumns;
-		this->noLines = t.noLines;
+		// vNames
+		if (this->vNames != nullptr)
+		{
+			delete[] this->vNames;
+			this->vNames = nullptr;
+		}
+		if (t.vNames != nullptr)
+		{
+			this->vNames = new std::string[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vNames[i] = t.vNames[i];
+			}
+		}
+		else
+		{
+			this->vNames = nullptr;
+		}
+		// vTypes
+		if (this->vTypes != nullptr)
+		{
+			delete[] this->vTypes;
+			this->vTypes = nullptr;
+		}
+		if (t.vTypes != nullptr)
+		{
+			this->vTypes = new std::string[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vTypes[i] = t.vTypes[i];
+			}
+		}
+		else
+		{
+			this->vTypes = nullptr;
+		}
+		// vDimensions
+		if (this->vDimensions != nullptr)
+		{
+			delete[] this->vDimensions;
+			this->vDimensions = nullptr;
+		}
+		if (t.vDimensions != nullptr)
+		{
+			this->vDimensions = new int[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDimensions[i] = t.vDimensions[i];
+			}
+		}
+		else
+		{
+			this->vDimensions = nullptr;
+		}
+		// vDefaults
+		if (this->vDefaults != nullptr)
+		{
+			delete[] this->vDefaults;
+			this->vDefaults = nullptr;
+		}
+		if (t.vDefaults != nullptr)
+		{
+			this->vDefaults = new std::string[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDefaults[i] = t.vDefaults[i];
+			}
+		}
+		else
+		{
+			this->vDefaults = nullptr;
+		}
+
+		// noData
+		this->noData = t.noData;
+
+		// mData
+		if (this->mData != nullptr)
+		{
+			for (int i = 0; i < noColumns; i++)
+			{
+				delete[] this->mData[i];
+			}
+			delete[] this->mData;
+			this->mData = nullptr;
+		}
+		if(t.mData != nullptr)
+		{
+			this->mData = new std::string * [noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->mData[i] = new std::string[noData];
+			}
+
+			for(int i = 0; i < noColumns; i++)
+				for (int j = 0; j < noData; j++)
+				{
+					this->mData[i][j] = t.mData[i][j];
+				}
+		}
+		else
+		{
+			this->mData = nullptr;
+		}
+
+		
 	}
 	//Destructor
 	~Table() {
@@ -642,9 +752,171 @@ public:
 			delete[] this->name;
 			this->name = nullptr;
 		}
+
+		if (this->vNames != nullptr)
+		{
+			delete[] this->vNames;
+			this->vNames = nullptr;
+		}
+
+		if (this->vTypes != nullptr)
+		{
+			delete[] this->vTypes;
+			this->vTypes = nullptr;
+		}
+
+		if (this->vDimensions != nullptr)
+		{
+			delete[] this->vDimensions;
+			this->vDimensions = nullptr;
+		}
+
+		if (this->vDefaults != nullptr)
+		{
+			delete[] this->vDefaults;
+			this->vDefaults = nullptr;
+		}
+		if (this->mData != nullptr)
+		{
+			for (int i = 0; i < noColumns; i++)
+			{
+				delete[] this->mData[i];
+			}
+			delete[] this->mData;
+			this->mData = nullptr;
+		}
+	}
+
+	Table& operator=(const Table& t) {
+		this->exists = t.exists;
+		// name
+		if (this->name != nullptr)
+		{
+			delete[] this->name;
+			this->name = nullptr;
+		}
+		if (t.name != nullptr)
+		{
+			this->name = new char[strlen(t.name) + 1];
+			strcpy(this->name, t.name);
+		}
+		else
+		{
+			this->name = nullptr;
+		}
+
+		this->noColumns = t.noColumns;
+		// vNames
+		if (this->vNames != nullptr)
+		{
+			delete[] this->vNames;
+			this->vNames = nullptr;
+		}
+		if (t.vNames != nullptr)
+		{
+			this->vNames = new std::string[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vNames[i] = t.vNames[i];
+			}
+		}
+		else
+		{
+			this->vNames = nullptr;
+		}
+		// vTypes
+		if (this->vTypes != nullptr)
+		{
+			delete[] this->vTypes;
+			this->vTypes = nullptr;
+		}
+		if (t.vTypes != nullptr)
+		{
+			this->vTypes = new std::string[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vTypes[i] = t.vTypes[i];
+			}
+		}
+		else
+		{
+			this->vTypes = nullptr;
+		}
+		// vDimensions
+		if (this->vDimensions != nullptr)
+		{
+			delete[] this->vDimensions;
+			this->vDimensions = nullptr;
+		}
+		if (t.vDimensions != nullptr)
+		{
+			this->vDimensions = new int[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDimensions[i] = t.vDimensions[i];
+			}
+		}
+		else
+		{
+			this->vDimensions = nullptr;
+		}
+		// vDefaults
+		if (this->vDefaults != nullptr)
+		{
+			delete[] this->vDefaults;
+			this->vDefaults = nullptr;
+		}
+		if (t.vDefaults != nullptr)
+		{
+			this->vDefaults = new std::string[noColumns];
+
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDefaults[i] = t.vDefaults[i];
+			}
+		}
+		else
+		{
+			this->vDefaults = nullptr;
+		}
+
+		// noData
+		this->noData = t.noData;
+
+		// mData
+		if (this->mData != nullptr)
+		{
+			for (int i = 0; i < noColumns; i++)
+			{
+				delete[] this->mData[i];
+			}
+			delete[] this->mData;
+			this->mData = nullptr;
+		}
+		if (t.mData != nullptr)
+		{
+			this->mData = new std::string * [noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->mData[i] = new std::string[noData];
+			}
+
+			for (int i = 0; i < noColumns; i++)
+				for (int j = 0; j < noData; j++)
+				{
+					this->mData[i][j] = t.mData[i][j];
+				}
+		}
+		else
+		{
+			this->mData = nullptr;
+		}
 	}
 };
-
+Table Table::tables[100];
 
 // Functions -------------------------------------------------------------------------------------------
 
