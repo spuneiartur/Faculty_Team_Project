@@ -57,6 +57,11 @@ public:
 		}
 		
 		tables[++noOfTables] = { Table(name, noColumns, vNames, vTypes, vDimensions, vDefaults) };
+		// Checking the name of all existing tables
+		/*for (int i = 0; i <= noOfTables; i++)
+		{
+			std::cout << tables[i].name << std::endl;
+		}*/
 	}
 
 	//Constructors
@@ -1155,7 +1160,7 @@ std::string deletingExtraSpacesString(std::string string) {
 }
 
 // Function for computing neccesary memory for the future array of char pointers (char**)
-int allocatingMemoryForCharArray( std::string string, char delimiter) {
+int allocatingMemoryForCharArray(std::string string, char delimiter) {
 	int contorWords = 0;
 	int contorLetters = 0;
 	int maxNoLetters = 0;
@@ -1348,3 +1353,66 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 	return vectorTypeOfToken;
 }
 
+// Function for looping through command line 
+// I: Entire command line (string)
+// E: -
+void loopingThroughCommands(std::string commandLine) {
+	int i = 0;
+	int sizeOfTokenizedVector = NULL;
+	char** tokenizedVector = nullptr;
+	int* vectorTypeOfToken = nullptr;
+	while (i < commandLine.length())
+	{
+		if (commandLine[i] == ';')
+		{
+			if (tokenizedVector != nullptr)
+			{
+				for (int i = 0; i < sizeOfTokenizedVector; i++)
+				{
+					delete[] tokenizedVector[i];
+				}
+				delete[] tokenizedVector;
+				tokenizedVector = nullptr;
+			}
+			tokenizedVector = tokenizingFunction(commandLine.substr(0, i + 1), sizeOfTokenizedVector, ' ');
+			if (vectorTypeOfToken != nullptr)
+			{
+				delete[] vectorTypeOfToken;
+				vectorTypeOfToken = nullptr;
+			}
+			vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
+			for (int i = 0; i < sizeOfTokenizedVector; i++)
+			{
+				std::cout << tokenizedVector[i] << "   ||   " << vectorTypeOfToken[i] << std::endl;
+			}
+			Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
+			token.parser();
+			commandLine = commandLine.substr(i + 1);
+			std::cout << std::endl << std::endl << std::endl;
+			i = 0;
+		}
+		else
+		{
+			i++;
+
+		}
+	}
+	if (tokenizedVector != nullptr)
+	{
+		for (int i = 0; i < sizeOfTokenizedVector; i++)
+		{
+			delete[] tokenizedVector[i];
+		}
+		delete[] tokenizedVector;
+		tokenizedVector = nullptr;
+	}
+
+	if (vectorTypeOfToken != nullptr)
+	{
+		delete[] vectorTypeOfToken;
+		vectorTypeOfToken = nullptr;
+	}
+
+
+
+}
