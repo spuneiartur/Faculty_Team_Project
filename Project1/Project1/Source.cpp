@@ -11,11 +11,38 @@
 int main()
 {
 
-	std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));";
+	//std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));";
 	
-	loopingThroughCommands(commandLine);
+	//loopingThroughCommands(commandLine);
 
-	
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+	int sizeOfTokenizedVector, i = 0;
+
+	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("INSERT INTO studenti VALUES('Ion', 'Mihai', 100, 500, 'Mihai', 500);", sizeOfTokenizedVector, ' ');
+	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
+	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
+
+	token.getVectorTypeOfTokenValues();
+
+	for (int i = 0; i < sizeOfTokenizedVector; i++)
+	{
+		std::cout << tokenizedVector[i] << "   ||   " << vectorTypeOfToken[i] << std::endl;
+	}
+
+	token.lexer();
+
+	// Deleting previously allocated arrays
+
+	for (int i = 0; i < sizeOfTokenizedVector; i++)
+	{
+		delete[] tokenizedVector[i];
+	}
+	delete[] tokenizedVector;
+	delete[] vectorTypeOfToken;
+	tokenizedVector = nullptr;
+	vectorTypeOfToken = nullptr;
+
 
 	return 0;
 }
