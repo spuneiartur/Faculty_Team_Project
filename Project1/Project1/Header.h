@@ -101,7 +101,25 @@ public:
 			std::cout << tables[i].name << std::endl;
 		}*/
 	}
-
+	int computingDimensionForColumns(int i) {
+		int maxSize;
+		if (this->vTypes[i] == "integer")
+		{
+			int  counter = 0;
+			int dimensionCopy = this->vDimensions[i];
+			while (dimensionCopy != 0)
+			{
+				dimensionCopy = dimensionCopy / 10;
+				counter++;
+			}
+			maxSize = counter + 10;
+		}
+		else
+		{
+			maxSize = this->vDimensions[i] / 8 + 15;
+		}
+		return maxSize;
+	}
 	void displayTable()
 	{
 		int maxSize;
@@ -111,21 +129,7 @@ public:
 		// Displaying headers
 		for (int i = 0; i < noColumns; i++)
 		{
-			if (this->vTypes[i] == "integer")
-			{
-				int  counter = 0;
-				int dimensionCopy = this->vDimensions[i];
-				while (dimensionCopy != 0)
-				{
-					dimensionCopy = dimensionCopy / 10;
-					counter++;
-				}
-				maxSize = counter + 10;
-			}
-			else
-			{
-				maxSize = this->vDimensions[i] / 8 + 15;
-			}
+		    maxSize = computingDimensionForColumns(i);
 			printf("%-*s|", maxSize, this->vNames[i].c_str());
 			counterForUnerline += maxSize;
 		}
@@ -134,6 +138,16 @@ public:
 			printf("-");
 		printf("\n");
 		
+		for (int i = 0; i < this->noData; i++)
+		{
+			for (int j = 0; j < this->noColumns; j++)
+			{
+				maxSize = computingDimensionForColumns(j);
+				printf("%-*s|", maxSize, mData[i][j].c_str());
+
+			}
+			printf("\n");
+		}
 
 
 	}
