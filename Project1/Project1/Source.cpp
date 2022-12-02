@@ -11,6 +11,7 @@
 int main()
 {
 
+
 	std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10')); drop index rgrg; Display table studenteel;";
 	
 	loopingThroughCommands(commandLine);
@@ -22,6 +23,7 @@ int main()
 	for (int i = 0; i < i1 + i3 + i2 + 30; i++) printf("-");
 	printf("\n\n\n\n\n\n");*/
 	
+
 	return 0;
 }
 
