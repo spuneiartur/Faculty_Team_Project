@@ -915,6 +915,12 @@ public:
 							throw;
 						}
 						for (int j = i + 4; j < sizeOfTokenizedVector - 4; j++) { // function to find all of the columns
+							if (!strcmp(tokenizedVector[j],tokenizedVector[j-1])){
+								throw; // case of , ,
+							}
+							if (!strcmp(tokenizedVector[j + 1], tokenizedVector[j])) {
+								throw; // case of , ,
+							}
 							if (vectorTypeOfToken[j] == dataTypeValues::number || vectorTypeOfToken[j] == dataTypeValues::string) {
 								nrOfColumns++;
 							}
@@ -922,7 +928,7 @@ public:
 								//verify for first value
 								if (!strcmp(tokenizedVector[j - 1], "(")) {
 									if (strcmp(tokenizedVector[j + 1], ",")) {
-										//throw;
+										throw;
 									}
 								}
 								//verify middle value
@@ -930,12 +936,12 @@ public:
 									if (!(dataTypeValues::number == vectorTypeOfToken[j-2] && dataTypeValues::number == vectorTypeOfToken[j + 2]) && 
 										!(dataTypeValues::number == vectorTypeOfToken[j-2] && !strcmp(tokenizedVector[j+2],"'")) &&
 										!(dataTypeValues::number == vectorTypeOfToken[j+2] && !strcmp(tokenizedVector[j-2],"'")) &&
-										(strcmp(tokenizedVector[j + 2], "'") && !strcmp(tokenizedVector[j - 2], "'"))) {
+										(strcmp(tokenizedVector[j + 2], "'") && strcmp(tokenizedVector[j - 2], "'"))) {
 										throw;
 									}
 								}
 								//verify last value
-								else if (strcmp(tokenizedVector[j + 1], ")")) {
+								else if (!strcmp(tokenizedVector[j + 1], ")")) {
 									if (strcmp(tokenizedVector[j - 1], ",")) {
 										throw;
 									}
@@ -961,26 +967,26 @@ public:
 								//verify middle value
 								else if (!strcmp(tokenizedVector[j - 2], ",") && !strcmp(tokenizedVector[j + 2], ","))
 								{
-									if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1],",")) {
-										//throw;
+									if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1],"'")) {
+										throw;
 									}
 									if (!(dataTypeValues::number == vectorTypeOfToken[j - 3] && dataTypeValues::number == vectorTypeOfToken[j + 3]) &&
 										!(dataTypeValues::number == vectorTypeOfToken[j - 3] && !strcmp(tokenizedVector[j + 3], "'")) &&
 										!(dataTypeValues::number == vectorTypeOfToken[j + 3] && !strcmp(tokenizedVector[j - 3], "'")) &&
-										(strcmp(tokenizedVector[j + 3], "'") && !strcmp(tokenizedVector[j - 3], "'"))) {
-										//throw;
+										(strcmp(tokenizedVector[j + 3], "'") && strcmp(tokenizedVector[j - 3], "'"))) {
+										throw;
 									}
 								}
 								//verify last value
 								else if (!strcmp(tokenizedVector[j + 2], ")")) {
 									if (strcmp(tokenizedVector[j - 2], ",")) {
-										//throw;
+										throw;
 									}
 									if (strcmp(tokenizedVector[j + 3], ";")) {
-										//throw;
+										throw;
 									}
-									if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1], ",")) {
-										//throw;
+									if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1], "'")) {
+										throw;
 									}
 								}
 								else {

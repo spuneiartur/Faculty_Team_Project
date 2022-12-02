@@ -19,7 +19,7 @@ int main()
 	int sizeOfTokenizedVector, i = 0;
 
 	//char** tokenizedVector = tokenizingFunction("CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10'));", sizeOfTokenizedVector, ' ');
-	char** tokenizedVector = tokenizingFunction("INSERT INTO studenti VALUES('Ion', 'Mihai', 100, 500, 'Mihai', 500);", sizeOfTokenizedVector, ' ');
+	char** tokenizedVector = tokenizingFunction("INSERT INTO studenti VALUES(500,'Ion', 'Mihai', 43 , 500, 'Mihai', 500,'Mihai');", sizeOfTokenizedVector, ' ');
 	int* vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
 	Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 
