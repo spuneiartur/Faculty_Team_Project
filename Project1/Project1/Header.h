@@ -45,13 +45,39 @@ public:
 	// Methods
 	// I: table name
 	// E: table index
-	static int findTableByName(char* name) {
+	static Table& findTableByName(char* name) {
 		for (int i = 0; i <= noOfTables; i++)
 		{
-			if (strcmp(tables[i].name, name) == 0) return i;
+			if (strcmp(tables[i].name, name) == 0) return tables[i];
 		}
-		return -1;
+		throw std::invalid_argument("Table with such a name does not exists; Please input a name for existing table");
 			
+	}
+
+	char* getTableName() {
+		char* nameCopy = new char[strlen(this->name)+1];
+		strcpy(nameCopy, this->name);
+		return nameCopy;
+	}
+
+	std::string getColumnNameByIndex(int index)
+	{
+		return this->vNames[index];
+	}
+
+	std::string getColumnTypeByIndex(int index)
+	{
+		return this->vTypes[index];
+	}
+
+	int getColumnDimensionByIndex(int index)
+	{
+		return this->vDimensions[index];
+	}
+
+	std::string getColumnDefaultValueByIndex(int index)
+	{
+		return this->vDefaults[index];
 	}
 
 	static void createTable(char* name, int noColumns, std::string* vNames, std::string* vTypes, int* vDimensions, std::string* vDefaults, bool checkIfExists = false) {
@@ -76,17 +102,39 @@ public:
 		}*/
 	}
 
-	void displayTable(int index)
+	void displayTable()
 	{
-		if (index < 0)
-		{
-			std::cout << "Table with such a name does not exists; Please input a name for existing table";
-			return;
-		}
+		int maxSize;
+		printf("Table name: %s\n\n", this->name);
+
+		int counterForUnerline = 0;
 		// Displaying headers
+		for (int i = 0; i < noColumns; i++)
+		{
+			if (this->vTypes[i] == "integer")
+			{
+				int  counter = 0;
+				int dimensionCopy = this->vDimensions[i];
+				while (dimensionCopy != 0)
+				{
+					dimensionCopy = dimensionCopy / 10;
+					counter++;
+				}
+				maxSize = counter + 10;
+			}
+			else
+			{
+				maxSize = this->vDimensions[i] / 8 + 15;
+			}
+			printf("%-*s|", maxSize, this->vNames[i].c_str());
+			counterForUnerline += maxSize;
+		}
+		printf("\n");
+		for(int i =0; i < counterForUnerline; i++)
+			printf("-");
+		printf("\n");
+		
 
-
-		printf("%-15s, %-30s, %-15s", "id", "name", "group");
 
 	}
 
@@ -510,7 +558,7 @@ public:
 			parserCreateTable();
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0) {
-			
+			parserDisplayTable();
 		}
 		//else throw std::invalid_argument("Wrong first token of the command");
 	}
@@ -647,7 +695,9 @@ public:
 	}
 
 	void parserDisplayTable() {
-
+		Table table = Table::findTableByName(tokenizedVector[2]);
+		table.displayTable();
+		
 	}
 
 	void lexerCreateTable() {
@@ -1117,6 +1167,10 @@ public:
 				lexerDropIndex();
 			}
 			else throw;   //second word is not correct
+		}
+		else if (strcmp(tokenizedVector[0], "display") == 0)
+		{
+			lexerDisplay();
 		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
 
