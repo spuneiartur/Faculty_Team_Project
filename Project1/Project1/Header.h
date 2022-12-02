@@ -9,7 +9,7 @@ enum commandBranches {
 };
 
 enum typeCommands {
-	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index, where, set, IF
+	create, alter, drop, select, delete_, insert, update, commit, rollback, savepoint, grant, revoke, table, index, where, set, IF , ON
 };
 
 enum typeOperators {
@@ -38,11 +38,22 @@ private:
 	std::string* vDefaults = nullptr;
 	int noData;
 	std::string** mData = nullptr;
-	static int noOfTables;
+	static int noOfTables; // it starts with 0 !!!
 	static Table tables[100];
 
 public:
 	// Methods
+	// I: table name
+	// E: table index
+	static int findTableByName(char* name) {
+		for (int i = 0; i <= noOfTables; i++)
+		{
+			if (strcmp(tables[i].name, name) == 0) return i;
+		}
+		return -1;
+			
+	}
+
 	static void createTable(char* name, int noColumns, std::string* vNames, std::string* vTypes, int* vDimensions, std::string* vDefaults, bool checkIfExists = false) {
 
 		if (checkIfExists)
@@ -63,6 +74,20 @@ public:
 		{
 			std::cout << tables[i].name << std::endl;
 		}*/
+	}
+
+	void displayTable(int index)
+	{
+		if (index < 0)
+		{
+			std::cout << "Table with such a name does not exists; Please input a name for existing table";
+			return;
+		}
+		// Displaying headers
+
+
+		printf("%-15s, %-30s, %-15s", "id", "name", "group");
+
 	}
 
 	//Constructors
@@ -483,7 +508,11 @@ public:
 
 		if (strcmp(tokenizedVector[0], "create") == 0) {
 			parserCreateTable();
-		}else throw std::invalid_argument("Wrong first token of the command");
+		}
+		else if (strcmp(tokenizedVector[0], "display") == 0) {
+			
+		}
+		//else throw std::invalid_argument("Wrong first token of the command");
 	}
 
 	// Checks this syntax : id = 5 || name = 'Alex'. 
@@ -617,6 +646,10 @@ public:
 
 	}
 
+	void parserDisplayTable() {
+
+	}
+
 	void lexerCreateTable() {
 		int i = 1;
 		if (!strcmp(tokenizedVector[i], "table") && vectorTypeOfToken[i + 1] == dataTypeValues::string) {
@@ -719,7 +752,105 @@ public:
 		std::cout << "The command is correct!" << std::endl;
 	}
 
-	void lexerUpdate()
+	void lexerCreateIndex() {
+		//if (strcmp(tokenizedVector[0], "createtable") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
+		//	throw; //wrong keywords
+		//}
+		int i = 2;		
+		if (vectorTypeOfToken[i] == dataTypeValues::string) 
+			i++;
+		else if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
+		{
+			i += 3;
+			if (vectorTypeOfToken[i] == dataTypeValues::string) {
+				i++;
+			}
+			else throw; // index_name nu este corect dupa IF NOT EXISTS
+		}		
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
+			 
+		if (strcmp(tokenizedVector[i], "on") == 0) {			//ON
+			i++;
+		}
+		else throw;
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table is valid
+			i++;
+		}
+		else throw;
+
+		if (strcmp(tokenizedVector[i], "(") == 0) {
+			i++;
+		}
+		else throw; //nu se deschide paranteza
+
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//column_name	//also have to check if column is valid
+			i++;
+		}
+		else throw; //nu este cuvantul valid
+
+		if (strcmp(tokenizedVector[i], ",") == 0) {
+			throw; //too many arguments
+		}
+
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {
+			throw; //invalid coolumn name
+		}
+
+		if (strcmp(tokenizedVector[i], ")") == 0) {
+			i++;
+		}
+		else throw; //nu se inchide paranteza
+
+
+		if (strcmp(tokenizedVector[i], ";") != 0) {
+			throw; // nu s-a pus ; la finalul comenzii
+		}
+	}
+
+	void lexerDropTable() {
+		int i = 2;
+		//if (strcmp(tokenizedVector[0], "droptable") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
+		//	throw; //wrong keywords
+		//}		
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table exists
+			i++;
+		}
+		else throw; // missing table name
+		if (strcmp(tokenizedVector[i], ",") == 0) {
+			throw; // too many table names
+		}
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	
+			throw; //wrong table name - has space
+		}
+		if (strcmp(tokenizedVector[i], ";") != 0) {
+			throw; // nu s-a pus ; la finalul comenzii
+		}
+	}
+
+
+	void lexerDropIndex() {
+		int i = 2;
+		//if (strcmp(tokenizedVector[0], "dropindex") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
+		//	throw; //wrong keywords
+		//}
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//index_name   //also have to check if the index exists
+			i++;
+		}
+		else throw; //missing index name
+		if (strcmp(tokenizedVector[i], ",") == 0) {
+			throw; // too many index names
+		}
+		if (vectorTypeOfToken[i] == dataTypeValues::string) {
+			throw; //wrong index name - has space
+		}
+		if (strcmp(tokenizedVector[i], ";") != 0) {
+			throw; // nu s-a pus ; la finalul comenzii
+		}
+	}
+
+
+	
+	void lexerUpdate() 
 	{
 		int i = 1;
 		if (vectorTypeOfToken[i] != dataTypeValues::string) throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"UPDATE\". Expected an identifier"); // checking the identifier name of table
@@ -962,13 +1093,13 @@ public:
 		// To add a lexer function for every command -----------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (strcmp(tokenizedVector[0], "create") == 0)
 		{
-			lexerCreateTable();
-		}
-		else if (strcmp(tokenizedVector[0], "display") == 0) {
-			lexerDisplay();
-		}
-		else if (strcmp(tokenizedVector[0], "select") == 0) {
-			lexerSelect();
+			if (strcmp(tokenizedVector[1], "table") == 0) {
+				lexerCreateTable();
+			}
+			else if (strcmp(tokenizedVector[1], "index") == 0) {
+				lexerCreateIndex();
+			}
+			else throw; //second word is not correct
 		}
 		else if (strcmp(tokenizedVector[0], "update") == 0) {
 			lexerUpdate();
@@ -977,15 +1108,18 @@ public:
 		{
 			lexerSelect();
 		}
-		else if (strcmp(tokenizedVector[0], "delete") == 0)
+		else if(strcmp(tokenizedVector[0], "drop") == 0)
 		{
-			lexerDelete();
-		}
-		else if (strcmp(tokenizedVector[0], "insert") == 0)
-		{
-			lexerInsert();
+			if (strcmp(tokenizedVector[1], "table") == 0) {
+				lexerDropTable();
+			}
+			else if (strcmp(tokenizedVector[1], "index") == 0) {
+				lexerDropIndex();
+			}
+			else throw;   //second word is not correct
 		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
+
 
 	}
 
@@ -1356,6 +1490,7 @@ int* identifyKeywordTypeVector(char** tokenizedVector, int sizeOfTokenizedVector
 	return vectorTypeOfToken;
 }
 
+
 // Function for looping through command line 
 // I: Entire command line (string)
 // E: -
@@ -1364,9 +1499,10 @@ void loopingThroughCommands(std::string commandLine) {
 	int sizeOfTokenizedVector = NULL;
 	char** tokenizedVector = nullptr;
 	int* vectorTypeOfToken = nullptr;
+	if (commandLine[commandLine.length()-1] != ';')  throw std::invalid_argument("Missing \";\" at the end of the command line");
 	while (i < commandLine.length())
 	{
-		if (commandLine[i] == ';')
+		if (commandLine[i] == ';' || i == commandLine.length() - 1)
 		{
 			if (tokenizedVector != nullptr)
 			{
