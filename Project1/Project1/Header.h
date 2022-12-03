@@ -148,9 +148,8 @@ public:
 			}
 			printf("\n");
 		}
-
-
 	}
+
 
 	//Constructors
 	Table() {
@@ -569,10 +568,23 @@ public:
 		lexer();
 
 		if (strcmp(tokenizedVector[0], "create") == 0) {
-			parserCreateTable();
+			if (strcmp(tokenizedVector[1], "table") == 0) {
+				parserCreateTable();
+			}
+			else if (strcmp(tokenizedVector[1], "index") == 0) {
+				parserCreateIndex();
+			}
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0) {
 			parserDisplayTable();
+		}
+		else if (strcmp(tokenizedVector[0], "drop") == 0) {
+			if (strcmp(tokenizedVector[1], "table") == 0) {
+				parserDropTable();
+			}
+			else if (strcmp(tokenizedVector[1], "index") == 0) {
+				parserDropIndex();
+			}
 		}
 		//else throw std::invalid_argument("Wrong first token of the command");
 	}
@@ -713,6 +725,25 @@ public:
 		table.displayTable();
 		
 	}
+
+	void parserCreateIndex() {
+
+	}
+
+
+
+
+	void parserDropTable() {
+		/*Table table = Table::findTableByName(tokenizedVector[2]);
+		table.droptable();*/
+	}
+
+
+	void parserDropIndex() {
+
+	}
+
+
 
 	void lexerCreateTable() {
 		int i = 1;
