@@ -112,13 +112,12 @@ public:
 
 		this->noData += 1;
 		std::string** mDataCopy = new std::string*[this->noData];
-		for (int i = 0; i < this->noColumns; ++i) {
-			mDataCopy[i] = new std::string[noColumns];
+		for (int i = 0; i < this->noData; ++i) {
+			mDataCopy[i] = new std::string[this->noColumns];
 		}
-
 		//deep copy with new values and an empty row
-		for (int i = 0; i < this->noData-1; i++) {
-			for (int j = 0; j < noColumns; j++) {
+		for (int i = 0; i < this->noData - 1; i++) {
+			for (int j = 0; j < this->noColumns; j++) {
 				mDataCopy[i][j] = mData[i][j];
 			}
 		}
@@ -128,19 +127,86 @@ public:
 			delete[] mData[i];
 		delete[] mData;
 
-		//insert in the new row;
-		for (int j = 0; noColumns; j++) {
-			mDataCopy[this->noData][j] = row[j];
+		//remake mData based on auxiliary copy
+		mData = new std::string * [this->noData];
+		for (int i = 0; i < this->noData; ++i) {
+			mData[i] = new std::string[this->noColumns];
 		}
 
+		for (int i = 0; i < this->noData - 1; i++) {
+			for (int j = 0; j < this->noColumns; j++) {
+				mData[i][j] = mDataCopy[i][j];
+			}
+		}
+		//insert in the new row;
+		for (int j = 0; j< this->noColumns; j++) {
+			mData[this->noData][j] = row[j];
+		}
 	}
 
 	void selectAll() {
-		
+		displayTable();
 	}
 
-	void selectValues() {
+	void selectValues(std::string* values, int noColumns) {
+		//check if values elemts are the same as column vNames
+		int* savingPositions = new int[this->noData];
+		int k = 0;
+		for (int i = 0; i < noColumns; i++) {
+			for (int j = 0; j < this->noData;j++) {
+				if (values[i] == vNames[j]) {
+					savingPositions[k] = j;
+				}
+			}
+		 }
 
+		int maxSize;
+		printf("Table name: %s\n\n", this->name);
+
+		int counterForUnerline = 0;
+		// Displaying headers
+		for (int i = 0; i < noColumns; i++)
+		{
+			maxSize = computingDimensionForColumns(i);
+			printf("%-*s|", maxSize, this->vNames[savingPositions[i]].c_str());
+			counterForUnerline += maxSize;
+		}
+		printf("\n");
+		for (int i = 0; i < counterForUnerline; i++)
+			printf("-");
+		printf("\n");
+
+
+		for (int i = 0; i < this->noData; i++)
+		{
+			for (int j = 0; j < noColumns; j++)
+			{
+				maxSize = computingDimensionForColumns(j);
+				printf("%-*s|", maxSize, mData[i][j].c_str());
+
+			}
+			printf("\n");
+		}
+	}
+
+	void deleteValues(std::string value, std::string column_name) {
+		int* posVectorToDelete = new int [this->noData];
+		//Delete from table_name where = column_name = value;
+		std::string** mDataCopy = new std::string * [this->noData];
+		for (int i = 0; i < this->noData; ++i) {
+			mDataCopy[i] = new std::string[noColumns];
+		}
+
+		//deep copy with new values
+		for (int i = 0; i < this->noData; i++) {
+			for (int j = 0; j < noColumns; j++) {
+				mDataCopy[i][j] = mData[i][j];
+			}
+		}
+
+
+
+		
 	}
 
 	int computingDimensionForColumns(int i) {
@@ -179,6 +245,7 @@ public:
 		for(int i =0; i < counterForUnerline; i++)
 			printf("-");
 		printf("\n");
+		
 		
 		for (int i = 0; i < this->noData; i++)
 		{
@@ -767,12 +834,42 @@ public:
 
 	void parserSerlect() {
 		Table table = Table::findTableByName(tokenizedVector[4]);
-		table.selectAll();
+		int noValues = 0;
+		int counter = 0;
+		//save the number of columns we want to print out
+		for (int i = 1; i < sizeOfTokenizedVector - 3;i++) {
+			if (dataTypeValues::string == vectorTypeOfToken[i]) {
+				noValues++;
+			}
+			if (!(strcmp(")", tokenizedVector[i]))) {
+				break;
+			}
+		}
+
+		std::string* values = new std::string[noValues];
+		//save the name of the columns we want to print out
+		for (int i = 1; i < sizeOfTokenizedVector - 3; i++) {
+			if (dataTypeValues::string == vectorTypeOfToken[i]) {
+				values[counter] = tokenizedVector[i];
+				counter++;
+			}
+			if (!(strcmp(")", tokenizedVector[i]))) {
+				break;
+			}
+		}
+
+		if(!strcmp(tokenizedVector[2],"ALL")|| !strcmp(tokenizedVector[2], "*"))
+			table.selectAll();
+		else {
+			table.selectValues(values, counter);
+		}
 	}
 	
 
 	void parserDelete() {
 		Table table = Table::findTableByName(tokenizedVector[2]);
+		//table.deleteValues();
+		
 	}
 
 	void parserInsertRow() {
@@ -787,7 +884,6 @@ public:
 			}
 		}	
 		table.insertRow(value);
-		delete[] value;
 	}
 
 	void lexerCreateTable() {
