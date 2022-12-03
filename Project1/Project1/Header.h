@@ -101,6 +101,48 @@ public:
 			std::cout << tables[i].name << std::endl;
 		}*/
 	}
+
+	void insertRow(std::string* row) {
+		//mdata = datele sub forma de string
+		//nodata = nr de randuri
+		//nocolumns = nr de coloane
+		//i different data i = noData
+		//j have the same type of data j = noColumns
+		//create a deep copy and increment the nodata to add the new row inserted
+
+		this->noData += 1;
+		std::string** mDataCopy = new std::string*[this->noData];
+		for (int i = 0; i < this->noColumns; ++i) {
+			mDataCopy[i] = new std::string[noColumns];
+		}
+
+		//deep copy with new values and an empty row
+		for (int i = 0; i < this->noData-1; i++) {
+			for (int j = 0; j < noColumns; j++) {
+				mDataCopy[i][j] = mData[i][j];
+			}
+		}
+
+		//delete previous table
+		for (int i = 0; i < this->noData-1; ++i)
+			delete[] mData[i];
+		delete[] mData;
+
+		//insert in the new row;
+		for (int j = 0; noColumns; j++) {
+			mDataCopy[this->noData][j] = row[j];
+		}
+
+	}
+
+	void selectAll() {
+		
+	}
+
+	void selectValues() {
+
+	}
+
 	int computingDimensionForColumns(int i) {
 		int maxSize;
 		if (this->vTypes[i] == "integer")
@@ -355,6 +397,12 @@ public:
 
 
 	}
+
+	//get number of columns
+	int getNoColums() {
+		return this->noColumns;
+	}
+
 	//Destructor
 	~Table() {
 		if (this->name != nullptr)
@@ -573,8 +621,10 @@ public:
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0) {
 			parserDisplayTable();
+		}else if (strcmp(tokenizedVector[0], "insert") == 0) {
+			parserInsertRow();
 		}
-		//else throw std::invalid_argument("Wrong first token of the command");
+		else throw std::invalid_argument("Wrong first token of the command");
 	}
 
 	// Checks this syntax : id = 5 || name = 'Alex'. 
@@ -626,6 +676,7 @@ public:
 		}
 		return counterNoCol;
 	}
+
 
 	void parserCreateTable() {
 		int posOfParanthesis;
@@ -712,6 +763,31 @@ public:
 		Table table = Table::findTableByName(tokenizedVector[2]);
 		table.displayTable();
 		
+	}
+
+	void parserSerlect() {
+		Table table = Table::findTableByName(tokenizedVector[4]);
+		table.selectAll();
+	}
+	
+
+	void parserDelete() {
+		Table table = Table::findTableByName(tokenizedVector[2]);
+	}
+
+	void parserInsertRow() {
+		
+		int counter = 0;
+		Table table = Table::findTableByName(tokenizedVector[2]);
+		std::string* value = new std::string[table.getNoColums()];
+		for (int i = 5; i < sizeOfTokenizedVector - 3; i++) {
+			if (vectorTypeOfToken[i] == dataTypeValues::string || vectorTypeOfToken[i] == dataTypeValues::number) {
+				value[counter]=tokenizedVector[i];
+				counter++;
+			}
+		}	
+		table.insertRow(value);
+		delete[] value;
 	}
 
 	void lexerCreateTable() {
@@ -1228,6 +1304,13 @@ public:
 		else if (strcmp(tokenizedVector[0], "display") == 0)
 		{
 			lexerDisplay();
+		}
+		else if (strcmp(tokenizedVector[0], "insert") == 0)
+		{
+			lexerInsert();
+		}
+		else if (strcmp(tokenizedVector[0], "delete") == 0) {
+			lexerDelete();
 		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
 
