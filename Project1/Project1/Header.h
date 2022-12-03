@@ -190,7 +190,6 @@ public:
 	}
 
 	void deleteValues(std::string value, std::string column_name) {
-		int* posVectorToDelete = new int [this->noData];
 		//Delete from table_name where = column_name = value;
 		std::string** mDataCopy = new std::string * [this->noData];
 		for (int i = 0; i < this->noData; ++i) {
@@ -204,8 +203,51 @@ public:
 			}
 		}
 
+		//delete previous table
+		for (int i = 0; i < this->noData - 1; ++i)
+			delete[] mData[i];
+		delete[] mData;
 
+		int* posVectorToDelete = new int [this->noData];
+		int k = 0;
+		for (int i = 0; i < noData; i++) {
+			for (int j = 0; j < noColumns; j++) {
+				if (mData[i][j] == value) {
+					posVectorToDelete[k++] = j;
+				}
+			}
+		}
 
+		int counter = 0, copyOf_k = k;
+		while (counter < copyOf_k) {
+			for (int i = 0; i < noData; i++) {
+				for (int j = 0; j < noColumns; j++) {
+					if (mData[i][j] == mData[i][posVectorToDelete[k]]) {
+						for (int m = posVectorToDelete[k]; m < noData - 1; m++) {
+							mData[i][j] = mData[i+1][j+1];
+						}
+					}
+				}
+			}
+			k++;
+			counter++;
+		}
+
+		std::string** mData = new std::string * [this->noData-copyOf_k];
+		for (int i = 0; i < this->noData- copyOf_k; ++i) {
+			mData[i] = new std::string[noColumns];
+		}
+
+		//deep copy with new values
+		for (int i = 0; i < this->noData- copyOf_k; i++) {
+			for (int j = 0; j < noColumns; j++) {
+				mData[i][j] = mDataCopy[i][j];
+			}
+		}
+		//delete previous table
+		for (int i = 0; i < this->noData - 1; ++i)
+			delete[] mDataCopy[i];
+		delete[] mDataCopy;
 		
 	}
 
