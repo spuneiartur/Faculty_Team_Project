@@ -189,24 +189,47 @@ public:
 		}
 	}
 
-	void deleteValues(std::string value, std::string column_name) {
+	void deleteValues(std::string value, std::string column_name) {//Delete from table_name where = column_name = value;
 		int* posVectorToDelete = new int [this->noData];
-		//Delete from table_name where = column_name = value;
-		std::string** mDataCopy = new std::string * [this->noData];
-		for (int i = 0; i < this->noData; ++i) {
-			mDataCopy[i] = new std::string[noColumns];
+		int k = 0;
+		for (int i = 0; i < this->noData; i++) {
+			if (vNames[i] == column_name) {
+				for (int j = 0; j < this->noColumns; j++) {
+					if (mData[i][j] == value) {
+						posVectorToDelete[k++] == j;
+					}
+				}
+			}
+		}
+		int counter = 0;
+		int copyk = k;
+		while (counter < k) {
+			for (int i = 0; i < this->noData; i++) {
+				for (int j = 0; j < this->noColumns; j++) {
+					if (mData[i][j] == mData[i][posVectorToDelete[k]]) {
+						for (int m = posVectorToDelete[k]; m < this->noData; m++) {
+							mData[i][j] = mData[i + 1][j + 1];
+						}
+					}
+				}
+			}
+			k++;
+		}
+		std::string** mDataCopy = new std::string* [this->noData-copyk];
+		for (int i = 0; i < this->noData-copyk; ++i) {
+			mDataCopy[i] = new std::string[this->noColumns];
 		}
 
 		//deep copy with new values
 		for (int i = 0; i < this->noData; i++) {
-			for (int j = 0; j < noColumns; j++) {
+			for (int j = 0; j < this->noColumns; j++) {
 				mDataCopy[i][j] = mData[i][j];
 			}
 		}
 
-
-
 		
+
+
 	}
 
 	int computingDimensionForColumns(int i) {
@@ -866,9 +889,9 @@ public:
 	}
 	
 
-	void parserDelete() {
+	void parserDelete() { //DELETE FROM table_name WHERE column_name = value;
 		Table table = Table::findTableByName(tokenizedVector[2]);
-		//table.deleteValues();
+		table.deleteValues(tokenizedVector[6],tokenizedVector[4]);
 		
 	}
 
