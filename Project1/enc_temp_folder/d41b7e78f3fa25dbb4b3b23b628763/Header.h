@@ -750,12 +750,22 @@ public:
 		
 	}
 
+	void parserCreateIndex() {
+
+	}
+
+
 
 
 	void parserDropTable() {
 		Table table = Table::findTableByName(tokenizedVector[2]);
 		Table::dropTable(tokenizedVector[2]);
 		table.setToInexistent();
+	}
+
+
+	void parserDropIndex() {
+
 	}
 
 
