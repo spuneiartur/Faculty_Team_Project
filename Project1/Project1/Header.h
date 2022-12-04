@@ -34,7 +34,7 @@ private:
 	int noColumns;
 	std::string* vNames = nullptr;
 	std::string* vTypes = nullptr;
-	int* vDimensions = nullptr;
+ 	int* vDimensions = nullptr;
 	std::string* vDefaults = nullptr;
 	int noData;
 	std::string** mData = nullptr;
@@ -111,11 +111,11 @@ public:
 		//create a deep copy and increment the nodata to add the new row inserted
 
 		this->noData += 1;
-		std::string** mDataCopy = new std::string*[this->noData];
-		for (int i = 0; i < this->noData; ++i) {
+		std::string** mDataCopy = new std::string*[this->noData-1];
+		for (int i = 0; i < this->noData-1; ++i) {
 			mDataCopy[i] = new std::string[this->noColumns];
 		}
-		//deep copy with new values and an empty row
+		//deep copy with new values
 		for (int i = 0; i < this->noData - 1; i++) {
 			for (int j = 0; j < this->noColumns; j++) {
 				mDataCopy[i][j] = mData[i][j];
@@ -140,8 +140,13 @@ public:
 		}
 		//insert in the new row;
 		for (int j = 0; j< this->noColumns; j++) {
-			mData[this->noData][j] = row[j];
+			mData[this->noData-1][j] = row[j];
 		}
+
+		// Deleting the allocating copy
+		for (int i = 0; i < this->noData - 1; ++i)
+			delete[] mDataCopy[i];
+		delete[] mDataCopy;
 	}
 
 	void selectAll() {
@@ -204,7 +209,7 @@ public:
 		}
 
 		//delete previous table
-		for (int i = 0; i < this->noData - 1; ++i)
+		for (int i = 0; i < this->noData; ++i)
 			delete[] mData[i];
 		delete[] mData;
 
@@ -232,7 +237,7 @@ public:
 			k++;
 			counter++;
 		}
-
+		copyOf_k++;
 		std::string** mData = new std::string * [this->noData-copyOf_k];
 		for (int i = 0; i < this->noData- copyOf_k; ++i) {
 			mData[i] = new std::string[noColumns];
@@ -545,7 +550,7 @@ public:
 		}
 		if (this->mData != nullptr)
 		{
-			for (int i = 0; i < noColumns; i++)
+			for (int i = 0; i < this->noData; i++)
 			{
 				delete[] this->mData[i];
 			}
@@ -730,8 +735,13 @@ public:
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0) {
 			parserDisplayTable();
-		}else if (strcmp(tokenizedVector[0], "insert") == 0) {
+		}
+		else if (strcmp(tokenizedVector[0], "insert") == 0) {
 			parserInsertRow();
+		}
+		else if (strcmp(tokenizedVector[0], "select") == 0)
+		{
+			parserSelect();
 		}
 		else throw std::invalid_argument("Wrong first token of the command");
 	}
@@ -874,8 +884,8 @@ public:
 		
 	}
 
-	void parserSerlect() {
-		Table table = Table::findTableByName(tokenizedVector[4]);
+	void parserSelect() {
+		Table table = Table::findTableByName(tokenizedVector[3]);
 		int noValues = 0;
 		int counter = 0;
 		//save the number of columns we want to print out
@@ -900,7 +910,7 @@ public:
 			}
 		}
 
-		if(!strcmp(tokenizedVector[2],"ALL")|| !strcmp(tokenizedVector[2], "*"))
+		if(!strcmp(tokenizedVector[1],"all")|| !strcmp(tokenizedVector[1], "*"))
 			table.selectAll();
 		else {
 			table.selectValues(values, counter);
