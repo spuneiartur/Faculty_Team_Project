@@ -48,7 +48,7 @@ public:
 	static Table& findTableByName(char* name) {
 		for (int i = 0; i <= noOfTables; i++)
 		{
-			if (strcmp(tables[i].name, name) == 0) return tables[i];
+			if (strcmp(tables[i].name, name) == 0 && tables[i].exists) return tables[i];
 		}
 		throw std::invalid_argument("Table with such a name does not exists; Please input a name for existing table");
 			
@@ -93,7 +93,8 @@ public:
 				}
 			}
 		}
-		
+		/*if(tables[noOfTables + 1].getExistitngStatus() == false)*/
+		if (noOfTables == 99) throw std::invalid_argument("To many tables; Your data base may contain max 100 tables");
 		tables[++noOfTables] = { Table(name, noColumns, vNames, vTypes, vDimensions, vDefaults) };
 		// Checking the name of all existing tables
 		/*for (int i = 0; i <= noOfTables; i++)
@@ -101,7 +102,10 @@ public:
 			std::cout << tables[i].name << std::endl;
 		}*/
 	}
-
+	bool getExistitngStatus()
+	{
+		return this->exists;
+	}
 	void insertRow(std::string* row) {
 		//mdata = datele sub forma de string
 		//nodata = nr de randuri
