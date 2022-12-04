@@ -216,8 +216,8 @@ public:
 
 		int* posVectorToDelete = new int [this->noData];
 		int k = 0;
-		for (int i = 0; i < noData; i++) {
-			for (int j = 0; j < noColumns; j++) {
+		for (int i = 0; i < this->noData; i++) {
+			for (int j = 0; j < this->noColumns; j++) {
 				if (mData[i][j] == value) {
 					posVectorToDelete[k] = j;
 					k++;
@@ -226,12 +226,13 @@ public:
 		}
 
 		int counter = 0, copyOf_k = k;
+		k = 0;
 		while (counter < copyOf_k) {
-			for (int i = 0; i < noData; i++) {
-				for (int j = 0; j < noColumns; j++) {
-					if (mData[i][j] == mData[i][posVectorToDelete[k]]) {
+			for (int i = 0; i < this->noData; i++) {
+				for (int j = 0; j < this->noColumns; j++) {
+					if (mDataCopy[i][j] == mDataCopy[i][posVectorToDelete[k]]) {
 						for (int m = posVectorToDelete[k]; m < noData - 1; m++) {
-							mData[i][j] = mData[i+1][j+1];
+							mDataCopy[i][j] = mDataCopy[i+1][j+1];
 						}
 					}
 				}
@@ -239,7 +240,6 @@ public:
 			k++;
 			counter++;
 		}
-		copyOf_k++;
 		std::string** mData = new std::string * [this->noData-copyOf_k];
 		for (int i = 0; i < this->noData- copyOf_k; ++i) {
 			mData[i] = new std::string[noColumns];
@@ -922,10 +922,11 @@ public:
 		}
 	}
 	
-
+	//delete from table where column = value;
 	void parserDelete() {
 		Table table = Table::findTableByName(tokenizedVector[2]);
-		//table.deleteValues();
+		//value column name
+		table.deleteValues(tokenizedVector[sizeOfTokenizedVector-2],tokenizedVector[sizeOfTokenizedVector-4]);
 		
 	}
 
