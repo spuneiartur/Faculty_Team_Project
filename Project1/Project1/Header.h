@@ -101,6 +101,156 @@ public:
 			std::cout << tables[i].name << std::endl;
 		}*/
 	}
+
+	void insertRow(std::string* row) {
+		//mdata = datele sub forma de string
+		//nodata = nr de randuri
+		//nocolumns = nr de coloane
+		//i different data i = noData
+		//j have the same type of data j = noColumns
+		//create a deep copy and increment the nodata to add the new row inserted
+
+		this->noData += 1;
+		std::string** mDataCopy = new std::string*[this->noData];
+		for (int i = 0; i < this->noData; ++i) {
+			mDataCopy[i] = new std::string[this->noColumns];
+		}
+		//deep copy with new values and an empty row
+		for (int i = 0; i < this->noData - 1; i++) {
+			for (int j = 0; j < this->noColumns; j++) {
+				mDataCopy[i][j] = mData[i][j];
+			}
+		}
+
+		//delete previous table
+		for (int i = 0; i < this->noData-1; ++i)
+			delete[] mData[i];
+		delete[] mData;
+
+		//remake mData based on auxiliary copy
+		mData = new std::string * [this->noData];
+		for (int i = 0; i < this->noData; ++i) {
+			mData[i] = new std::string[this->noColumns];
+		}
+
+		for (int i = 0; i < this->noData - 1; i++) {
+			for (int j = 0; j < this->noColumns; j++) {
+				mData[i][j] = mDataCopy[i][j];
+			}
+		}
+		//insert in the new row;
+		for (int j = 0; j< this->noColumns; j++) {
+			mData[this->noData][j] = row[j];
+		}
+	}
+
+	void selectAll() {
+		displayTable();
+	}
+
+	void selectValues(std::string* values, int noColumns) {
+		//check if values elemts are the same as column vNames
+		int* savingPositions = new int[this->noData];
+		int k = 0;
+		for (int i = 0; i < noColumns; i++) {
+			for (int j = 0; j < this->noData;j++) {
+				if (values[i] == vNames[j]) {
+					savingPositions[k] = j;
+				}
+			}
+		 }
+
+		int maxSize;
+		printf("Table name: %s\n\n", this->name);
+
+		int counterForUnerline = 0;
+		// Displaying headers
+		for (int i = 0; i < noColumns; i++)
+		{
+			maxSize = computingDimensionForColumns(i);
+			printf("%-*s|", maxSize, this->vNames[savingPositions[i]].c_str());
+			counterForUnerline += maxSize;
+		}
+		printf("\n");
+		for (int i = 0; i < counterForUnerline; i++)
+			printf("-");
+		printf("\n");
+
+
+		for (int i = 0; i < this->noData; i++)
+		{
+			for (int j = 0; j < noColumns; j++)
+			{
+				maxSize = computingDimensionForColumns(j);
+				printf("%-*s|", maxSize, mData[i][j].c_str());
+
+			}
+			printf("\n");
+		}
+	}
+
+	void deleteValues(std::string value, std::string column_name) {
+		//Delete from table_name where = column_name = value;
+		std::string** mDataCopy = new std::string * [this->noData];
+		for (int i = 0; i < this->noData; ++i) {
+			mDataCopy[i] = new std::string[noColumns];
+		}
+
+		//deep copy with new values
+		for (int i = 0; i < this->noData; i++) {
+			for (int j = 0; j < noColumns; j++) {
+				mDataCopy[i][j] = mData[i][j];
+			}
+		}
+
+		//delete previous table
+		for (int i = 0; i < this->noData - 1; ++i)
+			delete[] mData[i];
+		delete[] mData;
+
+		int* posVectorToDelete = new int [this->noData];
+		int k = 0;
+		for (int i = 0; i < noData; i++) {
+			for (int j = 0; j < noColumns; j++) {
+				if (mData[i][j] == value) {
+					posVectorToDelete[k++] = j;
+				}
+			}
+		}
+
+		int counter = 0, copyOf_k = k;
+		while (counter < copyOf_k) {
+			for (int i = 0; i < noData; i++) {
+				for (int j = 0; j < noColumns; j++) {
+					if (mData[i][j] == mData[i][posVectorToDelete[k]]) {
+						for (int m = posVectorToDelete[k]; m < noData - 1; m++) {
+							mData[i][j] = mData[i+1][j+1];
+						}
+					}
+				}
+			}
+			k++;
+			counter++;
+		}
+
+		std::string** mData = new std::string * [this->noData-copyOf_k];
+		for (int i = 0; i < this->noData- copyOf_k; ++i) {
+			mData[i] = new std::string[noColumns];
+		}
+
+		//deep copy with new values
+		for (int i = 0; i < this->noData- copyOf_k; i++) {
+			for (int j = 0; j < noColumns; j++) {
+				mData[i][j] = mDataCopy[i][j];
+			}
+		}
+		//delete previous table
+		for (int i = 0; i < this->noData - 1; ++i)
+			delete[] mDataCopy[i];
+		delete[] mDataCopy;
+		
+	}
+
 	int computingDimensionForColumns(int i) {
 		int maxSize;
 		if (this->vTypes[i] == "integer")
@@ -137,6 +287,7 @@ public:
 		for(int i =0; i < counterForUnerline; i++)
 			printf("-");
 		printf("\n");
+		
 		
 		for (int i = 0; i < this->noData; i++)
 		{
@@ -355,6 +506,12 @@ public:
 
 
 	}
+
+	//get number of columns
+	int getNoColums() {
+		return this->noColumns;
+	}
+
 	//Destructor
 	~Table() {
 		if (this->name != nullptr)
@@ -573,8 +730,10 @@ public:
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0) {
 			parserDisplayTable();
+		}else if (strcmp(tokenizedVector[0], "insert") == 0) {
+			parserInsertRow();
 		}
-		//else throw std::invalid_argument("Wrong first token of the command");
+		else throw std::invalid_argument("Wrong first token of the command");
 	}
 
 	// Checks this syntax : id = 5 || name = 'Alex'. 
@@ -626,6 +785,7 @@ public:
 		}
 		return counterNoCol;
 	}
+
 
 	void parserCreateTable() {
 		int posOfParanthesis;
@@ -712,6 +872,60 @@ public:
 		Table table = Table::findTableByName(tokenizedVector[2]);
 		table.displayTable();
 		
+	}
+
+	void parserSerlect() {
+		Table table = Table::findTableByName(tokenizedVector[4]);
+		int noValues = 0;
+		int counter = 0;
+		//save the number of columns we want to print out
+		for (int i = 1; i < sizeOfTokenizedVector - 3;i++) {
+			if (dataTypeValues::string == vectorTypeOfToken[i]) {
+				noValues++;
+			}
+			if (!(strcmp(")", tokenizedVector[i]))) {
+				break;
+			}
+		}
+
+		std::string* values = new std::string[noValues];
+		//save the name of the columns we want to print out
+		for (int i = 1; i < sizeOfTokenizedVector - 3; i++) {
+			if (dataTypeValues::string == vectorTypeOfToken[i]) {
+				values[counter] = tokenizedVector[i];
+				counter++;
+			}
+			if (!(strcmp(")", tokenizedVector[i]))) {
+				break;
+			}
+		}
+
+		if(!strcmp(tokenizedVector[2],"ALL")|| !strcmp(tokenizedVector[2], "*"))
+			table.selectAll();
+		else {
+			table.selectValues(values, counter);
+		}
+	}
+	
+
+	void parserDelete() {
+		Table table = Table::findTableByName(tokenizedVector[2]);
+		//table.deleteValues();
+		
+	}
+
+	void parserInsertRow() {
+		
+		int counter = 0;
+		Table table = Table::findTableByName(tokenizedVector[2]);
+		std::string* value = new std::string[table.getNoColums()];
+		for (int i = 5; i < sizeOfTokenizedVector - 3; i++) {
+			if (vectorTypeOfToken[i] == dataTypeValues::string || vectorTypeOfToken[i] == dataTypeValues::number) {
+				value[counter]=tokenizedVector[i];
+				counter++;
+			}
+		}	
+		table.insertRow(value);
 	}
 
 	void lexerCreateTable() {
@@ -1228,6 +1442,13 @@ public:
 		else if (strcmp(tokenizedVector[0], "display") == 0)
 		{
 			lexerDisplay();
+		}
+		else if (strcmp(tokenizedVector[0], "insert") == 0)
+		{
+			lexerInsert();
+		}
+		else if (strcmp(tokenizedVector[0], "delete") == 0) {
+			lexerDelete();
 		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
 
