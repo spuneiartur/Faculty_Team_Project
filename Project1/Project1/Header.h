@@ -155,12 +155,13 @@ public:
 
 	void selectValues(std::string* values, int noColumns) {
 		//check if values elemts are the same as column vNames
-		int* savingPositions = new int[this->noData];
+		int* savingPositions = new int[noColumns];
 		int k = 0;
 		for (int i = 0; i < noColumns; i++) {
-			for (int j = 0; j < this->noData;j++) {
+			for (int j = 0; j < this->noColumns;j++) {
 				if (values[i] == vNames[j]) {
 					savingPositions[k] = j;
+					k++;
 				}
 			}
 		 }
@@ -215,21 +216,23 @@ public:
 
 		int* posVectorToDelete = new int [this->noData];
 		int k = 0;
-		for (int i = 0; i < noData; i++) {
-			for (int j = 0; j < noColumns; j++) {
+		for (int i = 0; i < this->noData; i++) {
+			for (int j = 0; j < this->noColumns; j++) {
 				if (mData[i][j] == value) {
-					posVectorToDelete[k++] = j;
+					posVectorToDelete[k] = j;
+					k++;
 				}
 			}
 		}
 
 		int counter = 0, copyOf_k = k;
+		k = 0;
 		while (counter < copyOf_k) {
-			for (int i = 0; i < noData; i++) {
-				for (int j = 0; j < noColumns; j++) {
-					if (mData[i][j] == mData[i][posVectorToDelete[k]]) {
+			for (int i = 0; i < this->noData; i++) {
+				for (int j = 0; j < this->noColumns; j++) {
+					if (mDataCopy[i][j] == mDataCopy[i][posVectorToDelete[k]]) {
 						for (int m = posVectorToDelete[k]; m < noData - 1; m++) {
-							mData[i][j] = mData[i+1][j+1];
+							mDataCopy[i][j] = mDataCopy[i+1][j+1];
 						}
 					}
 				}
@@ -237,7 +240,6 @@ public:
 			k++;
 			counter++;
 		}
-		copyOf_k++;
 		std::string** mData = new std::string * [this->noData-copyOf_k];
 		for (int i = 0; i < this->noData- copyOf_k; ++i) {
 			mData[i] = new std::string[noColumns];
@@ -743,6 +745,9 @@ public:
 		{
 			parserSelect();
 		}
+		else if (strcmp(tokenizedVector[0],"delete") == 0) {
+			parserDelete();
+		}
 		else throw std::invalid_argument("Wrong first token of the command");
 	}
 
@@ -885,7 +890,7 @@ public:
 	}
 
 	void parserSelect() {
-		Table table = Table::findTableByName(tokenizedVector[3]);
+		Table table = Table::findTableByName(tokenizedVector[sizeOfTokenizedVector-2]);
 		int noValues = 0;
 		int counter = 0;
 		//save the number of columns we want to print out
@@ -917,10 +922,11 @@ public:
 		}
 	}
 	
-
+	//delete from table where column = value;
 	void parserDelete() {
 		Table table = Table::findTableByName(tokenizedVector[2]);
-		//table.deleteValues();
+		//value column name
+		table.deleteValues(tokenizedVector[sizeOfTokenizedVector-2],tokenizedVector[sizeOfTokenizedVector-4]);
 		
 	}
 
