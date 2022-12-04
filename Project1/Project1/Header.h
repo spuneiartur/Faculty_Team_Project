@@ -45,6 +45,25 @@ public:
 	// Methods
 	// I: table name
 	// E: table index
+
+	static void dropTable(char* nume) {
+		int poz = -1;
+		for (int i = 0; i <= noOfTables && poz==-1; i++) {
+			if (strcmp(tables[i].name, nume) == 0) {
+				poz = i;
+			}
+		}
+		
+		for (int i = poz; i < noOfTables; i++) {
+			tables[i] = tables[i + 1];
+			if (i + 1 == noOfTables) {
+				tables[i + 1].setToInexistent();
+			}
+		}
+		noOfTables--;
+	}
+
+
 	static Table& findTableByName(char* name) {
 		for (int i = 0; i <= noOfTables; i++)
 		{
@@ -52,6 +71,11 @@ public:
 		}
 		throw std::invalid_argument("Table with such a name does not exists; Please input a name for existing table");
 			
+	}
+
+
+	void setToInexistent() {
+		this->exists = false;
 	}
 
 	char* getTableName() {
@@ -734,8 +758,9 @@ public:
 
 
 	void parserDropTable() {
-		/*Table table = Table::findTableByName(tokenizedVector[2]);
-		table.droptable();*/
+		Table table = Table::findTableByName(tokenizedVector[2]);
+		Table::dropTable(tokenizedVector[2]);
+		table.setToInexistent();
 	}
 
 
