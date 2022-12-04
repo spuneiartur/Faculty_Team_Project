@@ -155,12 +155,13 @@ public:
 
 	void selectValues(std::string* values, int noColumns) {
 		//check if values elemts are the same as column vNames
-		int* savingPositions = new int[this->noData];
+		int* savingPositions = new int[noColumns];
 		int k = 0;
 		for (int i = 0; i < noColumns; i++) {
-			for (int j = 0; j < this->noData;j++) {
+			for (int j = 0; j < this->noColumns;j++) {
 				if (values[i] == vNames[j]) {
 					savingPositions[k] = j;
+					k++;
 				}
 			}
 		 }
@@ -218,7 +219,8 @@ public:
 		for (int i = 0; i < noData; i++) {
 			for (int j = 0; j < noColumns; j++) {
 				if (mData[i][j] == value) {
-					posVectorToDelete[k++] = j;
+					posVectorToDelete[k] = j;
+					k++;
 				}
 			}
 		}
@@ -743,6 +745,9 @@ public:
 		{
 			parserSelect();
 		}
+		else if (strcmp(tokenizedVector[0],"delete") == 0) {
+			parserDelete();
+		}
 		else throw std::invalid_argument("Wrong first token of the command");
 	}
 
@@ -885,7 +890,7 @@ public:
 	}
 
 	void parserSelect() {
-		Table table = Table::findTableByName(tokenizedVector[3]);
+		Table table = Table::findTableByName(tokenizedVector[sizeOfTokenizedVector-2]);
 		int noValues = 0;
 		int counter = 0;
 		//save the number of columns we want to print out
