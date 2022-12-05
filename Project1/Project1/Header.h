@@ -1767,6 +1767,7 @@ std::string deletingExtraSpacesString(std::string string) {
 		{
 			string.erase(0, 1);
 		}
+
 		while (string[i] == string[i + 1] && string[i] == ' ')
 		{
 			string.erase(i + 1, 1);
@@ -1990,7 +1991,7 @@ void loopingThroughCommands(std::string commandLine) {
 	if (commandLine[commandLine.length() - counter] != ';')  throw std::invalid_argument("Missing \";\" at the end of the command line");
 	while (i < commandLine.length())
 	{
-		if (commandLine[i] == ';' || i == commandLine.length() - 1)
+		if (commandLine[i] == ';')
 		{
 			if (tokenizedVector != nullptr)
 			{
