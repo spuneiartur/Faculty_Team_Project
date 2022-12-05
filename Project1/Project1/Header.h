@@ -214,11 +214,12 @@ public:
 			delete[] mData[i];
 		delete[] mData;
 
+		//save the positions of the vectors we want to delete
 		int* posVectorToDelete = new int [this->noData];
 		int k = 0;
 		for (int i = 0; i < this->noData; i++) {
 			for (int j = 0; j < this->noColumns; j++) {
-				if (mData[i][j] == value) {
+				if (mDataCopy[i][j] == value) {
 					posVectorToDelete[k] = j;
 					k++;
 				}
@@ -240,8 +241,8 @@ public:
 			k++;
 			counter++;
 		}
-		std::string** mData = new std::string * [this->noData-copyOf_k];
-		for (int i = 0; i < this->noData- copyOf_k; ++i) {
+		mData = new std::string * [this->noData-copyOf_k];
+		for (int i = 0; i < this->noData - copyOf_k; ++i) {
 			mData[i] = new std::string[noColumns];
 		}
 
