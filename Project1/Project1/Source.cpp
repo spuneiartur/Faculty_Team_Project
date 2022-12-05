@@ -12,7 +12,7 @@ int main()
 {
 
 	//no of tables incepe de la 0
-	std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10')); INSERT INTO studenteel VALUES(1,'Alex','1068g'); DELETE FROM studenteel WHERE grupa = 1068g;"; // eroare spatiu dupa punct si virgula
+	std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (nume, text, 16, '10')); INSERT INTO studenteel VALUES(1,'Alex','1068g'); display table studenteel; DELETE FROM studenteel WHERE grupa = 1068g;"; 
 	
 	loopingThroughCommands(commandLine);
 
