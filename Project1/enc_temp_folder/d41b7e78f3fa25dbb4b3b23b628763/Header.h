@@ -34,7 +34,7 @@ private:
 	int noColumns;
 	std::string* vNames = nullptr;
 	std::string* vTypes = nullptr;
- 	int* vDimensions = nullptr;
+	int* vDimensions = nullptr;
 	std::string* vDefaults = nullptr;
 	int noData;
 	std::string** mData = nullptr;
@@ -52,30 +52,26 @@ public:
 			if (strcmp(tables[i].name, nume) == 0) {
 				poz = i;
 			}
-
-			for (int i = poz; i < noOfTables; i++) {
-				tables[i] = tables[i + 1];
-				if (i + 1 == noOfTables) {
-					tables[i + 1].setToInexistent();
-				}
-			}
-			i--;
-			noOfTables--;
 		}
 		
-		
+		for (int i = poz; i < noOfTables; i++) {
+			tables[i] = tables[i + 1];
+			if (i + 1 == noOfTables) {
+				tables[i + 1].setToInexistent();
+			}
+		}
+		noOfTables--;
 	}
 
 
 	static Table& findTableByName(char* name) {
 		for (int i = 0; i <= noOfTables; i++)
 		{
-			if (strcmp(tables[i].name, name) == 0 && tables[i].exists) return tables[i];
+			if (strcmp(tables[i].name, name) == 0) return tables[i];
 		}
 		throw std::invalid_argument("Table with such a name does not exists; Please input a name for existing table");
 			
 	}
-	
 
 
 	void setToInexistent() {
@@ -121,8 +117,7 @@ public:
 				}
 			}
 		}
-		/*if(tables[noOfTables + 1].getExistitngStatus() == false)*/
-		if (noOfTables == 99) throw std::invalid_argument("To many tables; Your data base may contain max 100 tables");
+		
 		tables[++noOfTables] = { Table(name, noColumns, vNames, vTypes, vDimensions, vDefaults) };
 		// Checking the name of all existing tables
 		/*for (int i = 0; i <= noOfTables; i++)
@@ -130,194 +125,6 @@ public:
 			std::cout << tables[i].name << std::endl;
 		}*/
 	}
-	bool getExistitngStatus()
-	{
-		return this->exists;
-	}
-	void insertRow(std::string* row) {
-		//mdata = datele sub forma de string
-		//nodata = nr de randuri
-		//nocolumns = nr de coloane
-		//i different data i = noData
-		//j have the same type of data j = noColumns
-		//create a deep copy and increment the nodata to add the new row inserted
-
-		this->noData += 1;
-		if (noData == 1)
-		{
-			mData = new std::string * [this->noData];
-			for (int i = 0; i < this->noData; ++i) {
-				mData[i] = new std::string[this->noColumns];
-			}
-			//insert in the new row;
-			for (int j = 0; j < this->noColumns; j++) {
-				mData[this->noData - 1][j] = row[j];
-			}
-		}
-		else
-		{
-		std::string** mDataCopy = new std::string*[this->noData-1];
-		for (int i = 0; i < this->noData-1; ++i) {
-			mDataCopy[i] = new std::string[this->noColumns];
-		}
-		//deep copy with new values
-		for (int i = 0; i < this->noData - 1; i++) {
-			for (int j = 0; j < this->noColumns; j++) {
-				mDataCopy[i][j] = mData[i][j];
-			}
-		}
-
-		//delete previous table
-		for (int i = 0; i < this->noData-1; ++i)
-			delete[] mData[i];
-		delete[] mData;
-		
-
-		//remake mData based on auxiliary copy
-		mData = new std::string*[this->noData];
-		for (int i = 0; i < this->noData; ++i) {
-			mData[i] = new std::string[this->noColumns];
-		}
-
-		for (int i = 0; i < this->noData - 1; i++) {
-			for (int j = 0; j < this->noColumns; j++) {
-				mData[i][j] = mDataCopy[i][j];
-			}
-		}
-		//insert in the new row;
-		for (int j = 0; j< this->noColumns; j++) {
-			mData[this->noData-1][j] = row[j];
-		}
-
-		// Deleting the allocating copy
-		for (int i = 0; i < this->noData - 1; ++i)
-			delete[] mDataCopy[i];
-		delete[] mDataCopy;
-		mDataCopy = nullptr;
-		}
-
-	}
-
-	void selectAll() {
-		displayTable();
-	}
-
-	void selectValues(std::string* values, int noColumns) {
-		//check if values elemts are the same as column vNames
-		int* savingPositions = new int[noColumns];
-		int k = 0;
-		for (int i = 0; i < noColumns; i++) {
-			for (int j = 0; j < this->noColumns;j++) {
-				if (values[i] == vNames[j]) {
-					savingPositions[k] = j;
-					k++;
-				}
-			}
-		 }
-
-		int maxSize;
-		printf("Table name: %s\n\n", this->name);
-
-		int counterForUnerline = 0;
-		// Displaying headers
-		for (int i = 0; i < noColumns; i++)
-		{
-			maxSize = computingDimensionForColumns(i);
-			printf("%-*s|", maxSize, this->vNames[savingPositions[i]].c_str());
-			counterForUnerline += maxSize;
-		}
-		printf("\n");
-		for (int i = 0; i < counterForUnerline; i++)
-			printf("-");
-		printf("\n");
-
-
-		for (int i = 0; i < this->noData; i++)
-		{
-			for (int j = 0; j < noColumns; j++)
-			{
-				maxSize = computingDimensionForColumns(j);
-				printf("%-*s|", maxSize, mData[i][j].c_str());
-
-			}
-			printf("\n");
-		}
-	}
-
-	void deleteValues(std::string value, std::string column_name) {
-		//Delete from table_name where = column_name = value;
-		std::string** mDataCopy = new std::string*[this->noData];
-		for (int i = 0; i < this->noData; ++i) {
-			mDataCopy[i] = new std::string[noColumns];
-		}
-
-		//deep copy with new values
-		for (int i = 0; i < this->noData; i++) {
-			for (int j = 0; j < noColumns; j++) {
-				mDataCopy[i][j] = mData[i][j];
-			}
-		}
-
-		//delete previous table
-		for (int i = 0; i < this->noData; ++i)
-			delete[] mData[i];
-		delete[] mData;
-
-		//save the positions of the vectors we want to delete
-		int* posVectorToDelete = new int [this->noData];
-		int k = 0;
-		for (int i = 0; i < this->noData; i++) {
-			for (int j = 0; j < this->noColumns; j++) {
-				if (mDataCopy[i][j] == value) {
-					posVectorToDelete[k] = j;
-					k++;
-				}
-			}
-		}
-
-		int counter = 0, copyOf_k = k;
-		k = 0;
-		while (counter < copyOf_k) {
-			for (int i = 0; i < this->noData; i++) {
-				for (int j = 0; j < this->noColumns; j++) {
-					if (mDataCopy[i][j] == mDataCopy[i][posVectorToDelete[k]]) {
-						for (int m = posVectorToDelete[k]; m < noData - 1; m++) {
-							mDataCopy[i][j] = mDataCopy[i+1][j+1];
-						}
-					}
-				}
-			}
-			k++;
-			counter++;
-		}
-
-		if (noData - copyOf_k == 0)
-		{
-			mData = nullptr;
-		}
-		else
-		{
-			mData = new std::string * [this->noData - copyOf_k];
-			for (int i = 0; i < this->noData - copyOf_k; ++i) {
-				mData[i] = new std::string[noColumns];
-			}
-
-			//deep copy with new values
-			for (int i = 0; i < this->noData - copyOf_k; i++) {
-				for (int j = 0; j < noColumns; j++) {
-					mData[i][j] = mDataCopy[i][j];
-				}
-			}
-		}
-		
-		//delete previous table
-		for (int i = 0; i < this->noData; ++i)
-			delete[] mDataCopy[i];
-		delete[] mDataCopy;
-		noData = noData - copyOf_k;
-		
-	}
-
 	int computingDimensionForColumns(int i) {
 		int maxSize;
 		if (this->vTypes[i] == "integer")
@@ -354,7 +161,6 @@ public:
 		for(int i =0; i < counterForUnerline; i++)
 			printf("-");
 		printf("\n");
-		
 		
 		for (int i = 0; i < this->noData; i++)
 		{
@@ -544,7 +350,7 @@ public:
 		// mData
 		if (this->mData != nullptr)
 		{
-			for (int i = 0; i < noData; i++)
+			for (int i = 0; i < noColumns; i++)
 			{
 				delete[] this->mData[i];
 			}
@@ -553,14 +359,14 @@ public:
 		}
 		if (t.mData != nullptr)
 		{
-			this->mData = new std::string * [noData];
-			for (int i = 0; i < noData; i++)
+			this->mData = new std::string * [noColumns];
+			for (int i = 0; i < noColumns; i++)
 			{
-				this->mData[i] = new std::string[noColumns];
+				this->mData[i] = new std::string[noData];
 			}
 
-			for (int i = 0; i < noData; i++)
-				for (int j = 0; j < noColumns; j++)
+			for (int i = 0; i < noColumns; i++)
+				for (int j = 0; j < noData; j++)
 				{
 					this->mData[i][j] = t.mData[i][j];
 				}
@@ -572,15 +378,8 @@ public:
 
 
 	}
-
-	//get number of columns
-	int getNoColums() {
-		return this->noColumns;
-	}
-
 	//Destructor
 	~Table() {
-		this->exists = false;
 		if (this->name != nullptr)
 		{
 			delete[] this->name;
@@ -612,7 +411,7 @@ public:
 		}
 		if (this->mData != nullptr)
 		{
-			for (int i = 0; i < this->noData; i++)
+			for (int i = 0; i < noColumns; i++)
 			{
 				delete[] this->mData[i];
 			}
@@ -717,12 +516,13 @@ public:
 			this->vDefaults = nullptr;
 		}
 
-		
+		// noData
+		this->noData = t.noData;
 
 		// mData
 		if (this->mData != nullptr)
 		{
-			for (int i = 0; i < noData; i++)
+			for (int i = 0; i < noColumns; i++)
 			{
 				delete[] this->mData[i];
 			}
@@ -731,14 +531,14 @@ public:
 		}
 		if (t.mData != nullptr)
 		{
-			this->mData = new std::string * [t.noData];
-			for (int i = 0; i < t.noData; i++)
+			this->mData = new std::string * [noColumns];
+			for (int i = 0; i < noColumns; i++)
 			{
-				this->mData[i] = new std::string[t.noColumns];
+				this->mData[i] = new std::string[noData];
 			}
 
-			for (int i = 0; i < t.noData; i++)
-				for (int j = 0; j < t.noColumns; j++)
+			for (int i = 0; i < noColumns; i++)
+				for (int j = 0; j < noData; j++)
 				{
 					this->mData[i][j] = t.mData[i][j];
 				}
@@ -747,10 +547,6 @@ public:
 		{
 			this->mData = nullptr;
 		}
-
-		// noData
-		this->noData = t.noData;
-
 		return *this;
 	}
 };
@@ -800,36 +596,21 @@ public:
 				parserCreateTable();
 			}
 			else if (strcmp(tokenizedVector[1], "index") == 0) {
-				/*parserCreateIndex();*/
+				parserCreateIndex();
 			}
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0) {
 			parserDisplayTable();
 		}
-		else if (strcmp(tokenizedVector[0], "drop") == 0)
-		{
-			if (strcmp(tokenizedVector[1], "table") == 0)
-			{
+		else if (strcmp(tokenizedVector[0], "drop") == 0) {
+			if (strcmp(tokenizedVector[1], "table") == 0) {
 				parserDropTable();
 			}
-			else if (strcmp(tokenizedVector[1], "index") == 0)
-			{
-				/*parserDropIndex();*/
+			else if (strcmp(tokenizedVector[1], "index") == 0) {
+				parserDropIndex();
 			}
 		}
-		else if (strcmp(tokenizedVector[0], "insert") == 0) 
-		{
-			parserInsertRow();
-		}
-		else if (strcmp(tokenizedVector[0], "select") == 0)
-		{
-			parserSelect();
-		}
-		else if (strcmp(tokenizedVector[0],"delete") == 0) 
-		{
-			parserDelete();
-		}
-		else throw std::invalid_argument("Wrong first token of the command");
+		//else throw std::invalid_argument("Wrong first token of the command");
 	}
 
 	// Checks this syntax : id = 5 || name = 'Alex'. 
@@ -881,7 +662,6 @@ public:
 		}
 		return counterNoCol;
 	}
-
 
 	void parserCreateTable() {
 		int posOfParanthesis;
@@ -965,68 +745,27 @@ public:
 	}
 
 	void parserDisplayTable() {
-		Table::findTableByName(tokenizedVector[2]).displayTable();
-		
-		
-	}
-
-	void parserSelect() {
-		int noValues = 0;
-		int counter = 0;
-		//save the number of columns we want to print out
-		for (int i = 1; i < sizeOfTokenizedVector - 3;i++) {
-			if (dataTypeValues::string == vectorTypeOfToken[i]) {
-				noValues++;
-			}
-			if (!(strcmp(")", tokenizedVector[i]))) {
-				break;
-			}
-		}
-
-		std::string* values = new std::string[noValues];
-		//save the name of the columns we want to print out
-		for (int i = 1; i < sizeOfTokenizedVector - 3; i++) {
-			if (dataTypeValues::string == vectorTypeOfToken[i]) {
-				values[counter] = tokenizedVector[i];
-				counter++;
-			}
-			if (!(strcmp(")", tokenizedVector[i]))) {
-				break;
-			}
-		}
-
-		if(!strcmp(tokenizedVector[1],"all")|| !strcmp(tokenizedVector[1], "*"))
-			Table::findTableByName(tokenizedVector[sizeOfTokenizedVector - 2]).selectAll();
-		else {
-			Table::findTableByName(tokenizedVector[sizeOfTokenizedVector - 2]).selectValues(values, counter);
-		}
-	}
-	
-	//delete from table where column = value;
-	void parserDelete() {
-		//value column name
-		Table::findTableByName(tokenizedVector[2]).deleteValues(tokenizedVector[sizeOfTokenizedVector-2],tokenizedVector[sizeOfTokenizedVector-4]);
+		Table table = Table::findTableByName(tokenizedVector[2]);
+		table.displayTable();
 		
 	}
 
-	void parserInsertRow() {
-		
-		int counter = 0;
-		std::string* value = new std::string[Table::findTableByName(tokenizedVector[2]).getNoColums()];
-		for (int i = 5; i < sizeOfTokenizedVector - 3; i++) {
-			if (vectorTypeOfToken[i] == dataTypeValues::string || vectorTypeOfToken[i] == dataTypeValues::number) {
-				value[counter]=tokenizedVector[i];
-				counter++;
-			}
-		}	
-		Table::findTableByName(tokenizedVector[2]).insertRow(value);
+	void parserCreateIndex() {
+
 	}
+
 
 
 
 	void parserDropTable() {
-		Table::findTableByName(tokenizedVector[2]).setToInexistent();
+		Table table = Table::findTableByName(tokenizedVector[2]);
 		Table::dropTable(tokenizedVector[2]);
+		table.setToInexistent();
+	}
+
+
+	void parserDropIndex() {
+
 	}
 
 
@@ -1291,7 +1030,7 @@ public:
 					if (!(strcmp(tokenizedVector[j], tokenizedVector[j + 2]))) {
 						throw;//check if the same column isnt used twice
 					}
-					if (vectorTypeOfToken[j] == dataTypeValues::string || vectorTypeOfToken[j] == dataTypeValues::number) {
+					if (vectorTypeOfToken[j] == dataTypeValues::string) {
 						if (!(strcmp(tokenizedVector[j], "all"))) {
 							throw;//if user uses all and another value throw an error
 						}
@@ -1379,24 +1118,16 @@ public:
 								throw std::invalid_argument("Missing equals operator or wrong position!");
 							}
 							else {
-								if (strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";")) {
-									throw;
+								if (vectorTypeOfToken[6] != dataTypeValues::string && vectorTypeOfToken[6] != dataTypeValues::number) {
+									throw std::invalid_argument("Missing value or wrong type of value!");
 								}
-								if (!strcmp(tokenizedVector[sizeOfTokenizedVector - 2], "'")) {
-									if (strcmp(tokenizedVector[sizeOfTokenizedVector - 4], "'")) {
-										throw;
-									}
-									if (dataTypeValues::string != vectorTypeOfToken[sizeOfTokenizedVector - 3] && dataTypeValues::number != vectorTypeOfToken[sizeOfTokenizedVector - 3]) {
-										throw;
-									}
-								}
-								else if (dataTypeValues::number == vectorTypeOfToken[sizeOfTokenizedVector - 2]) {
-									if (!strcmp(tokenizedVector[sizeOfTokenizedVector - 3], "'") || !strcmp(tokenizedVector[sizeOfTokenizedVector - 1], "'")) {
-										throw;
-									}
+								else if (!strcmp(tokenizedVector[6], "from") || !strcmp(tokenizedVector[6], "delete") || !strcmp(tokenizedVector[6], "where")) {
+									throw std::invalid_argument("Wrong name of column!");
 								}
 								else {
-									throw;
+									if (strcmp(tokenizedVector[7], ";")) {
+										throw std::invalid_argument("Function not ending with ';' or too many arguments");
+									}
 								}
 							}
 						}
@@ -1445,74 +1176,34 @@ public:
 								nrOfColumns++;
 							}
 							if (vectorTypeOfToken[j] == dataTypeValues::number) {
-								if (!strcmp(tokenizedVector[j + 1], "'") && !strcmp(tokenizedVector[j - 1], "'")) {
-									//verify first value
-									if (!strcmp(tokenizedVector[j - 2], "(")) {
-										if (strcmp(tokenizedVector[j + 2], ",")) {
-											throw;
-										}
-										if (strcmp(tokenizedVector[j - 1], "'") || strcmp(tokenizedVector[j + 1], "'")) {
-											throw;
-										}
+								//verify for first value
+								if (!strcmp(tokenizedVector[j - 1], "(")) {
+									if (strcmp(tokenizedVector[j + 1], ",")) {
+										throw;
 									}
-									//verify middle value
-									else if (!strcmp(tokenizedVector[j - 2], ",") && !strcmp(tokenizedVector[j + 2], ","))
-									{
-										if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1], "'")) {
-											throw;
-										}
-										if (!(dataTypeValues::number == vectorTypeOfToken[j - 3] && dataTypeValues::number == vectorTypeOfToken[j + 3]) &&
-											!(dataTypeValues::number == vectorTypeOfToken[j - 3] && !strcmp(tokenizedVector[j + 3], "'")) &&
-											!(dataTypeValues::number == vectorTypeOfToken[j + 3] && !strcmp(tokenizedVector[j - 3], "'")) &&
-											(strcmp(tokenizedVector[j + 3], "'") && strcmp(tokenizedVector[j - 3], "'"))) {
-											throw;
-										}
+								}
+								//verify middle value
+								else if (!strcmp(tokenizedVector[j - 1], ",") && !strcmp(tokenizedVector[j + 1], ",")) {
+									if (!(dataTypeValues::number == vectorTypeOfToken[j-2] && dataTypeValues::number == vectorTypeOfToken[j + 2]) && 
+										!(dataTypeValues::number == vectorTypeOfToken[j-2] && !strcmp(tokenizedVector[j+2],"'")) &&
+										!(dataTypeValues::number == vectorTypeOfToken[j+2] && !strcmp(tokenizedVector[j-2],"'")) &&
+										(strcmp(tokenizedVector[j + 2], "'") && strcmp(tokenizedVector[j - 2], "'"))) {
+										throw;
 									}
-									//verify last value
-									else if (!strcmp(tokenizedVector[j + 2], ")")) {
-										if (strcmp(tokenizedVector[j - 2], ",")) {
-											throw;
-										}
-										if (strcmp(tokenizedVector[j + 3], ";")) {
-											throw;
-										}
-										if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1], "'")) {
-											throw;
-										}
+								}
+								//verify last value
+								else if (!strcmp(tokenizedVector[j + 1], ")")) {
+									if (strcmp(tokenizedVector[j - 1], ",")) {
+										throw;
 									}
-									else {
+									if (strcmp(tokenizedVector[j + 2], ";")) {
 										throw;
 									}
 								}
 								else {
-									//verify first value
-									if (!strcmp(tokenizedVector[j - 1], "(")) {
-										if (strcmp(tokenizedVector[j + 1], ",")) {
-											throw;
-										}
-									}
-									//verify middle value
-									else if (!strcmp(tokenizedVector[j - 1], ",") && !strcmp(tokenizedVector[j + 1], ",")) {
-										if (!(dataTypeValues::number == vectorTypeOfToken[j - 2] && dataTypeValues::number == vectorTypeOfToken[j + 2]) &&
-											!(dataTypeValues::number == vectorTypeOfToken[j - 2] && !strcmp(tokenizedVector[j + 2], "'")) &&
-											!(dataTypeValues::number == vectorTypeOfToken[j + 2] && !strcmp(tokenizedVector[j - 2], "'")) &&
-											(strcmp(tokenizedVector[j + 2], "'") && strcmp(tokenizedVector[j - 2], "'"))) {
-											throw;
-										}
-									}
-									//verify last value
-									else if (!strcmp(tokenizedVector[j + 1], ")")) {
-										if (strcmp(tokenizedVector[j - 1], ",")) {
-											throw;
-										}
-										if (strcmp(tokenizedVector[j + 2], ";")) {
-											throw;
-										}
-									}
-									else {
-										throw;
-									}
+									throw;
 								}
+							
 							}
 							if (vectorTypeOfToken[j] == dataTypeValues::string) {
 								//verify first value
@@ -1593,13 +1284,6 @@ public:
 		else if (strcmp(tokenizedVector[0], "display") == 0)
 		{
 			lexerDisplay();
-		}
-		else if (strcmp(tokenizedVector[0], "insert") == 0)
-		{
-			lexerInsert();
-		}
-		else if (strcmp(tokenizedVector[0], "delete") == 0) {
-			lexerDelete();
 		}
 		else throw std::invalid_argument("First token in the command is wrong"); // First word in the command is wrong
 
@@ -1982,12 +1666,7 @@ void loopingThroughCommands(std::string commandLine) {
 	int sizeOfTokenizedVector = NULL;
 	char** tokenizedVector = nullptr;
 	int* vectorTypeOfToken = nullptr;
-	int counter = 1;
-	while (commandLine[commandLine.length() - counter] == ' ')
-	{
-		counter++;
-	}
-	if (commandLine[commandLine.length() - counter] != ';')  throw std::invalid_argument("Missing \";\" at the end of the command line");
+	if (commandLine[commandLine.length()-1] != ';')  throw std::invalid_argument("Missing \";\" at the end of the command line");
 	while (i < commandLine.length())
 	{
 		if (commandLine[i] == ';' || i == commandLine.length() - 1)
