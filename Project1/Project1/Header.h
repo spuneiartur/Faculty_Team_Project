@@ -53,6 +53,7 @@ public:
 		throw std::invalid_argument("Table with such a name does not exists; Please input a name for existing table");
 			
 	}
+	
 
 	char* getTableName() {
 		char* nameCopy = new char[strlen(this->name)+1];
@@ -525,6 +526,7 @@ public:
 
 	//Destructor
 	~Table() {
+		this->exists = false;
 		if (this->name != nullptr)
 		{
 			delete[] this->name;
@@ -888,13 +890,12 @@ public:
 	}
 
 	void parserDisplayTable() {
-		Table table = Table::findTableByName(tokenizedVector[2]);
-		table.displayTable();
+		Table::findTableByName(tokenizedVector[2]).displayTable();
+		
 		
 	}
 
 	void parserSelect() {
-		Table table = Table::findTableByName(tokenizedVector[sizeOfTokenizedVector-2]);
 		int noValues = 0;
 		int counter = 0;
 		//save the number of columns we want to print out
@@ -920,32 +921,30 @@ public:
 		}
 
 		if(!strcmp(tokenizedVector[1],"all")|| !strcmp(tokenizedVector[1], "*"))
-			table.selectAll();
+			Table::findTableByName(tokenizedVector[sizeOfTokenizedVector - 2]).selectAll();
 		else {
-			table.selectValues(values, counter);
+			Table::findTableByName(tokenizedVector[sizeOfTokenizedVector - 2]).selectValues(values, counter);
 		}
 	}
 	
 	//delete from table where column = value;
 	void parserDelete() {
-		Table table = Table::findTableByName(tokenizedVector[2]);
 		//value column name
-		table.deleteValues(tokenizedVector[sizeOfTokenizedVector-2],tokenizedVector[sizeOfTokenizedVector-4]);
+		Table::findTableByName(tokenizedVector[2]).deleteValues(tokenizedVector[sizeOfTokenizedVector-2],tokenizedVector[sizeOfTokenizedVector-4]);
 		
 	}
 
 	void parserInsertRow() {
 		
 		int counter = 0;
-		Table table = Table::findTableByName(tokenizedVector[2]);
-		std::string* value = new std::string[table.getNoColums()];
+		std::string* value = new std::string[Table::findTableByName(tokenizedVector[2]).getNoColums()];
 		for (int i = 5; i < sizeOfTokenizedVector - 3; i++) {
 			if (vectorTypeOfToken[i] == dataTypeValues::string || vectorTypeOfToken[i] == dataTypeValues::number) {
 				value[counter]=tokenizedVector[i];
 				counter++;
 			}
 		}	
-		table.insertRow(value);
+		Table::findTableByName(tokenizedVector[2]).insertRow(value);
 	}
 
 	void lexerCreateTable() {
@@ -1851,7 +1850,12 @@ void loopingThroughCommands(std::string commandLine) {
 	int sizeOfTokenizedVector = NULL;
 	char** tokenizedVector = nullptr;
 	int* vectorTypeOfToken = nullptr;
-	if (commandLine[commandLine.length()-1] != ';')  throw std::invalid_argument("Missing \";\" at the end of the command line");
+	int counter = 1;
+	while (commandLine[commandLine.length() - counter] == ' ')
+	{
+		counter++;
+	}
+	if (commandLine[commandLine.length() - counter] != ';')  throw std::invalid_argument("Missing \";\" at the end of the command line");
 	while (i < commandLine.length())
 	{
 		if (commandLine[i] == ';' || i == commandLine.length() - 1)
