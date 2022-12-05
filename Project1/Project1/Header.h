@@ -116,6 +116,19 @@ public:
 		//create a deep copy and increment the nodata to add the new row inserted
 
 		this->noData += 1;
+		if (noData == 1)
+		{
+			mData = new std::string * [this->noData];
+			for (int i = 0; i < this->noData; ++i) {
+				mData[i] = new std::string[this->noColumns];
+			}
+			//insert in the new row;
+			for (int j = 0; j < this->noColumns; j++) {
+				mData[this->noData - 1][j] = row[j];
+			}
+		}
+		else
+		{
 		std::string** mDataCopy = new std::string*[this->noData-1];
 		for (int i = 0; i < this->noData-1; ++i) {
 			mDataCopy[i] = new std::string[this->noColumns];
@@ -131,9 +144,10 @@ public:
 		for (int i = 0; i < this->noData-1; ++i)
 			delete[] mData[i];
 		delete[] mData;
+		
 
 		//remake mData based on auxiliary copy
-		mData = new std::string * [this->noData];
+		mData = new std::string*[this->noData];
 		for (int i = 0; i < this->noData; ++i) {
 			mData[i] = new std::string[this->noColumns];
 		}
@@ -152,6 +166,9 @@ public:
 		for (int i = 0; i < this->noData - 1; ++i)
 			delete[] mDataCopy[i];
 		delete[] mDataCopy;
+		mDataCopy = nullptr;
+		}
+
 	}
 
 	void selectAll() {
@@ -202,7 +219,7 @@ public:
 
 	void deleteValues(std::string value, std::string column_name) {
 		//Delete from table_name where = column_name = value;
-		std::string** mDataCopy = new std::string * [this->noData];
+		std::string** mDataCopy = new std::string*[this->noData];
 		for (int i = 0; i < this->noData; ++i) {
 			mDataCopy[i] = new std::string[noColumns];
 		}
@@ -246,21 +263,31 @@ public:
 			k++;
 			counter++;
 		}
-		mData = new std::string * [this->noData-copyOf_k];
-		for (int i = 0; i < this->noData - copyOf_k; ++i) {
-			mData[i] = new std::string[noColumns];
-		}
 
-		//deep copy with new values
-		for (int i = 0; i < this->noData- copyOf_k; i++) {
-			for (int j = 0; j < noColumns; j++) {
-				mData[i][j] = mDataCopy[i][j];
+		if (noData - copyOf_k == 0)
+		{
+			mData = nullptr;
+		}
+		else
+		{
+			mData = new std::string * [this->noData - copyOf_k];
+			for (int i = 0; i < this->noData - copyOf_k; ++i) {
+				mData[i] = new std::string[noColumns];
+			}
+
+			//deep copy with new values
+			for (int i = 0; i < this->noData - copyOf_k; i++) {
+				for (int j = 0; j < noColumns; j++) {
+					mData[i][j] = mDataCopy[i][j];
+				}
 			}
 		}
+		
 		//delete previous table
-		for (int i = 0; i < this->noData - 1; ++i)
+		for (int i = 0; i < this->noData; ++i)
 			delete[] mDataCopy[i];
 		delete[] mDataCopy;
+		noData = noData - copyOf_k;
 		
 	}
 
