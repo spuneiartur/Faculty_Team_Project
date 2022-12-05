@@ -76,7 +76,39 @@ public:
 			
 	}
 	
-
+	void updateTable(std::string columnNameChange, std::string valueChange, std::string columnNameCondition, std::string valueCondition) {
+		// Check if both columns exist
+		int checkCond = 0, posOfColumnCondition;
+		int checkChange = 0, posOfColumnChange;
+		if(columnNameChange == columnNameCondition) throw std::invalid_argument("The condition column and the column to be changed must be different ");
+		for (int i = 0; i < noColumns; i++)
+		{
+			if (vNames[i] == columnNameCondition) { checkCond++; posOfColumnCondition = i; }
+			if (vNames[i] == columnNameChange) { checkChange++; posOfColumnChange = i; }
+		}
+		if (checkChange == 0 || checkCond == 0)
+		{
+			throw std::invalid_argument("Such a column does not exist. Please input a valid names for columns ");
+		}
+		if (noData == 0)
+		{
+			std::cout << "The table has no data. Nothing has changed." << std::endl;
+			return;
+		}
+		else
+		{	
+			for (int i = 0; i < noData; i++)
+			{
+				if (mData[i][posOfColumnCondition] == valueCondition)
+				{
+					mData[i][posOfColumnChange] = valueChange;
+				}
+				
+			}
+		}
+		std::cout << std::endl << "Table updated" << std::endl;
+		 
+	}
 
 	void setToInexistent() {
 		this->exists = false;
@@ -368,6 +400,13 @@ public:
 		}
 	}
 
+	std::string getColumnTypeByName(std::string s) {
+		for (int i = 0; i < noColumns; i++)
+		{
+			if (s == vNames[i]) return vTypes[i];
+		} 
+		throw std::invalid_argument("Invalid name for column. Input a valid one");
+	}
 
 	//Constructors
 	Table() {
@@ -829,6 +868,10 @@ public:
 		{
 			parserDelete();
 		}
+		else if (strcmp(tokenizedVector[0], "update") == 0)
+		{
+			parserUpdate();
+		}
 		else throw std::invalid_argument("Wrong first token of the command");
 	}
 
@@ -1027,6 +1070,44 @@ public:
 	void parserDropTable() {
 		Table::findTableByName(tokenizedVector[2]).setToInexistent();
 		Table::dropTable(tokenizedVector[2]);
+	}
+
+	void parserUpdate() {
+		int i = 3; // position for filter column name
+		std::string changeColumnName = tokenizedVector[i];
+		std::string changeColumnValue;
+		std::string filterName;
+		std::string filterValue;
+		
+		if ("text" == Table::findTableByName(tokenizedVector[i-2]).getColumnTypeByName(changeColumnName))
+		{
+			changeColumnValue = tokenizedVector[i + 3];
+			filterName = tokenizedVector[i + 6];
+			if ("text" == Table::findTableByName(tokenizedVector[i - 2]).getColumnTypeByName(filterName))
+			{
+				filterValue = tokenizedVector[i + 9];
+			}
+			else
+			{
+				filterValue = tokenizedVector[i + 8];
+
+			}
+		}
+		else {
+			changeColumnValue = tokenizedVector[i + 2];
+			filterName = tokenizedVector[i + 5];
+			if ("text" == Table::findTableByName(tokenizedVector[i - 2]).getColumnTypeByName(filterName))
+			{
+				filterValue = tokenizedVector[i+8];
+			}
+			else
+			{
+				filterValue = tokenizedVector[i+7];
+
+			}
+		}
+		Table::findTableByName(tokenizedVector[1]).updateTable(changeColumnName, changeColumnValue, filterName, filterValue);
+
 	}
 
 
@@ -1719,7 +1800,7 @@ public:
 		this->tokenizedVector = nullptr;
 		// vectorTypeOfToken
 		delete[] this->vectorTypeOfToken;
-		std::cout << "token object was destructed" << std::endl;
+		//std::cout << "token object was destructed" << std::endl;
 	}
 
 
@@ -2009,10 +2090,10 @@ void loopingThroughCommands(std::string commandLine) {
 				vectorTypeOfToken = nullptr;
 			}
 			vectorTypeOfToken = identifyKeywordTypeVector(tokenizedVector, sizeOfTokenizedVector);
-			for (int i = 0; i < sizeOfTokenizedVector; i++)
+			/*for (int i = 0; i < sizeOfTokenizedVector; i++)
 			{
 				std::cout << tokenizedVector[i] << "   ||   " << vectorTypeOfToken[i] << std::endl;
-			}
+			}*/
 			Token token(tokenizedVector, sizeOfTokenizedVector, vectorTypeOfToken);
 			token.parser();
 			commandLine = commandLine.substr(i + 1);
