@@ -52,15 +52,18 @@ public:
 			if (strcmp(tables[i].name, nume) == 0) {
 				poz = i;
 			}
+
+			for (int i = poz; i < noOfTables; i++) {
+				tables[i] = tables[i + 1];
+				if (i + 1 == noOfTables) {
+					tables[i + 1].setToInexistent();
+				}
+			}
+			i--;
+			noOfTables--;
 		}
 		
-		for (int i = poz; i < noOfTables; i++) {
-			tables[i] = tables[i + 1];
-			if (i + 1 == noOfTables) {
-				tables[i + 1].setToInexistent();
-			}
-		}
-		noOfTables--;
+		
 	}
 
 
@@ -541,7 +544,7 @@ public:
 		// mData
 		if (this->mData != nullptr)
 		{
-			for (int i = 0; i < noColumns; i++)
+			for (int i = 0; i < noData; i++)
 			{
 				delete[] this->mData[i];
 			}
@@ -550,14 +553,14 @@ public:
 		}
 		if (t.mData != nullptr)
 		{
-			this->mData = new std::string * [noColumns];
-			for (int i = 0; i < noColumns; i++)
+			this->mData = new std::string * [noData];
+			for (int i = 0; i < noData; i++)
 			{
-				this->mData[i] = new std::string[noData];
+				this->mData[i] = new std::string[noColumns];
 			}
 
-			for (int i = 0; i < noColumns; i++)
-				for (int j = 0; j < noData; j++)
+			for (int i = 0; i < noData; i++)
+				for (int j = 0; j < noColumns; j++)
 				{
 					this->mData[i][j] = t.mData[i][j];
 				}
@@ -714,13 +717,12 @@ public:
 			this->vDefaults = nullptr;
 		}
 
-		// noData
-		this->noData = t.noData;
+		
 
 		// mData
 		if (this->mData != nullptr)
 		{
-			for (int i = 0; i < noColumns; i++)
+			for (int i = 0; i < noData; i++)
 			{
 				delete[] this->mData[i];
 			}
@@ -729,14 +731,14 @@ public:
 		}
 		if (t.mData != nullptr)
 		{
-			this->mData = new std::string * [noColumns];
-			for (int i = 0; i < noColumns; i++)
+			this->mData = new std::string * [t.noData];
+			for (int i = 0; i < t.noData; i++)
 			{
-				this->mData[i] = new std::string[noData];
+				this->mData[i] = new std::string[t.noColumns];
 			}
 
-			for (int i = 0; i < noColumns; i++)
-				for (int j = 0; j < noData; j++)
+			for (int i = 0; i < t.noData; i++)
+				for (int j = 0; j < t.noColumns; j++)
 				{
 					this->mData[i][j] = t.mData[i][j];
 				}
@@ -745,6 +747,10 @@ public:
 		{
 			this->mData = nullptr;
 		}
+
+		// noData
+		this->noData = t.noData;
+
 		return *this;
 	}
 };
@@ -794,35 +800,36 @@ public:
 				parserCreateTable();
 			}
 			else if (strcmp(tokenizedVector[1], "index") == 0) {
-				parserCreateIndex();
+				/*parserCreateIndex();*/
 			}
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0) {
 			parserDisplayTable();
 		}
-<<<<<<< HEAD
-		else if (strcmp(tokenizedVector[0], "drop") == 0) {
-			if (strcmp(tokenizedVector[1], "table") == 0) {
+		else if (strcmp(tokenizedVector[0], "drop") == 0)
+		{
+			if (strcmp(tokenizedVector[1], "table") == 0)
+			{
 				parserDropTable();
 			}
-			else if (strcmp(tokenizedVector[1], "index") == 0) {
-				parserDropIndex();
+			else if (strcmp(tokenizedVector[1], "index") == 0)
+			{
+				/*parserDropIndex();*/
 			}
 		}
-		//else throw std::invalid_argument("Wrong first token of the command");
-=======
-		else if (strcmp(tokenizedVector[0], "insert") == 0) {
+		else if (strcmp(tokenizedVector[0], "insert") == 0) 
+		{
 			parserInsertRow();
 		}
 		else if (strcmp(tokenizedVector[0], "select") == 0)
 		{
 			parserSelect();
 		}
-		else if (strcmp(tokenizedVector[0],"delete") == 0) {
+		else if (strcmp(tokenizedVector[0],"delete") == 0) 
+		{
 			parserDelete();
 		}
 		else throw std::invalid_argument("Wrong first token of the command");
->>>>>>> main
 	}
 
 	// Checks this syntax : id = 5 || name = 'Alex'. 
@@ -1018,9 +1025,8 @@ public:
 
 
 	void parserDropTable() {
-		Table table = Table::findTableByName(tokenizedVector[2]);
+		Table::findTableByName(tokenizedVector[2]).setToInexistent();
 		Table::dropTable(tokenizedVector[2]);
-		table.setToInexistent();
 	}
 
 
