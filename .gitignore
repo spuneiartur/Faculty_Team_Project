@@ -398,3 +398,9 @@ FodyWeavers.xsd
 *.sln.iml
 *.sln
 *.vcxproj*
+*.idb
+*.pdb
+*.tlog
+*.log
+*.exe
+*.ilk
