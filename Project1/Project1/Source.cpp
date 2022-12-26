@@ -27,11 +27,7 @@ int main()
 
 	// PLAYGROUND
 
-	// std::ifstream iFile;
-	std::ofstream oFile;
-
-
-	oFile.open("oFile.txt");
+	
 	
 	
 

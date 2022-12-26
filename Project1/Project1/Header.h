@@ -44,11 +44,29 @@ private:
 public:
 	// Methods
 	
-	/*Table(const char* fName)
+	// Reading from text file listOfTables.txt the list of all tables
+	static void processingDbData()
 	{
-		
-	}*/
+		std::ifstream iFile("listOfTables.txt");
 
+		if (!iFile)
+		{
+			return;
+		}
+
+		std::string s;
+		noOfTables = -1;
+		while (iFile >> s)
+		{
+			tables[++noOfTables].setByReadingFromFileDB(s.c_str());
+		}
+
+
+		iFile.close();
+
+	}
+
+	// Writing into files the names of all existing tables
 	static void updatingListOfTables()
 	{
 		std::ofstream oFile("listOfTables.txt");
@@ -125,9 +143,23 @@ public:
 			}
 		}
 
+
+		//========------------------------------------------Complete with seting the table with the read values !!!!!!!!!!!!!!!!!!!--------------------------==============
 		iFile.close();
 
 
+		// Deleting all dinamically alocated arrays
+		delete[] vNamesCopy;
+		vNamesCopy = nullptr;
+
+		delete[] vTypesCopy;
+		vTypesCopy = nullptr;
+
+		delete[] vDimensionsCopy;
+		vDimensionsCopy = nullptr;
+
+		delete[] vDefaultsCopy;
+		vDefaultsCopy = nullptr;
 
 	}
 
