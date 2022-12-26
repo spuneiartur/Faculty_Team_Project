@@ -43,9 +43,152 @@ private:
 
 public:
 	// Methods
+	
+	/*Table(const char* fName)
+	{
+		
+	}*/
+
+	static void updatingListOfTables()
+	{
+		std::ofstream oFile("listOfTables.txt");
+
+		for (int i = 0; i <= noOfTables; i++)
+		{
+			oFile << tables[i].name << std::endl;
+		}
+
+		oFile.close();
+	}
+
+	void setByReadingFromFileDB(const char* fName)
+	{
+		// DO NOT FORGET TO DELETE DINAMICALY ALLOCATED VECTORS
+		bool existsCopy = false;
+		char* nameCopy = nullptr;
+		int noColumnsCopy;
+		std::string* vNamesCopy = nullptr;
+		std::string* vTypesCopy = nullptr;
+		int* vDimensionsCopy = nullptr;
+		std::string* vDefaultsCopy = nullptr;
+		int noDataCopy;
+		std::string** mDataCopy = nullptr;
+
+		std::ifstream iFile(fName);
+
+
+		iFile >> existsCopy;
+
+		iFile >> noColumnsCopy;
+		vNamesCopy = new std::string[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			iFile >> vNamesCopy[i];
+		}
+
+		vTypesCopy = new std::string[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			iFile >> vTypesCopy[i];
+		}
+
+		vDimensionsCopy = new int[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			iFile >> vDimensionsCopy[i];
+		}
+
+		vDefaultsCopy = new std::string[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			
+			iFile >> vDefaultsCopy[i];
+			if (vDefaultsCopy[i] == "$space") vDefaultsCopy[i] = "";
+
+		}
+
+		iFile >> noDataCopy;
+
+
+		mDataCopy = new std::string*[noDataCopy];
+		for (int i = 0; i < noDataCopy; i++)
+		{
+			mDataCopy[i] = new std::string[noColumnsCopy];
+
+		}
+
+		for (int i = 0; i < noDataCopy; i++)
+		{
+			for (int j = 0; j < noColumnsCopy; j++)
+			{
+				iFile >> mDataCopy[i][j];
+			}
+		}
+
+		iFile.close();
+
+
+
+	}
+
+	void writingTableToFileDB()
+	{
+		std::ofstream oFile(this->name);
+		//bool - exists or not
+		oFile << this->exists << std::endl;
+		//noColumns
+		oFile << this->noColumns << std::endl;
+		// vNames
+		for (int i = 0; i < noColumns; i++)
+		{
+			oFile << vNames[i] << " ";
+		}
+		oFile << std::endl;
+		// vTypes
+		for (int i = 0; i < noColumns; i++)
+		{
+			oFile << vTypes[i] << " ";
+		}
+		oFile << std::endl;
+		// vDimensions
+		for (int i = 0; i < noColumns; i++)
+		{
+			oFile << vDimensions[i] << " ";
+		}
+		oFile << std::endl;
+		// vDefaults
+		for (int i = 0; i < noColumns; i++)
+		{
+			if (vDefaults[i] == " " || vDefaults[i] == "")
+			{
+				oFile << "$space" << " ";
+			}
+			else
+			{
+				oFile << vDefaults[i] << " ";
+			}
+		}
+		oFile << std::endl;
+		// noData
+		oFile << this->noData << std::endl;
+		// mData
+		for (int i = 0; i < noData; i++) {
+			for (int j = 0; j < noColumns; j++)
+			{
+				oFile << this->mData[i][j] << " ";
+			}
+			oFile << std::endl;
+		}
+		// noOfTables
+		oFile << noOfTables << std::endl;
+
+		oFile.close();
+
+	}
+
+
 	// I: table name
 	// E: table index
-
 	static void dropTable(char* nume) {
 		int poz = -1;
 		for (int i = 0; i <= noOfTables && poz==-1; i++) {
@@ -373,7 +516,7 @@ public:
 	{
 		int maxSize;
 		printf("Table name: %s\n\n", this->name);
-
+		
 		int counterForUnerline = 0;
 		// Displaying headers
 		for (int i = 0; i < noColumns; i++)
@@ -398,7 +541,11 @@ public:
 			}
 			printf("\n");
 		}
+		writingTableToFileDB();
+		setByReadingFromFileDB(this->name);
 	}
+
+	
 
 	std::string getColumnTypeByName(std::string s) {
 		for (int i = 0; i < noColumns; i++)
