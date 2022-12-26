@@ -81,7 +81,7 @@ public:
 
 	void setByReadingFromFileDB(const char* fName)
 	{
-		// DO NOT FORGET TO DELETE DINAMICALY ALLOCATED VECTORS
+		
 		bool existsCopy = false;
 		char* nameCopy = nullptr;
 		int noColumnsCopy;
@@ -96,6 +96,8 @@ public:
 
 
 		iFile >> existsCopy;
+
+		if (!iFile) return;
 
 		iFile >> noColumnsCopy;
 		vNamesCopy = new std::string[noColumnsCopy];
@@ -145,6 +147,10 @@ public:
 
 
 		//========------------------------------------------Complete with seting the table with the read values !!!!!!!!!!!!!!!!!!!--------------------------==============
+
+		Table tempTable(nameCopy, noColumnsCopy, vNamesCopy, vTypesCopy, vDimensionsCopy, vDefaultsCopy, noDataCopy, mDataCopy);
+		*this = tempTable;
+
 		iFile.close();
 
 
@@ -324,7 +330,7 @@ public:
 				
 				if (strcmp(tables[i].name, name) == 0)
 				{
-					throw std::invalid_argument("A table with such name alreay exists");
+					throw std::invalid_argument("A table with such name already exists");
 				}
 			}
 		}
@@ -573,8 +579,7 @@ public:
 			}
 			printf("\n");
 		}
-		writingTableToFileDB();
-		setByReadingFromFileDB(this->name);
+		
 	}
 
 	
@@ -656,6 +661,79 @@ public:
 		// DATA 
 		this->noData = 0;
 		this->mData = nullptr;
+
+	}
+
+	Table(char* name, int noColumns, std::string* vNames, std::string* vTypes, int* vDimensions, std::string* vDefaults, int noData, std::string** mData) {
+
+		this->exists = true;
+
+		if (name != nullptr)
+		{
+			this->name = new char[strlen(name) + 1];
+			strcpy(this->name, name);
+		}
+		else
+		{
+			this->name = nullptr;
+		}
+		this->noColumns = noColumns;
+		// vNames
+		if (vNames != nullptr)
+		{
+			this->vNames = new std::string[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vNames[i] = vNames[i];
+			}
+		}
+
+		// vTypes
+		if (vTypes != nullptr)
+		{
+			this->vTypes = new std::string[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vTypes[i] = vTypes[i];
+			}
+		}
+
+		// vDimensions
+		if (vDimensions != nullptr)
+		{
+			this->vDimensions = new int[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDimensions[i] = vDimensions[i];
+			}
+		}
+
+		// vDefaults
+		if (vDefaults != nullptr)
+		{
+			this->vDefaults = new std::string[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDefaults[i] = vDefaults[i];
+			}
+		}
+
+		// DATA 
+		this->noData = noData;
+		// // Allocating memory
+		this->mData = new std::string*[noData];
+		for (int i = 0; i < noData; i++)
+		{
+			this->mData[i] = new std::string[noColumns];
+		}
+		// Setting values
+		for (int i = 0; i < noData; i++)
+		{
+			for (int j = 0; j < noColumns; j++)
+			{
+				this->mData[i][j] = mData[i][j];
+			}
+		}
 
 	}
 	// Copy constructor

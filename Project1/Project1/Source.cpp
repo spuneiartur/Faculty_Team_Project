@@ -15,8 +15,9 @@ int main()
 	// All commands can be verified using display table command 
 	// Input has to be written in the bellow string
 
+	// TO DO : UPDATE ALL THE TABLES AFTER EXECUTING ALL THE COMMANDS
 
-	//processingDbData();
+	Table::processingDbData();
 
 	std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); INSERT INTO studenteel VALUES(1,'Alex','1068'); display table studenteel;INSERT INTO students VALUES(1,'Alex','1068');  INSERT INTO students VALUES(2,'Danut','1068');  INSERT INTO students VALUES(3,'Artur','1069');  INSERT INTO students VALUES(4,'Roma','1067'); display table students; DELETE FROM studenteel WHERE grupa = '1068g'; update students set nume = 'Bravo' where grupa = '1068'; display table students; DROP TABLE studenteel;    "; 
 
