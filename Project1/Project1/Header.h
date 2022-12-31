@@ -43,24 +43,238 @@ private:
 
 public:
 	// Methods
+	
+	// Reading from text file listOfTables.txt the list of all tables
+	static void extractingDbData()
+	{
+		std::ifstream iFile("listOfTables.txt");
+
+		if (!iFile)
+		{
+			return;
+		}
+
+		std::string s;
+		noOfTables = -1;
+		while (iFile >> s)
+		{
+			tables[++noOfTables].setByReadingFromFileDB(s.c_str());
+		}
+
+
+		iFile.close();
+
+	}
+
+	static void deletingPreviousFiles()
+	{ // ADD A TRY CATCH ---------------------------------------------------------------==========================================
+		std::ifstream iFile("listOfTables.txt");
+		if (!iFile)
+		{
+			return;
+		}
+		
+		std::string fileName;
+
+
+		while (iFile >> fileName)
+		{
+			char* fileNameChar;
+			fileNameChar = new char[fileName.length() + 1];
+			strcpy(fileNameChar, fileName.c_str());
+			if (remove(fileNameChar))
+			{
+				throw std::invalid_argument("A error occured when trying to delete a file");
+			}
+			
+		}
+
+		iFile.close();
+		if (remove("listOfTables.txt"))
+		{
+			throw std::invalid_argument("A error occured when trying to delete file 'listOfTables.txt' ");
+
+		}
+	}
+
+	// Writing into files the names of all existing tables
+	static void updatingListOfTables()
+	{
+		std::ofstream oFile("listOfTables.txt");
+
+		for (int i = 0; i <= noOfTables; i++)
+		{
+			tables[i].writingTableToFileDB();
+			oFile << tables[i].name << std::endl;
+		}
+
+		oFile.close();
+	}
+
+	void setByReadingFromFileDB(const char* fName)
+	{
+		
+		bool existsCopy = false;
+		char* nameCopy = nullptr;
+		int noColumnsCopy;
+		std::string* vNamesCopy = nullptr;
+		std::string* vTypesCopy = nullptr;
+		int* vDimensionsCopy = nullptr;
+		std::string* vDefaultsCopy = nullptr;
+		int noDataCopy;
+		std::string** mDataCopy = nullptr;
+
+		std::ifstream iFile(fName);
+
+		if (!iFile) return;
+
+		nameCopy = new char[strlen(fName) + 1];
+		strcpy(nameCopy, fName);
+		
+		iFile >> existsCopy;
+
+		iFile >> noColumnsCopy;
+		vNamesCopy = new std::string[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			iFile >> vNamesCopy[i];
+		}
+
+		vTypesCopy = new std::string[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			iFile >> vTypesCopy[i];
+		}
+
+		vDimensionsCopy = new int[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			iFile >> vDimensionsCopy[i];
+		}
+
+		vDefaultsCopy = new std::string[noColumnsCopy];
+		for (int i = 0; i < noColumnsCopy; i++)
+		{
+			
+			iFile >> vDefaultsCopy[i];
+			if (vDefaultsCopy[i] == "$space") vDefaultsCopy[i] = "";
+
+		}
+
+		iFile >> noDataCopy;
+
+
+		mDataCopy = new std::string*[noDataCopy];
+		for (int i = 0; i < noDataCopy; i++)
+		{
+			mDataCopy[i] = new std::string[noColumnsCopy];
+
+		}
+
+		for (int i = 0; i < noDataCopy; i++)
+		{
+			for (int j = 0; j < noColumnsCopy; j++)
+			{
+				iFile >> mDataCopy[i][j];
+			}
+		}
+
+		Table tempTable(nameCopy, noColumnsCopy, vNamesCopy, vTypesCopy, vDimensionsCopy, vDefaultsCopy, noDataCopy, mDataCopy);
+		*this = tempTable;
+
+		iFile.close();
+
+
+		// Deleting all dinamically alocated arrays
+		delete[] vNamesCopy;
+		vNamesCopy = nullptr;
+
+		delete[] vTypesCopy;
+		vTypesCopy = nullptr;
+
+		delete[] vDimensionsCopy;
+		vDimensionsCopy = nullptr;
+
+		delete[] vDefaultsCopy;
+		vDefaultsCopy = nullptr;
+
+	}
+
+	void writingTableToFileDB()
+	{
+		std::ofstream oFile(this->name);
+		//bool - exists or not
+		oFile << this->exists << std::endl;
+		//noColumns
+		oFile << this->noColumns << std::endl;
+		// vNames
+		for (int i = 0; i < noColumns; i++)
+		{
+			oFile << vNames[i] << " ";
+		}
+		oFile << std::endl;
+		// vTypes
+		for (int i = 0; i < noColumns; i++)
+		{
+			oFile << vTypes[i] << " ";
+		}
+		oFile << std::endl;
+		// vDimensions
+		for (int i = 0; i < noColumns; i++)
+		{
+			oFile << vDimensions[i] << " ";
+		}
+		oFile << std::endl;
+		// vDefaults
+		for (int i = 0; i < noColumns; i++)
+		{
+			if (vDefaults[i] == " " || vDefaults[i] == "")
+			{
+				oFile << "$space" << " ";
+			}
+			else
+			{
+				oFile << vDefaults[i] << " ";
+			}
+		}
+		oFile << std::endl;
+		// noData
+		oFile << this->noData << std::endl;
+		// mData
+		for (int i = 0; i < noData; i++) {
+			for (int j = 0; j < noColumns; j++)
+			{
+				oFile << this->mData[i][j] << " ";
+			}
+			oFile << std::endl;
+		}
+		// noOfTables
+		oFile << noOfTables << std::endl;
+
+		oFile.close();
+
+	}
+
+
 	// I: table name
 	// E: table index
-
 	static void dropTable(char* nume) {
-		int poz = -1;
-		for (int i = 0; i <= noOfTables && poz==-1; i++) {
+		int pos = -1;
+		for (int i = 0; i <= noOfTables; i++) {
 			if (strcmp(tables[i].name, nume) == 0) {
-				poz = i;
-			}
+				pos = i;
 
-			for (int i = poz; i < noOfTables; i++) {
-				tables[i] = tables[i + 1];
-				if (i + 1 == noOfTables) {
-					tables[i + 1].setToInexistent();
+				
+				while (pos < noOfTables)
+				{
+					tables[pos] = tables[pos + 1];
+					pos++;
 				}
+				tables[pos].setToInexistent();
+				
+				i--;
+				noOfTables--;
 			}
-			i--;
-			noOfTables--;
 		}
 		
 		
@@ -149,18 +363,13 @@ public:
 				
 				if (strcmp(tables[i].name, name) == 0)
 				{
-					throw std::invalid_argument("A table with such name alreay exists");
+					throw std::invalid_argument("A table with such name already exists");
 				}
 			}
 		}
-		/*if(tables[noOfTables + 1].getExistitngStatus() == false)*/
 		if (noOfTables == 99) throw std::invalid_argument("To many tables; Your data base may contain max 100 tables");
 		tables[++noOfTables] = { Table(name, noColumns, vNames, vTypes, vDimensions, vDefaults) };
-		// Checking the name of all existing tables
-		/*for (int i = 0; i <= noOfTables; i++)
-		{
-			std::cout << tables[i].name << std::endl;
-		}*/
+		
 	}
 	bool getExistitngStatus()
 	{
@@ -373,7 +582,7 @@ public:
 	{
 		int maxSize;
 		printf("Table name: %s\n\n", this->name);
-
+		
 		int counterForUnerline = 0;
 		// Displaying headers
 		for (int i = 0; i < noColumns; i++)
@@ -398,7 +607,10 @@ public:
 			}
 			printf("\n");
 		}
+		
 	}
+
+	
 
 	std::string getColumnTypeByName(std::string s) {
 		for (int i = 0; i < noColumns; i++)
@@ -477,6 +689,79 @@ public:
 		// DATA 
 		this->noData = 0;
 		this->mData = nullptr;
+
+	}
+
+	Table(char* name, int noColumns, std::string* vNames, std::string* vTypes, int* vDimensions, std::string* vDefaults, int noData, std::string** mData) {
+
+		this->exists = true;
+
+		if (name != nullptr)
+		{
+			this->name = new char[strlen(name) + 1];
+			strcpy(this->name, name);
+		}
+		else
+		{
+			this->name = nullptr;
+		}
+		this->noColumns = noColumns;
+		// vNames
+		if (vNames != nullptr)
+		{
+			this->vNames = new std::string[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vNames[i] = vNames[i];
+			}
+		}
+
+		// vTypes
+		if (vTypes != nullptr)
+		{
+			this->vTypes = new std::string[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vTypes[i] = vTypes[i];
+			}
+		}
+
+		// vDimensions
+		if (vDimensions != nullptr)
+		{
+			this->vDimensions = new int[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDimensions[i] = vDimensions[i];
+			}
+		}
+
+		// vDefaults
+		if (vDefaults != nullptr)
+		{
+			this->vDefaults = new std::string[noColumns];
+			for (int i = 0; i < noColumns; i++)
+			{
+				this->vDefaults[i] = vDefaults[i];
+			}
+		}
+
+		// DATA 
+		this->noData = noData;
+		// // Allocating memory
+		this->mData = new std::string*[noData];
+		for (int i = 0; i < noData; i++)
+		{
+			this->mData[i] = new std::string[noColumns];
+		}
+		// Setting values
+		for (int i = 0; i < noData; i++)
+		{
+			for (int j = 0; j < noColumns; j++)
+			{
+				this->mData[i][j] = mData[i][j];
+			}
+		}
 
 	}
 	// Copy constructor
@@ -929,7 +1214,7 @@ public:
 	void parserCreateTable() {
 		int posOfParanthesis;
 		// Checking if the condition IF NOT EXISTS is mentioned -----------------------------------??????????????????????????????????
-		bool verificationIsNeeded = false;
+		bool verificationIsNeeded = true;
 		for (int i = 1; i < sizeOfTokenizedVector-2; i++)
 		{
 			if (strcmp(tokenizedVector[i], "if") == 0)
@@ -954,7 +1239,6 @@ public:
 		
 		// // Getting the No of Columns
 		int counterNoCol = countingNoOfColumns(posOfParanthesis);
-		std::cout << "The table consists of " << counterNoCol << " columns" << std::endl;
 		// // Saving parameters for each column 
 		char* tableName = new char[strlen(tokenizedVector[2]) + 1];
 		strcpy(tableName, tokenizedVector[2]);
@@ -998,9 +1282,7 @@ public:
 				else throw std::invalid_argument("The type of value is neither an INTEGER nor TEXT");
 			}
 		}
-		/*for (int i = 0; i < counterNoCol; i++) {
-			std::cout << vNames[i] << " | " << vTypes[i] << " | " << vDimensions[i] << " | " << vDefaults[i] << std::endl;
-		}*/
+		
 
 		// // Creating table
 		Table::createTable(tableName, counterNoCol, vNames, vTypes, vDimensions, vDefaults, verificationIsNeeded);
@@ -1191,7 +1473,6 @@ public:
 			i++;
 			if (strcmp(tokenizedVector[i], ";") < 0) throw std::invalid_argument("Unexpected tokens after \")\"");
 
-			std::cout << "the command is correct!" << std::endl;
 		}
 		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
 
@@ -1494,7 +1775,7 @@ public:
 		int nrOfColumns = 0;
 		if (strcmp(tokenizedVector[i], "into") || strcmp(tokenizedVector[sizeOfTokenizedVector-1],";") 
 			|| strcmp(tokenizedVector[sizeOfTokenizedVector-2],")")) {
-			throw;//check if second word is not INTO
+			throw std::invalid_argument("Check the second token. Expected 'INTO'");//check if second word is not INTO
 		}
 		else {
 			if (vectorTypeOfToken[i + 1] != dataTypeValues::string) {
@@ -1505,7 +1786,7 @@ public:
 			}
 			else {
 				if (strcmp(tokenizedVector[i+2], "values")) {
-					throw;//check if syntax has values on 4th position
+					throw std::invalid_argument("Check the 4th position token. Expected 'VALUES'");//check if syntax has values on 4th position
 				}
 				else {
 					if (strcmp(tokenizedVector[i + 3], "(")) {
