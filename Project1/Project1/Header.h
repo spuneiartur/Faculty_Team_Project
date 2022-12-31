@@ -84,7 +84,7 @@ public:
 			strcpy(fileNameChar, fileName.c_str());
 			if (remove(fileNameChar))
 			{
-				throw std::exception("A error occured when trying to delete a file");
+				throw std::invalid_argument("A error occured when trying to delete a file");
 			}
 			
 		}
@@ -92,7 +92,7 @@ public:
 		iFile.close();
 		if (remove("listOfTables.txt"))
 		{
-			throw std::exception("A error occured when trying to delete file 'listOfTables.txt' ");
+			throw std::invalid_argument("A error occured when trying to delete file 'listOfTables.txt' ");
 
 		}
 	}
@@ -367,14 +367,9 @@ public:
 				}
 			}
 		}
-		/*if(tables[noOfTables + 1].getExistitngStatus() == false)*/
 		if (noOfTables == 99) throw std::invalid_argument("To many tables; Your data base may contain max 100 tables");
 		tables[++noOfTables] = { Table(name, noColumns, vNames, vTypes, vDimensions, vDefaults) };
-		// Checking the name of all existing tables
-		/*for (int i = 0; i <= noOfTables; i++)
-		{
-			std::cout << tables[i].name << std::endl;
-		}*/
+		
 	}
 	bool getExistitngStatus()
 	{
@@ -1219,7 +1214,7 @@ public:
 	void parserCreateTable() {
 		int posOfParanthesis;
 		// Checking if the condition IF NOT EXISTS is mentioned -----------------------------------??????????????????????????????????
-		bool verificationIsNeeded = false;
+		bool verificationIsNeeded = true;
 		for (int i = 1; i < sizeOfTokenizedVector-2; i++)
 		{
 			if (strcmp(tokenizedVector[i], "if") == 0)
@@ -1244,7 +1239,6 @@ public:
 		
 		// // Getting the No of Columns
 		int counterNoCol = countingNoOfColumns(posOfParanthesis);
-		std::cout << "The table consists of " << counterNoCol << " columns" << std::endl;
 		// // Saving parameters for each column 
 		char* tableName = new char[strlen(tokenizedVector[2]) + 1];
 		strcpy(tableName, tokenizedVector[2]);
@@ -1288,9 +1282,7 @@ public:
 				else throw std::invalid_argument("The type of value is neither an INTEGER nor TEXT");
 			}
 		}
-		/*for (int i = 0; i < counterNoCol; i++) {
-			std::cout << vNames[i] << " | " << vTypes[i] << " | " << vDimensions[i] << " | " << vDefaults[i] << std::endl;
-		}*/
+		
 
 		// // Creating table
 		Table::createTable(tableName, counterNoCol, vNames, vTypes, vDimensions, vDefaults, verificationIsNeeded);
@@ -1481,7 +1473,6 @@ public:
 			i++;
 			if (strcmp(tokenizedVector[i], ";") < 0) throw std::invalid_argument("Unexpected tokens after \")\"");
 
-			std::cout << "the command is correct!" << std::endl;
 		}
 		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
 
@@ -1784,7 +1775,7 @@ public:
 		int nrOfColumns = 0;
 		if (strcmp(tokenizedVector[i], "into") || strcmp(tokenizedVector[sizeOfTokenizedVector-1],";") 
 			|| strcmp(tokenizedVector[sizeOfTokenizedVector-2],")")) {
-			throw;//check if second word is not INTO
+			throw std::invalid_argument("Check the second token. Expected 'INTO'");//check if second word is not INTO
 		}
 		else {
 			if (vectorTypeOfToken[i + 1] != dataTypeValues::string) {
@@ -1795,7 +1786,7 @@ public:
 			}
 			else {
 				if (strcmp(tokenizedVector[i+2], "values")) {
-					throw;//check if syntax has values on 4th position
+					throw std::invalid_argument("Check the 4th position token. Expected 'VALUES'");//check if syntax has values on 4th position
 				}
 				else {
 					if (strcmp(tokenizedVector[i + 3], "(")) {
