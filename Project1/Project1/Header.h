@@ -45,7 +45,7 @@ public:
 	// Methods
 	
 	// Reading from text file listOfTables.txt the list of all tables
-	static void processingDbData()
+	static void extractingDbData()
 	{
 		std::ifstream iFile("listOfTables.txt");
 
@@ -66,6 +66,37 @@ public:
 
 	}
 
+	static void deletingPreviousFiles()
+	{ // ADD A TRY CATCH ---------------------------------------------------------------==========================================
+		std::ifstream iFile("listOfTables.txt");
+		if (!iFile)
+		{
+			return;
+		}
+		
+		std::string fileName;
+
+
+		while (iFile >> fileName)
+		{
+			char* fileNameChar;
+			fileNameChar = new char[fileName.length() + 1];
+			strcpy(fileNameChar, fileName.c_str());
+			if (remove(fileNameChar))
+			{
+				throw std::exception("A error occured when trying to delete a file");
+			}
+			
+		}
+
+		iFile.close();
+		if (remove("listOfTables.txt"))
+		{
+			throw std::exception("A error occured when trying to delete file 'listOfTables.txt' ");
+
+		}
+	}
+
 	// Writing into files the names of all existing tables
 	static void updatingListOfTables()
 	{
@@ -73,6 +104,7 @@ public:
 
 		for (int i = 0; i <= noOfTables; i++)
 		{
+			tables[i].writingTableToFileDB();
 			oFile << tables[i].name << std::endl;
 		}
 
@@ -94,10 +126,12 @@ public:
 
 		std::ifstream iFile(fName);
 
-
-		iFile >> existsCopy;
-
 		if (!iFile) return;
+
+		nameCopy = new char[strlen(fName) + 1];
+		strcpy(nameCopy, fName);
+		
+		iFile >> existsCopy;
 
 		iFile >> noColumnsCopy;
 		vNamesCopy = new std::string[noColumnsCopy];
@@ -144,9 +178,6 @@ public:
 				iFile >> mDataCopy[i][j];
 			}
 		}
-
-
-		//========------------------------------------------Complete with seting the table with the read values !!!!!!!!!!!!!!!!!!!--------------------------==============
 
 		Table tempTable(nameCopy, noColumnsCopy, vNamesCopy, vTypesCopy, vDimensionsCopy, vDefaultsCopy, noDataCopy, mDataCopy);
 		*this = tempTable;
@@ -228,20 +259,22 @@ public:
 	// I: table name
 	// E: table index
 	static void dropTable(char* nume) {
-		int poz = -1;
-		for (int i = 0; i <= noOfTables && poz==-1; i++) {
+		int pos = -1;
+		for (int i = 0; i <= noOfTables; i++) {
 			if (strcmp(tables[i].name, nume) == 0) {
-				poz = i;
-			}
+				pos = i;
 
-			for (int i = poz; i < noOfTables; i++) {
-				tables[i] = tables[i + 1];
-				if (i + 1 == noOfTables) {
-					tables[i + 1].setToInexistent();
+				
+				while (pos < noOfTables)
+				{
+					tables[pos] = tables[pos + 1];
+					pos++;
 				}
+				tables[pos].setToInexistent();
+				
+				i--;
+				noOfTables--;
 			}
-			i--;
-			noOfTables--;
 		}
 		
 		

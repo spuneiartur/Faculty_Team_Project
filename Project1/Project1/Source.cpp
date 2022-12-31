@@ -17,7 +17,9 @@ int main()
 
 	// TO DO : UPDATE ALL THE TABLES AFTER EXECUTING ALL THE COMMANDS
 
-	Table::processingDbData();
+
+	Table::extractingDbData();
+	Table::deletingPreviousFiles();
 
 	std::string commandLine = " CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); INSERT INTO studenteel VALUES(1,'Alex','1068'); display table studenteel;INSERT INTO students VALUES(1,'Alex','1068');  INSERT INTO students VALUES(2,'Danut','1068');  INSERT INTO students VALUES(3,'Artur','1069');  INSERT INTO students VALUES(4,'Roma','1067'); display table students; DELETE FROM studenteel WHERE grupa = '1068g'; update students set nume = 'Bravo' where grupa = '1068'; display table students; DROP TABLE studenteel;    "; 
 
@@ -29,7 +31,9 @@ int main()
 	// PLAYGROUND
 
 	
-	
+
+	//std::cout << remove("listOfTables.txt") << std::endl;
+
 	
 
 	return 0;
@@ -44,7 +48,7 @@ int main()
 
 // SELECT (table_alpha, nr_grupa) FROM spain;
 
-
+//  CREATE TABLE Studenteel IF NOT EXISTS ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); CREATE TABLE students ((id, integer, 1000, 0), (nume, text, 128, ''), (grupa, text, 16, '10')); INSERT INTO studenteel VALUES(1,'Alex','1068'); display table studenteel;INSERT INTO students VALUES(1,'Alex','1068');  INSERT INTO students VALUES(2,'Danut','1068');  INSERT INTO students VALUES(3,'Artur','1069');  INSERT INTO students VALUES(4,'Roma','1067'); display table students; DELETE FROM studenteel WHERE grupa = '1068g'; update students set nume = 'Bravo' where grupa = '1068'; display table students; DROP TABLE studenteel; 
 
 
 //CREATE TABLE clients ( client_id NUMBER(6) 12.5 CONSTRAINT pk_client PRIMARY KEY, client_name VARCHAR2(20) NOT NULL, client_surname VARCHAR2(20) NOT NULL, telephone VARCHAR2(20), credit_limit NUMBER(9,2), email VARCHAR2(30) CONSTRAINT one_email UNIQUE, birth_date DATE, status VARCHAR2(20), gender CHAR(1), CONSTRAINT ck_email CHECK (email LIKE '%@%.%') );
