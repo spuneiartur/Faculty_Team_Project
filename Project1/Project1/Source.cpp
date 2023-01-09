@@ -36,7 +36,7 @@ int main()
 
 	Table::updatingListOfTables();
 
-	// PLAYGROUND
+	// PLAYGROUND.
 	
 
 	return 0;

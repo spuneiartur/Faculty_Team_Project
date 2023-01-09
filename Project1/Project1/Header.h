@@ -1398,7 +1398,7 @@ public:
 		int i = 1;
 		if (!strcmp(tokenizedVector[i], "table") && vectorTypeOfToken[i + 1] == dataTypeValues::string) {
 			i++;
-			if (vectorTypeOfToken[i] == dataTypeValues::string) { // if token is an identifier 
+			if (vectorTypeOfToken[i] == dataTypeValues::string) { // if token is an identifier .
 				i++;
 
 				if (strcmp(tokenizedVector[i], "(") == 0) { // if token is an identifier and next token is a paranthesis
