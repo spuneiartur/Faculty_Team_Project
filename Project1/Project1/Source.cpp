@@ -5,16 +5,11 @@
 #include<algorithm>
 #include "Header.h"
 
-/* Deallocation - Do no forget :
 
-
-*/
 
 int main()
 {
-	// All commands can be verified using display table command 
-	// Input has to be written in the bellow string
-
+	// Commands will be written in CommandLine.txt
 
 
 	Files::extractingDbData();
