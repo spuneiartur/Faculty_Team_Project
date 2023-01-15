@@ -23,12 +23,10 @@ enum typeDataType {
 enum dataTypeValues {
 	number = -10, string = -5
 };
-// TODO
-// to build custom throws
 
 // Classes -------------------------------------------------------------------------------------------
 class Table {
-private:
+protected:
 	bool exists = false;
 	char* name = nullptr;
 	int noColumns;
@@ -43,77 +41,10 @@ private:
 
 public:
 	// Methods
-	
-	// Reading from text file listOfTables.txt the list of all tables
-	static void extractingDbData()
-	{
-		std::ifstream iFile("listOfTables.txt");
-
-		if (!iFile)
-		{
-			return;
-		}
-
-		std::string s;
-		noOfTables = -1;
-		while (iFile >> s)
-		{
-			tables[++noOfTables].setByReadingFromFileDB(s.c_str());
-		}
-
-
-		iFile.close();
-
-	}
-
-	static void deletingPreviousFiles()
-	{ // ADD A TRY CATCH ---------------------------------------------------------------==========================================
-		std::ifstream iFile("listOfTables.txt");
-		if (!iFile)
-		{
-			return;
-		}
-		
-		std::string fileName;
-
-
-		while (iFile >> fileName)
-		{
-			char* fileNameChar;
-			fileNameChar = new char[fileName.length() + 1];
-			strcpy(fileNameChar, fileName.c_str());
-			if (remove(fileNameChar))
-			{
-				throw std::invalid_argument("A error occured when trying to delete a file");
-			}
-			
-		}
-
-		iFile.close();
-		if (remove("listOfTables.txt"))
-		{
-			throw std::invalid_argument("A error occured when trying to delete file 'listOfTables.txt' ");
-
-		}
-	}
-
-	// Writing into files the names of all existing tables
-	static void updatingListOfTables()
-	{
-		std::ofstream oFile("listOfTables.txt");
-
-		for (int i = 0; i <= noOfTables; i++)
-		{
-			tables[i].writingTableToFileDB();
-			oFile << tables[i].name << std::endl;
-		}
-
-		oFile.close();
-	}
 
 	void setByReadingFromFileDB(const char* fName)
 	{
-		
+
 		bool existsCopy = false;
 		char* nameCopy = nullptr;
 		int noColumnsCopy;
@@ -130,7 +61,7 @@ public:
 
 		nameCopy = new char[strlen(fName) + 1];
 		strcpy(nameCopy, fName);
-		
+
 		iFile >> existsCopy;
 
 		iFile >> noColumnsCopy;
@@ -155,7 +86,7 @@ public:
 		vDefaultsCopy = new std::string[noColumnsCopy];
 		for (int i = 0; i < noColumnsCopy; i++)
 		{
-			
+
 			iFile >> vDefaultsCopy[i];
 			if (vDefaultsCopy[i] == "$space") vDefaultsCopy[i] = "";
 
@@ -164,7 +95,7 @@ public:
 		iFile >> noDataCopy;
 
 
-		mDataCopy = new std::string*[noDataCopy];
+		mDataCopy = new std::string * [noDataCopy];
 		for (int i = 0; i < noDataCopy; i++)
 		{
 			mDataCopy[i] = new std::string[noColumnsCopy];
@@ -200,6 +131,8 @@ public:
 
 	}
 
+
+	
 	void writingTableToFileDB()
 	{
 		std::ofstream oFile(this->name);
@@ -254,6 +187,7 @@ public:
 		oFile.close();
 
 	}
+	
 
 
 	// I: table name
@@ -369,6 +303,8 @@ public:
 		}
 		if (noOfTables == 99) throw std::invalid_argument("To many tables; Your data base may contain max 100 tables");
 		tables[++noOfTables] = { Table(name, noColumns, vNames, vTypes, vDimensions, vDefaults) };
+		std::cout << "Table " << name << " was created!" << std::endl;
+
 		
 	}
 	bool getExistitngStatus()
@@ -610,7 +546,11 @@ public:
 		
 	}
 
-	
+	char* getName() {
+		char* nameCopy = new char[strlen(name) + 1];
+		strcpy(nameCopy, name);
+		return nameCopy;
+	}
 
 	std::string getColumnTypeByName(std::string s) {
 		for (int i = 0; i < noColumns; i++)
@@ -1081,6 +1021,103 @@ public:
 int Table::noOfTables = -1;
 Table Table::tables[100];
 
+class Files : public Table {
+private:
+
+public:
+	static char* readingCommandsFromDB() {
+		std::ifstream iFile("CommandLine.txt");
+		
+		std::string token = "";
+		if (!iFile)
+		{
+			return nullptr;
+		}
+		std::string command = "";
+
+		
+		while (iFile >> token)
+		{
+			command =command + " " + token;
+		}
+
+		char* commandChar = new char[command.length() + 1];
+		strcpy(commandChar, command.c_str());
+		
+		return commandChar;
+	}
+
+	// Reading from text file listOfTables.txt the list of all tables
+	static void extractingDbData()
+	{
+		std::ifstream iFile("listOfTables.txt");
+
+		if (!iFile)
+		{
+			return;
+		}
+
+		std::string s;
+		Table::noOfTables = -1;
+		while (iFile >> s)
+		{
+			tables[++noOfTables].setByReadingFromFileDB(s.c_str());
+		}
+
+
+		iFile.close();
+
+	}
+
+	static void deletingPreviousFiles()
+	{ // ADD A TRY CATCH ---------------------------------------------------------------==========================================
+		std::ifstream iFile("listOfTables.txt");
+		if (!iFile)
+		{
+			return;
+		}
+
+		std::string fileName;
+
+
+		while (iFile >> fileName)
+		{
+			char* fileNameChar;
+			fileNameChar = new char[fileName.length() + 1];
+			strcpy(fileNameChar, fileName.c_str());
+			if (remove(fileNameChar))
+			{
+				throw std::invalid_argument("A error occured when trying to delete a file");
+			}
+
+		}
+
+		iFile.close();
+		if (remove("listOfTables.txt"))
+		{
+			throw std::invalid_argument("A error occured when trying to delete file 'listOfTables.txt' ");
+
+		}
+	}
+
+	// Writing into files the names of all existing tables
+	static void updatingListOfTables()
+	{
+		std::ofstream oFile("listOfTables.txt");
+
+		for (int i = 0; i <= noOfTables; i++)
+		{
+			tables[i].writingTableToFileDB();
+			oFile << tables[i].getName() << std::endl;
+		}
+
+		oFile.close();
+	}
+
+	
+
+};
+
 
 class Token {
 private:
@@ -1496,7 +1533,7 @@ public:
 		if (strcmp(tokenizedVector[i + 2], ",") == 0) throw std::invalid_argument("Too many arguments. Display accepts only a table as argument -> DISPLAY TABLE command");
 
 
-		std::cout << "The command is correct!" << std::endl;
+		//std::cout << "The command is correct!" << std::endl;
 	}
 
 	
@@ -1621,7 +1658,7 @@ public:
 
 		if (strcmp(tokenizedVector[i], ";") < 0) throw std::invalid_argument("Too many arguments after WHERE or Missing token \";\" -> UPDATE command");
 
-		std::cout << "The command is correct!" << std::endl;
+		//std::cout << "The command is correct!" << std::endl;
 
 
 
@@ -1721,7 +1758,7 @@ public:
 		else {
 			throw std::invalid_argument("The command is missing the token \";\" -> SELECT command");;
 		}
-		std::cout << "Command is correct!" << std::endl;
+		//std::cout << "Command is correct!" << std::endl;
 	}
 	
 	void lexerDelete() {//DELETE FROM table_name WHERE column_name = value;
@@ -1774,7 +1811,7 @@ public:
 				}
 			}
 		}
-		std::cout << "Command is correct!" << std::endl;
+		//std::cout << "Command is correct!" << std::endl;
 	}
 
 	//INSERT INTO table VALUES(...);
@@ -2354,6 +2391,7 @@ void loopingThroughCommands(std::string commandLine) {
 	char** tokenizedVector = nullptr;
 	int* vectorTypeOfToken = nullptr;
 	int counter = 1;
+	if (commandLine.length() == 0) throw std::invalid_argument("Please input at least one command");
 	while (commandLine[commandLine.length() - counter] == ' ')
 	{
 		counter++;
