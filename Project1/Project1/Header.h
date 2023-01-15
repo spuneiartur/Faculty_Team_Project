@@ -1109,7 +1109,7 @@ public:
 			std::cout << std::endl;
 		}
 		else {
-			throw;
+			throw std::invalid_argument("Internal error");
 		}
 	}
 
@@ -1392,108 +1392,114 @@ public:
 
 	}
 
-
+	
 
 	void lexerCreateTable() {
 		int i = 1;
 		if (!strcmp(tokenizedVector[i], "table") && vectorTypeOfToken[i + 1] == dataTypeValues::string) {
 			i++;
-			if (vectorTypeOfToken[i] == dataTypeValues::string) { // if token is an identifier 
+			if (vectorTypeOfToken[i] == dataTypeValues::string) { // if token is an identifier .
 				i++;
 
 				if (strcmp(tokenizedVector[i], "(") == 0) { // if token is an identifier and next token is a paranthesis
 				}
 				else if (strcmp(tokenizedVector[i], "if") == 0 && strcmp(tokenizedVector[i + 1], "not") == 0 && strcmp(tokenizedVector[i + 2], "exists") == 0)
 				{
-					if(strcmp(tokenizedVector[i+3], "(") < 0) throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
+					if(strcmp(tokenizedVector[i+3], "(") < 0) throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\" -> CREATE TABLE command");
 					i += 3;
 					
 				}
-				else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
+				else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\" -> CREATE TABLE command");
 
-				if (strcmp(tokenizedVector[i + 1], ")") == 0) throw; // you should insert at least one column 
+				if (strcmp(tokenizedVector[i + 1], ")") == 0) throw std::invalid_argument("At least one column needs to be inserted -> CREATE TABLE command"); // you should insert at least one column 
 				i++;
 				// Processing the lexer for all columns' structure 
 				while (strcmp(tokenizedVector[i], ")") < 0) {
 					while (strcmp(tokenizedVector[i], ")") < 0) { // Here tokenizedVector[i] is pointing to the opening paranthesis of the column
 						int maxSize = 0;
-						if (strcmp(tokenizedVector[i], "(") < 0) throw; // Missing "(" token at the the position i
+						if (strcmp(tokenizedVector[i], "(") < 0) throw std::invalid_argument("Missing '(' token at position i -> CREATE TABLE command"); // Missing "(" token at the the position i
 
-						if (vectorTypeOfToken[i + 1] >= 0) throw; // Unexpected argument at position i, expecting an identifier - name for the column;
-						if (strcmp(tokenizedVector[i + 2], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+						if (vectorTypeOfToken[i + 1] >= 0) throw std::invalid_argument("Unexpected argument at position i, expecting an identifier - name for the column -> CREATE TABLE command"); 
+						if (strcmp(tokenizedVector[i + 2], ",") < 0) throw std::invalid_argument("Unexpected argument at position i, expecting a ','  - separator -> CREATE TABLE command"); // 
 						switch (vectorTypeOfToken[i + 3]) // Forkifying around 2 cases: if the input is set as integer or as text
 						{
 
 						case typeDataType::integer:  // type 14 from enum of data types - INTEGER
 
-							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw std::invalid_argument("Expecting a ',' - separator -> CREATE TABLE command");
 
-							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw std::invalid_argument("Unexpected token at position in the column arguments; Expected token \",\" ");
+							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw std::invalid_argument("Unexpected token at position in the column arguments; Expected token \",\" -> CREATE TABLE command");
 
 							maxSize = atoi(tokenizedVector[i + 5]);
 
-							if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+							if (strcmp(tokenizedVector[i + 6], ",") < 0) throw std::invalid_argument("Unexpected argument at position i, expecting a ',' - separator -> CREATE TABLE command");
 
-							if (vectorTypeOfToken[i + 7] != dataTypeValues::number || atoi(tokenizedVector[i + 7]) > maxSize) throw; // Token is not of the integer data type or the integer is greater than max size addmissible
+							if (vectorTypeOfToken[i + 7] != dataTypeValues::number || atoi(tokenizedVector[i + 7]) > maxSize) throw std::invalid_argument("Token is not of the integer data type or the integer is greater than max size addmissible -> CREATE TABLE command"); 
 							i += 8;
 							break;
 						case typeDataType::text: // type 15 from enum of data types - TEXT
-							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw; // Expecting a "," - separator;
+							if (strcmp(tokenizedVector[i + 4], ",") < 0) throw std::invalid_argument("Expecting a ',' - separator -> CREATE TABLE command");
 
-							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw; // Expected a 
+							if (vectorTypeOfToken[i + 5] != dataTypeValues::number) throw std::invalid_argument("Expected a -> CREATE TABLE command");
 
 							maxSize = atoi(tokenizedVector[i + 5]) / 8;
 
-							if (strcmp(tokenizedVector[i + 6], ",") < 0) throw; // Unexpected argument at position i, expecting a "," - separator;
+							if (strcmp(tokenizedVector[i + 6], ",") < 0) throw std::invalid_argument("Unexpected argument at position i, expecting a ',' - separator -> CREATE TABLE command");
 
-							if (strcmp(tokenizedVector[i + 7], "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
+							if (strcmp(tokenizedVector[i + 7], "'") < 0) throw std::invalid_argument("Unexpected argument at position i, expecting a ' - separator -> CREATE TABLE command");
 							if (strcmp(tokenizedVector[i + 7], "'") == 0 && strcmp(tokenizedVector[i + 8], "'") == 0) {
 								i += 9;
 							}
 							else {
-								if (strlen(tokenizedVector[i + 8]) > maxSize) throw; // Token is not a text data type or the length of the text is greater than the max size addmissible 
+								if (strlen(tokenizedVector[i + 8]) > maxSize) throw std::invalid_argument("Token is not a text data type or the length of the text is greater than the max size addmissible -> CREATE TABLE command");
 
-								if (strcmp(tokenizedVector[i + 9], "'") < 0) throw; // Unexpected argument at position i, expecting a "'" - separator;
+								if (strcmp(tokenizedVector[i + 9], "'") < 0) throw std::invalid_argument("Unexpected argument at position i, expecting a ' - separator -> CREATE TABLE command");
 								i += 10;
 							}
 							break;
 						default:
-							throw; // Expected a data type as second argument (text or integer)
+							throw std::invalid_argument("Expected a data type as second argument (text or integer) -> CREATE TABLE command");
 						}
-						if (strcmp(tokenizedVector[i], ")") < 0) throw; // Expected token ")"
+						if (strcmp(tokenizedVector[i], ")") < 0) 
+							throw std::invalid_argument("Expected token ')' -> CREATE TABLE command");
 
 					}
 					i++; // Exiting the parameters for processed column
-					if (strcmp(tokenizedVector[i], ",") < 0 && strcmp(tokenizedVector[i], ")") < 0) throw; // Expected a separation token - ","
+					if (strcmp(tokenizedVector[i], ",") < 0 && strcmp(tokenizedVector[i], ")") < 0) 
+						throw std::invalid_argument("Expected a separation token ',' -> CREATE TABLE command"); 
 					else if (strcmp(tokenizedVector[i], ",") == 0) i++; // Moving to next column or end of the command
 
 				}
 
 			}
 			i++;
-			if (strcmp(tokenizedVector[i], ";") < 0) throw std::invalid_argument("Unexpected tokens after \")\"");
+			if (strcmp(tokenizedVector[i], ";") < 0) throw std::invalid_argument("Unexpected tokens after \")\" -> CREATE TABLE command");
 
 		}
-		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\"");
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"CREATE\". Expected token \"Table\" or \"Index\" -> CREATE TABLE command");
 
 	}
 
+	
+
 	void lexerDisplay() {
 		int i = 1;
-		if (strcmp(tokenizedVector[i], "table") < 0) throw std::invalid_argument("The second token is not compatible with token \"DISPLAY\". Expected token \"TABLE\"");
+		if (strcmp(tokenizedVector[i], "table") < 0) throw std::invalid_argument("The second token is not compatible with token \"DISPLAY\". Expected token \"TABLE\" -> DISPLAY TABLE command");
 
-		if (vectorTypeOfToken[i + 1] != dataTypeValues::string) throw std::invalid_argument("Missing the table name; Expected an identifier - name of an existing table");
+		if (vectorTypeOfToken[i + 1] != dataTypeValues::string) throw std::invalid_argument("Missing the table name; Expected an identifier - name of an existing table -> DISPLAY TABLE command");
 
-		if (strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") != 0) throw std::invalid_argument("Expected \";\"");
+		if (strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") != 0) throw std::invalid_argument("Expected \";\" -> DISPLAY TABLE command");
 
 
-		if (vectorTypeOfToken[i + 2] == dataTypeValues::string && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0) throw std::invalid_argument("Wrong table name");
+		if (vectorTypeOfToken[i + 2] == dataTypeValues::string && strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";") == 0) throw std::invalid_argument("Wrong table name -> DISPLAY TABLE command");
 
-		if (strcmp(tokenizedVector[i + 2], ",") == 0) throw std::invalid_argument("Too many arguments. Display accepts only a table as argument");
+		if (strcmp(tokenizedVector[i + 2], ",") == 0) throw std::invalid_argument("Too many arguments. Display accepts only a table as argument -> DISPLAY TABLE command");
 
 
 		std::cout << "The command is correct!" << std::endl;
 	}
+
+	
 
 	void lexerCreateIndex() {
 		//if (strcmp(tokenizedVector[0], "createtable") == 0) {				//NU IESE ORICUM DIN LEXERUL NORMAL
@@ -1508,47 +1514,49 @@ public:
 			if (vectorTypeOfToken[i] == dataTypeValues::string) {
 				i++;
 			}
-			else throw; // index_name nu este corect dupa IF NOT EXISTS
+			else throw std::invalid_argument("Index_Name after 'IF NOT EXSITS' is not correct -> CREATE INDEX command");
 		}		
-		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\"");
+		else throw std::invalid_argument("Unexpected token at position iterator+1; Expected token \"()\" or \"IF NOT EXISTS\" -> CREATE INDEX command");
 			 
 		if (strcmp(tokenizedVector[i], "on") == 0) {			//ON
 			i++;
 		}
-		else throw;
+		else throw std::invalid_argument("Unexpected token; expected 'ON' -> CREATE INDEX command");
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table is valid
 			i++;
 		}
-		else throw;
+		else throw std::invalid_argument("Table name is not correct. -> CREATE INDEX command");
 
 		if (strcmp(tokenizedVector[i], "(") == 0) {
 			i++;
 		}
-		else throw; //nu se deschide paranteza
+		else throw std::invalid_argument("Expected '(' before collumn name -> CREATE INDEX command"); //nu se deschide paranteza
 
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//column_name	//also have to check if column is valid
 			i++;
 		}
-		else throw; //nu este cuvantul valid
+		else throw std::invalid_argument("Expected a string at column_name -> CREATE INDEX command");
 
 		if (strcmp(tokenizedVector[i], ",") == 0) {
-			throw; //too many arguments
+			throw std::invalid_argument("Too many arguments -> CREATE INDEX command");
 		}
 
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {
-			throw; //invalid coolumn name
+			throw std::invalid_argument("Invalid column name -> CREATE INDEX command");
 		}
 
 		if (strcmp(tokenizedVector[i], ")") == 0) {
 			i++;
 		}
-		else throw; //nu se inchide paranteza
+		else throw std::invalid_argument("Expected ')' after column name -> CREATE INDEX command"); //nu se inchide paranteza
 
 
 		if (strcmp(tokenizedVector[i], ";") != 0) {
-			throw; // nu s-a pus ; la finalul comenzii
+			throw std::invalid_argument("Expected ';' at the end of the command -> CREATE INDEX command");
 		}
 	}
+
+	
 
 	void lexerDropTable() {
 		int i = 2;
@@ -1558,15 +1566,15 @@ public:
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//table_name   //also have to check if the table exists
 			i++;
 		}
-		else throw; // missing table name
+		else throw std::invalid_argument("Missing table name -> DROP TABLE command");
 		if (strcmp(tokenizedVector[i], ",") == 0) {
-			throw; // too many table names
+			throw std::invalid_argument("Too many table names -> DROP TABLE command");
 		}
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	
-			throw; //wrong table name - has space
+			throw std::invalid_argument("Wrong table name; has a space in it -> DROP TABLE command");
 		}
 		if (strcmp(tokenizedVector[i], ";") != 0) {
-			throw; // nu s-a pus ; la finalul comenzii
+			throw std::invalid_argument("Expected a ';' at the end of the statement -> DROP TABLE command");
 		}
 	}
 
@@ -1579,39 +1587,39 @@ public:
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {	//index_name   //also have to check if the index exists
 			i++;
 		}
-		else throw; //missing index name
+		else throw std::invalid_argument("Missing index name -> DROP INDEX command");
 		if (strcmp(tokenizedVector[i], ",") == 0) {
-			throw; // too many index names
+			throw std::invalid_argument("Too many index names -> DROP INDEX command");
 		}
 		if (vectorTypeOfToken[i] == dataTypeValues::string) {
-			throw; //wrong index name - has space
+			throw std::invalid_argument("Wrong index name; has a space in it -> DROP INDEX command");
 		}
 		if (strcmp(tokenizedVector[i], ";") != 0) {
-			throw; // nu s-a pus ; la finalul comenzii
+			throw std::invalid_argument("Expected a ';' at the end of the statement -> DROP INDEX command");
 		}
 	}
 
-
+	
 	
 	void lexerUpdate() 
 	{
 		int i = 1;
-		if (vectorTypeOfToken[i] != dataTypeValues::string) throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"UPDATE\". Expected an identifier"); // checking the identifier name of table
+		if (vectorTypeOfToken[i] != dataTypeValues::string) throw std::invalid_argument("Unexpected token at position iterator+1; Non compatible with token \"UPDATE\". Expected an identifier -> UPDATE command"); // checking the identifier name of table
 		i++;
-		if (strcmp(tokenizedVector[i], "set") < 0) throw std::invalid_argument("Unexpected token at position iterator; Non compatible with token \"UPDATE table_name -\". Expected token \"Set\""); // checking the token SET
+		if (strcmp(tokenizedVector[i], "set") < 0) throw std::invalid_argument("Unexpected token at position iterator; Non compatible with token \"UPDATE table_name -\". Expected token \"Set\" -> UPDATE command"); // checking the token SET
 		i++;
 
 		checkingLexerOfEquality(i); // Checks this syntax : id = 5 || name = 'Alex'
 
-		if (strcmp(tokenizedVector[i], ",") == 0) throw std::invalid_argument("Too many SET columns ");
+		if (strcmp(tokenizedVector[i], ",") == 0) throw std::invalid_argument("Too many SET columns -> UPDATE command");
 
-		if (strcmp(tokenizedVector[i], "where") < 0) throw std::invalid_argument("Unexpected token at position iterator; Expected token \"where\"");
+		if (strcmp(tokenizedVector[i], "where") < 0) throw std::invalid_argument("Unexpected token at position iterator; Expected token \"where\" -> UPDATE command");
 
 		i++;
 
 		checkingLexerOfEquality(i); // Checks this syntax of this type: id = 5 || name = 'Alex'
 
-		if (strcmp(tokenizedVector[i], ";") < 0) throw std::invalid_argument("Too many arguments after WHERE or Missing token \";\"");
+		if (strcmp(tokenizedVector[i], ";") < 0) throw std::invalid_argument("Too many arguments after WHERE or Missing token \";\" -> UPDATE command");
 
 		std::cout << "The command is correct!" << std::endl;
 
@@ -1621,7 +1629,7 @@ public:
 
 	}
 
-
+	
 	void lexerSelect() {
 		int i = 0;
 		int k, m, n;
@@ -1647,27 +1655,27 @@ public:
 					}
 				}
 				if ((strcmp(tokenizedVector[i + 1], "(")) || (strcmp(tokenizedVector[m - 1], ")"))) {//verify if we have () around the values
-					throw;
+					throw std::invalid_argument("Parenhesis not opened or closed -> SELECT command");
 				}
 				for (int j = i + 2; j < nrColumns + numberOfCommasIn + 2; j++) { // check if we have string then "," and end with string
 					if (!(strcmp(tokenizedVector[j], tokenizedVector[j + 2]))) {
-						throw;//check if the same column isnt used twice
+						throw std::invalid_argument("Same column is used more than once -> SELECT command");//check if the same column isnt used twice
 					}
 					if (vectorTypeOfToken[j] == dataTypeValues::string || vectorTypeOfToken[j] == dataTypeValues::number) {
 						if (!(strcmp(tokenizedVector[j], "all"))) {
-							throw;//if user uses all and another value throw an error
+							throw std::invalid_argument("If ALL is used then anotheer value can't be specified -> SELECT command");
 						}
 						++j;
 						if (!(strcmp(tokenizedVector[j], ")"))) {
 							break; // stop when we reach the end so we dont look for one more comma that will throw an error
 						}
 						if ((strcmp(tokenizedVector[j], ","))) {
-							throw;//if the values are not comma separated throw a error
+							throw std::invalid_argument("The values are not separated by a comma -> SELECT command");
 						}
 					}
 				}
 				if (strcmp(tokenizedVector[m + 2], ";") || vectorTypeOfToken[m + 1] != dataTypeValues::string || strcmp(tokenizedVector[m - 1], ")") || strcmp(tokenizedVector[m], "from")) {
-					throw; //verifiy if after from we have ";" and a string;
+					throw std::invalid_argument("After FROM there is not a string value and a ';' at the end -> SELECT command"); //verifiy if after from we have ";" and a string;
 				}
 
 			} // for a case where we find FROM but we find it somewhere else then after a ")"
@@ -1677,88 +1685,88 @@ public:
 				if (!(strcmp(tokenizedVector[i + 1], "(")) && !(strcmp(tokenizedVector[i + 3], ")"))) {// check if we only have one argument 
 					if (vectorTypeOfToken[i + 2] == dataTypeValues::string && (strcmp(tokenizedVector[i + 2], "all")) && (strcmp(tokenizedVector[i + 2], "*"))) { // check to see if we have a string between the parenthesis and its not all or *
 						if (strcmp(tokenizedVector[i + 4], "from")) {
-							throw; // SELECT value FROM syntax is wrongly written
+							throw std::invalid_argument("SELECT value FROM syntax is wrongly written -> SELECT command"); // SELECT value FROM syntax is wrongly written
 						}
 						if (vectorTypeOfToken[i + 5] != dataTypeValues::string) {
-							throw; // if the 4th place is not a string value , the name of the table we throw error
+							throw std::invalid_argument("The 4th place is not a string value; the name of the table -> SELECT command"); // if the 4th place is not a string value , the name of the table we throw error
 						}
 						if (strcmp(tokenizedVector[i + 6], ";")) {
-							throw; // verifiy the we dont have two words after from
+							throw std::invalid_argument("Only one word after 'from' : table_name -> SELECT command"); // verifiy the we dont have two words after from
 						}
 						if (!(strcmp(tokenizedVector[i + 2], "all")) || (!(strcmp(tokenizedVector[i + 2], "*")))) {
-							throw;
+							throw std::invalid_argument("Select all not written properly -> SELECT command"); //????
 						}
 					}
 					else {
-						throw; //if the value between parenthisis insnt a string throw error
+						throw std::invalid_argument("The value between parenthesis is not a string -> SELECT command");
 					}
 				}
 				//FOR ALL COLUMNS-----------------------------------------------------
 				else if (!(strcmp(tokenizedVector[i + 1], "all")) || !(strcmp(tokenizedVector[i + 1], "*"))) {//check for ALL or * written after SELECT
 					if (strcmp(tokenizedVector[i + 2], "from")) {
-						throw; // SELECT ALL FROM syntax is wrongly written
+						throw std::invalid_argument("SELECT ALL FROM syntax ia wrongly written -> SELECT command"); // SELECT ALL FROM syntax is wrongly written
 					}
 					else if (vectorTypeOfToken[i + 3] != dataTypeValues::string) {
-						throw; // if the 4th place is not a string value , the name of the table we throw error
+						throw std::invalid_argument("The 4th place is not a string value; the name of the table -> SELECT command"); // if the 4th place is not a string value , the name of the table we throw error
 					}
 					if (strcmp(tokenizedVector[i + 4], ";")) {
-						throw; // verifiy the we dont have two words after from
+						throw std::invalid_argument("Only one word after 'from' : table_name -> SELECT command"); // verifiy the we dont have two words after from
 					}
 				}
 				else {
-					throw;
+					throw std::invalid_argument("The value between parenthesis is not a string -> SELECT command");
 				}
 			}
 		}
 		else {
-			throw std::invalid_argument("The command is missing the token \";\"");;
+			throw std::invalid_argument("The command is missing the token \";\" -> SELECT command");;
 		}
 		std::cout << "Command is correct!" << std::endl;
 	}
-
+	
 	void lexerDelete() {//DELETE FROM table_name WHERE column_name = value;
 		if (strcmp(tokenizedVector[0], "delete")) {
-			throw std::invalid_argument("Wrong format of the keyword!\n");
+			throw std::invalid_argument("Wrong format of the keyword!\n -> DELETE command");
 		}
 		else {
 			if (strcmp(tokenizedVector[1], "from")) {
-				throw std::invalid_argument("Wrong FROM format or position as 2nd argument!");
+				throw std::invalid_argument("Wrong FROM format or position as 2nd argument! -> DELETE command");
 			}
 			else {
 				if (vectorTypeOfToken[2] != dataTypeValues::string || !strcmp(tokenizedVector[2], "from") || !strcmp(tokenizedVector[2], "delete") || !strcmp(tokenizedVector[2], "where")) {
-					throw std::invalid_argument("Wrong table name or missing!");
+					throw std::invalid_argument("Wrong table name or missing! -> DELETE command");
 				}
 				else {
 					if (strcmp(tokenizedVector[3], "where")) {
-						throw std::invalid_argument("Missing WHERE clause as 4th poisiton in argument");
+						throw std::invalid_argument("Missing WHERE clause as 4th poisiton in argument -> DELETE command");
 					}
 					else {
 						if (vectorTypeOfToken[4] != dataTypeValues::string || !strcmp(tokenizedVector[4], "from") || !strcmp(tokenizedVector[4], "delete") || !strcmp(tokenizedVector[4], "where")) {
-							throw std::invalid_argument("Wrong column name or missing!");
+							throw std::invalid_argument("Wrong column name or missing! -> DELETE command");
 						}
 						else {
 							if (strcmp(tokenizedVector[5], "=")) {
-								throw std::invalid_argument("Missing equals operator or wrong position!");
+								throw std::invalid_argument("Missing equals operator or wrong position! -> DELETE command");
 							}
 							else {
 								if (strcmp(tokenizedVector[sizeOfTokenizedVector - 1], ";")) {
-									throw;
+									throw std::invalid_argument("Expected ';' -> DELETE command");
 								}
 								if (!strcmp(tokenizedVector[sizeOfTokenizedVector - 2], "'")) {
 									if (strcmp(tokenizedVector[sizeOfTokenizedVector - 4], "'")) {
-										throw;
+										throw std::invalid_argument("Quotation marks were not open -> DELETE command");
 									}
 									if (dataTypeValues::string != vectorTypeOfToken[sizeOfTokenizedVector - 3] && dataTypeValues::number != vectorTypeOfToken[sizeOfTokenizedVector - 3]) {
-										throw;
+										throw std::invalid_argument("Invalid token -> DELETE command");
 									}
 								}
 								else if (dataTypeValues::number == vectorTypeOfToken[sizeOfTokenizedVector - 2]) {
 									if (!strcmp(tokenizedVector[sizeOfTokenizedVector - 3], "'") || !strcmp(tokenizedVector[sizeOfTokenizedVector - 1], "'")) {
-										throw;
+										throw std::invalid_argument("Quotation marks were not closed -> DELETE command");
 									}
 								}
 								else {
-									throw;
+									throw std::invalid_argument("Invalid token. Expected ' -> DELETE command");
 								}
 							}
 						}
@@ -1775,33 +1783,33 @@ public:
 		int nrOfColumns = 0;
 		if (strcmp(tokenizedVector[i], "into") || strcmp(tokenizedVector[sizeOfTokenizedVector-1],";") 
 			|| strcmp(tokenizedVector[sizeOfTokenizedVector-2],")")) {
-			throw std::invalid_argument("Check the second token. Expected 'INTO'");//check if second word is not INTO
+			throw std::invalid_argument("Check the second token. Expected 'INTO' -> INSERT INTO command");//check if second word is not INTO
 		}
 		else {
 			if (vectorTypeOfToken[i + 1] != dataTypeValues::string) {
-				throw; //check if the 3rd value is a table 
+				throw std::invalid_argument("The 3rd token is not a table_name -> INSERT INTO command"); //check if the 3rd value is a table 
 			}
 			else if (!strcmp(tokenizedVector[i + 1], "insert") || !strcmp(tokenizedVector[i + 1], "into")) {
-				throw; //check if there were no misspositionings;
+				throw std::invalid_argument("There are some missppositionings. -> INSERT INTO command"); //check if there were no misspositionings;
 			}
 			else {
 				if (strcmp(tokenizedVector[i+2], "values")) {
-					throw std::invalid_argument("Check the 4th position token. Expected 'VALUES'");//check if syntax has values on 4th position
+					throw std::invalid_argument("Check the 4th position token. Expected 'VALUES' -> INSERT INTO command");//check if syntax has values on 4th position
 				}
 				else {
 					if (strcmp(tokenizedVector[i + 3], "(")) {
-						throw; // check if we start with a paranthesis
+						throw std::invalid_argument("Values have to stard with '(' -> INSERT INTO command"); // check if we start with a paranthesis
 					}
 					else {
 						if (vectorTypeOfToken[sizeOfTokenizedVector - 3] != dataTypeValues::number && strcmp("'", tokenizedVector[sizeOfTokenizedVector - 3])){
-							throw;
+							throw std::invalid_argument("Values between () are not correct -> INSERT INTO command");
 						}
 						for (int j = i + 4; j < sizeOfTokenizedVector - 4; j++) { // function to find all of the columns
 							if (!strcmp(tokenizedVector[j],tokenizedVector[j-1])){
-								throw; // case of , ,
+								throw std::invalid_argument("Case of ', ,' when finding the columns -> INSERT INTO command"); // case of , ,
 							}
 							if (!strcmp(tokenizedVector[j + 1], tokenizedVector[j])) {
-								throw; // case of , ,
+								throw std::invalid_argument("Case of ', ,' when finding the columns -> INSERT INTO command"); // case of , ,
 							}
 							if (vectorTypeOfToken[j] == dataTypeValues::number || vectorTypeOfToken[j] == dataTypeValues::string) {
 								nrOfColumns++;
@@ -1811,46 +1819,46 @@ public:
 									//verify first value
 									if (!strcmp(tokenizedVector[j - 2], "(")) {
 										if (strcmp(tokenizedVector[j + 2], ",")) {
-											throw;
+											throw std::invalid_argument("Invalid token , expected ',' for the first value -> INSERT INTO command");
 										}
 										if (strcmp(tokenizedVector[j - 1], "'") || strcmp(tokenizedVector[j + 1], "'")) {
-											throw;
+											throw std::invalid_argument("Invalid token , expected quotation marks for the first value -> INSERT INTO command");
 										}
 									}
 									//verify middle value
 									else if (!strcmp(tokenizedVector[j - 2], ",") && !strcmp(tokenizedVector[j + 2], ","))
 									{
 										if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1], "'")) {
-											throw;
+											throw std::invalid_argument("Invalid token , expected ',' for the middle value -> INSERT INTO command");
 										}
 										if (!(dataTypeValues::number == vectorTypeOfToken[j - 3] && dataTypeValues::number == vectorTypeOfToken[j + 3]) &&
 											!(dataTypeValues::number == vectorTypeOfToken[j - 3] && !strcmp(tokenizedVector[j + 3], "'")) &&
 											!(dataTypeValues::number == vectorTypeOfToken[j + 3] && !strcmp(tokenizedVector[j - 3], "'")) &&
 											(strcmp(tokenizedVector[j + 3], "'") && strcmp(tokenizedVector[j - 3], "'"))) {
-											throw;
+											throw std::invalid_argument("Invalid token , expected quotation marks for the second value -> INSERT INTO command");
 										}
 									}
 									//verify last value
 									else if (!strcmp(tokenizedVector[j + 2], ")")) {
 										if (strcmp(tokenizedVector[j - 2], ",")) {
-											throw;
+											throw std::invalid_argument("Invalid token , expected ',' for the last value -> INSERT INTO command");
 										}
 										if (strcmp(tokenizedVector[j + 3], ";")) {
-											throw;
+											throw std::invalid_argument("Invalid token , expected ',' for the last value -> INSERT INTO command");
 										}
 										if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1], "'")) {
-											throw;
+											throw std::invalid_argument("Invalid token , expected quotation marks for the last value -> INSERT INTO command");
 										}
 									}
 									else {
-										throw;
+										throw std::invalid_argument("Invalid token -> INSERT INTO command");
 									}
 								}
 								else {
 									//verify first value
 									if (!strcmp(tokenizedVector[j - 1], "(")) {
 										if (strcmp(tokenizedVector[j + 1], ",")) {
-											throw;
+											throw std::invalid_argument("Invalid token for the first value -> INSERT INTO command");
 										}
 									}
 									//verify middle value
@@ -1859,20 +1867,20 @@ public:
 											!(dataTypeValues::number == vectorTypeOfToken[j - 2] && !strcmp(tokenizedVector[j + 2], "'")) &&
 											!(dataTypeValues::number == vectorTypeOfToken[j + 2] && !strcmp(tokenizedVector[j - 2], "'")) &&
 											(strcmp(tokenizedVector[j + 2], "'") && strcmp(tokenizedVector[j - 2], "'"))) {
-											throw;
+											throw std::invalid_argument("Invalid token for the middle value -> INSERT INTO command");
 										}
 									}
 									//verify last value
 									else if (!strcmp(tokenizedVector[j + 1], ")")) {
 										if (strcmp(tokenizedVector[j - 1], ",")) {
-											throw;
+											throw std::invalid_argument("Invalid token, expected ',' separator for the last value -> INSERT INTO command");
 										}
 										if (strcmp(tokenizedVector[j + 2], ";")) {
-											throw;
+											throw std::invalid_argument("Invalid token, expected ';' separator for the last value -> INSERT INTO command");
 										}
 									}
 									else {
-										throw;
+										throw std::invalid_argument("Invalid token for the last value -> INSERT INTO command");
 									}
 								}
 							}
@@ -1880,39 +1888,39 @@ public:
 								//verify first value
 								if (!strcmp(tokenizedVector[j - 2], "(")) {
 									if (strcmp(tokenizedVector[j + 2], ",")) {
-										throw;
+										throw std::invalid_argument("Invalid token, expected ',' separator between first and second value -> INSERT INTO command");
 									}
 									if (strcmp(tokenizedVector[j - 1], "'") || strcmp(tokenizedVector[j + 1], "'")) {
-										throw;
+										throw std::invalid_argument("Invalid token, expected quotation mark for the first value -> INSERT INTO command");
 									}
 								}
 								//verify middle value
 								else if (!strcmp(tokenizedVector[j - 2], ",") && !strcmp(tokenizedVector[j + 2], ","))
 								{
 									if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1],"'")) {
-										throw;
+										throw std::invalid_argument("Invalid token, expected quotation mark for the middle value -> INSERT INTO command");
 									}
 									if (!(dataTypeValues::number == vectorTypeOfToken[j - 3] && dataTypeValues::number == vectorTypeOfToken[j + 3]) &&
 										!(dataTypeValues::number == vectorTypeOfToken[j - 3] && !strcmp(tokenizedVector[j + 3], "'")) &&
 										!(dataTypeValues::number == vectorTypeOfToken[j + 3] && !strcmp(tokenizedVector[j - 3], "'")) &&
 										(strcmp(tokenizedVector[j + 3], "'") && strcmp(tokenizedVector[j - 3], "'"))) {
-										throw;
+										throw std::invalid_argument("Invalid token, expected quotation mark for the middle value -> INSERT INTO command");
 									}
 								}
 								//verify last value
 								else if (!strcmp(tokenizedVector[j + 2], ")")) {
 									if (strcmp(tokenizedVector[j - 2], ",")) {
-										throw;
+										throw std::invalid_argument("Invalid token, expected ',' separator for the last value -> INSERT INTO command");
 									}
 									if (strcmp(tokenizedVector[j + 3], ";")) {
-										throw;
+										throw std::invalid_argument("Invalid token, expected ';' separator for the last value -> INSERT INTO command");
 									}
 									if (strcmp(tokenizedVector[j + 1], "'") || strcmp(tokenizedVector[j - 1], "'")) {
-										throw;
+										throw std::invalid_argument("invalid token, expected ' separtor for the last value -> INSERT INTO command");
 									}
 								}
 								else {
-									throw;
+									throw std::invalid_argument("Invalid token -> INSERT INTO command");
 								}
 							}
 						}
@@ -1933,7 +1941,7 @@ public:
 			else if (strcmp(tokenizedVector[1], "index") == 0) {
 				lexerCreateIndex();
 			}
-			else throw; //second word is not correct
+			else throw std::invalid_argument("Second word is not correct -> CREATE TABLE/INDEX command.");; //second word is not correct
 		}
 		else if (strcmp(tokenizedVector[0], "update") == 0) {
 			lexerUpdate();
@@ -1950,7 +1958,7 @@ public:
 			else if (strcmp(tokenizedVector[1], "index") == 0) {
 				lexerDropIndex();
 			}
-			else throw;   //second word is not correct
+			else throw std::invalid_argument("Second word is not correct -> DROP TABLE/INDEX command");   //second word is not correct
 		}
 		else if (strcmp(tokenizedVector[0], "display") == 0)
 		{
